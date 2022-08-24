@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/camartinez04/portworx-cli/broker/pkg/cluster"
-	"github.com/camartinez04/portworx-cli/broker/pkg/nodes"
-	"github.com/camartinez04/portworx-cli/broker/pkg/volumes"
+	"github.com/camartinez04/portworx-client/broker/pkg/cluster"
+	"github.com/camartinez04/portworx-client/broker/pkg/nodes"
+	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 )
 
 // GetVolumeIDHTTP http function to get the volume ID.

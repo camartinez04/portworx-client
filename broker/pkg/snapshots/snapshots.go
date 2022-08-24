@@ -8,14 +8,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/camartinez04/portworx-cli/broker/pkg/volumes"
+	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 	"github.com/golang/protobuf/ptypes"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
 
-//createSnapshot creates a local snapshot of a volume
+// createSnapshot creates a local snapshot of a volume
 func createSnapshot(conn *grpc.ClientConn, volumeName string) {
 
 	volumenes := api.NewOpenStorageVolumeClient(conn)
@@ -46,7 +46,7 @@ func createSnapshot(conn *grpc.ClientConn, volumeName string) {
 
 }
 
-//createCloudSnap creates a cloud snapshot
+// createCloudSnap creates a cloud snapshot
 func createCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 	volumeID, err := volumes.GetVolumeID(conn, volumeName)
@@ -74,7 +74,7 @@ func createCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 }
 
-//statusCloudSnap gets the status of a cloud snapshot
+// statusCloudSnap gets the status of a cloud snapshot
 func statusCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 	volumeID, err := volumes.GetVolumeID(conn, volumeName)
@@ -114,7 +114,7 @@ func statusCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 }
 
-//cloudSnapHistory gets the history of a cloud snapshot
+// cloudSnapHistory gets the history of a cloud snapshot
 func cloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 
 	volumeID, err := volumes.GetVolumeID(conn, volumeName)
@@ -148,7 +148,7 @@ func cloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 	fmt.Println()
 }
 
-//createCloudCredentials creates a new cloud credential for the given provider
+// createCloudCredentials creates a new cloud credential for the given provider
 func createS3CloudCredentials(conn *grpc.ClientConn, credName string, bucketName string, accessKey string, secretKey string, endPoint string, region string, sslDisabled bool, iamPolicyEnabled bool) {
 
 	creds := api.NewOpenStorageCredentialsClient(conn)

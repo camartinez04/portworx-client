@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/camartinez04/portworx-cli/broker/pkg/volumes"
+	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 )
