@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxfrontend-service
+  labels:
+    app: pxfrontend
+spec:
+  selector:
+    app: pxfrontend
+  ports:
+  - port: 80
+    targetPort: 8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxfrontend-deployment
+  labels:
+    app: pxfrontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pxfrontend
+  template:
+    metadata:
+      labels:
+        app: pxfrontend
+    spec:
+      containers:
+      - name: pxfrontend
+        image: calvarado2004/portworx-client-frontend:latest
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+        env:
+        - name: "BROKER_URL"
+          value: "http://pxbroker-service"
+        ports:
+        - containerPort: 8081
+

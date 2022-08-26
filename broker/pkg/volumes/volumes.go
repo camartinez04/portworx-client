@@ -23,7 +23,7 @@ func GetVolumeID(conn *grpc.ClientConn, volumeName string) (volumeID string, err
 			Name: volumeName,
 		})
 	if err != nil {
-		errorFound = errors.New("volume not found")
+		errorFound = fmt.Errorf("volume id not found of %s", volumeName)
 		fmt.Println(errorFound)
 		return "", errorFound
 	}

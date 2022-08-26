@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 )
@@ -29,7 +28,7 @@ func main() {
 	NewRenderer(&app)
 	NewHelpers(&app)
 
-	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
+	log.Println("Starting Frontend on port", portNumber)
 
 	srv := &http.Server{
 		Addr:    portNumber,
