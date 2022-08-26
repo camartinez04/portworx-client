@@ -31,18 +31,21 @@ func NewHandlers(r *Repository) {
 
 func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 
-	volume_inspect := InspectVolume()
+	volume := "pvc-52574539-e72f-452f-b355-caa63e41cd9d"
+
+	volume_inspect := InspectVolume(volume)
 
 	Template(w, r, "index.html", &TemplateData{
 		JsonVolumeInspect: volume_inspect,
 	})
 }
 
-func InspectVolume() JsonVolumeInspect {
+func InspectVolume(volume string) JsonVolumeInspect {
 
 	var jsonVolume JsonVolumeInspect
 
-	url := "http://localhost:8080/getinspectvolume/pvc-52574539-e72f-452f-b355-caa63e41cd9d"
+	url := "http://localhost:8080/getinspectvolume/" + volume
+
 	method := "GET"
 
 	client := &http.Client{}
