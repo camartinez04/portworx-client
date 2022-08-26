@@ -5,5 +5,9 @@
 		},
 		{
 			"path": "broker"
+		},
+		{
+			"path": "kubernetes"
 		}
+	]
 }
