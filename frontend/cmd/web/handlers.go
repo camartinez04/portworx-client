@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 var Repo *Repository
@@ -29,22 +30,27 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
-func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) Volume(w http.ResponseWriter, r *http.Request) {
 
-	volume := "pvc-52574539-e72f-452f-b355-caa63e41cd9d"
+	exploded := strings.Split(r.RequestURI, "/")
 
-	volume_inspect := InspectVolume(volume)
+	volumeName := exploded[3]
+
+	volumeInspect := InspectVolume(volumeName)
+
+	volumeUsage := UsageVolume(volumeName)
 
 	Template(w, r, "index.html", &TemplateData{
-		JsonVolumeInspect: volume_inspect,
+		JsonVolumeInspect: volumeInspect,
+		JsonUsageVolume:   volumeUsage,
 	})
 }
 
-func InspectVolume(volume string) JsonVolumeInspect {
+func InspectVolume(volumeName string) JsonVolumeInspect {
 
 	var jsonVolume JsonVolumeInspect
 
-	url := "http://localhost:8080/getinspectvolume/" + volume
+	url := brokerURL + "/getinspectvolume/" + volumeName
 
 	method := "GET"
 
@@ -68,5 +74,36 @@ func InspectVolume(volume string) JsonVolumeInspect {
 	json.Unmarshal(body, &jsonVolume)
 
 	return jsonVolume
+
+}
+
+func UsageVolume(volumeName string) JsonUsageVolume {
+
+	var jsonUsage JsonUsageVolume
+
+	url := brokerURL + "/getvolumeusage/" + volumeName
+
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	json.Unmarshal(body, &jsonUsage)
+
+	return jsonUsage
 
 }

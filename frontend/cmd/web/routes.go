@@ -19,7 +19,7 @@ func routes(app *AppConfig) http.Handler {
 
 	mux.Route("/frontend", func(mux chi.Router) {
 
-		mux.Get("/", Repo.Home)
+		mux.Get("/volume/{volume_name}", Repo.Volume)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 

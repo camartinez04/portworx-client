@@ -84,6 +84,16 @@ type TemplateData struct {
 	Warning           string
 	Error             string
 	IsAuthenticated   int
+	JsonUsageVolume   JsonUsageVolume
+}
+
+// JsonUsageVolume holds the json data for the usage volume
+type JsonUsageVolume struct {
+	VolumeUsage            int     `json:"volume_usage,omitempty"`
+	AvailableSpace         int     `json:"available_space,omitempty"`
+	TotalSize              int     `json:"total_size,omitempty"`
+	VolumeUsagePercent     float64 `json:"volume_usage_percent,omitempty"`
+	VolumeAvailablePercent float64 `json:"volume_available_percent,omitempty"`
 }
 
 // JsonVolumeInspect holds the volume inspect json

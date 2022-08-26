@@ -20,10 +20,12 @@
   <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
   {{end}}
 
-  {{$volume := index .JsonVolumeInspect }}
+  {{$usage := .JsonUsageVolume }}
+  {{$volume := .JsonVolumeInspect }}
 
 </head>
 <body>
+
   <div class="container-scroller">
     <div class="row p-0 m-0 proBanner" id="proBanner">
       <div class="col-md-12 p-0 m-0">
@@ -259,10 +261,11 @@
                     <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
                       <div class="ml-xl-4">
                         <h5 class="font-weight-light mb-xl-4">Volume Name</h5>
-                        <h6 class="font-weight-light mb-xl-3">{{printf "%s" $.JsonVolumeInspect.VolumeInspect.Locator.Name  }}</h5>
+                        <h6 class="font-weight-light mb-xl-3">{{printf "%s" $volume.VolumeInspect.Locator.Name  }}</h5>
                         <h5 class="font-weight-light mb-xl-4">Volume ID</h5>
-                        <h6 class="font-weight-light mb-xl-3">{{printf "%s" $.JsonVolumeInspect.VolumeInspect.ID  }}</h5>
-                        <p class="text-muted mb-2 mb-xl-0">This is the information of your Portworx volume.</p>
+                        <h6 class="font-weight-light mb-xl-3">{{printf "%s" $volume.VolumeInspect.ID  }}</h5>
+                        <p class="text-muted mb-2 mb-xl-0">This is the information of your Portworx volume. {{printf "%f" $usage.VolumeAvailablePercent }} </p>
+                        <p class="text-muted mb-2 mb-xl-0">And the current used space: {{printf "%f" $usage.VolumeUsagePercent }} </p>
                       </div>  
                     </div>
                     <div class="col-md-12 col-xl-9">
@@ -277,7 +280,7 @@
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Number of Replicas</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{printf "%d" $.JsonVolumeInspect.VolumeInspect.Spec.HaLevel }}</h5>
+                                  <h5 class="font-weight-normal mb-0">{{printf "%d" $volume.VolumeInspect.Spec.HaLevel }}</h5>
                                 </td>
                               </tr>
                             </table>
@@ -308,6 +311,18 @@
   <!-- container-scroller -->
   {{block "js" .}}
 
+  {{$volume :=  .JsonVolumeInspect }}
+
+  {{$usageGolang := .JsonUsageVolume }}
+
+  <script>
+    var usagePercent = "{{$usageGolang.VolumeUsagePercent}}";
+    var availablePercent = "{{$usageGolang.VolumeAvailablePercent}}";
+    var usage = "{{$usageGolang.VolumeUsage}}";
+    var available = "{{$usageGolang.AvailableSpace}}";
+    var total = "{{$usageGolang.TotalSize}}";
+
+  </script>
   <!-- plugins:js -->
   <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
 
@@ -323,7 +338,7 @@
   <script src="/frontend/static/templates/js/todolist.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="/frontend/static/templates/js/dashboard.js"></script>
+  <script src="/frontend/static/templates/js/dashboard.js"> </script>
   <!-- End custom js for this page-->
   {{end}}
 
