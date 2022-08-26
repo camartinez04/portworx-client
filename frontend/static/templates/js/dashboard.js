@@ -3,7 +3,7 @@
 (function($) {
   'use strict';
   var settings = {
-    "url": "http://localhost:8080/getvolumeusage/test-volume",
+    "url": "http://localhost:8080/getvolumeusage/pvc-52574539-e72f-452f-b355-caa63e41cd9d",
     "method": "GET",
     "timeout": 0,
   };
