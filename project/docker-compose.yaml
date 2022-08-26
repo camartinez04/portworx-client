@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+
+  frontend-service:
+    build:
+      context: ./../frontend
+      dockerfile: ./../frontend/frontend.dockerfile
+    restart: always
+    ports:
+      - "8081:8081"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      BROKER_URL: "http://broker-service:8080"
+
+  broker-service:
+    build:
+      context: ./../broker
+      dockerfile: ./../broker/broker.dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      PORTWORX_GRPC_URL: "portworx-openstorage:9100"
+
+  portworx-openstorage:
+    image: openstorage/mock-sdk-server:latest
+    restart: always
+    ports:
+      - "9100:9100"
+      - "9110:9110"
+    deploy:
+      mode: replicated
+      replicas: 1
+
+
