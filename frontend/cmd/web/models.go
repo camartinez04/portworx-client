@@ -187,4 +187,5 @@ type JsonVolumeInspect struct {
 		} `json:"sharedv4_mount_options,omitempty"`
 		PrevState int `json:"prev_state,omitempty"`
 	} `json:"volume_inspect,omitempty"`
+	ReplicasInfo []string `json:"replicas_info,omitempty"`
 }

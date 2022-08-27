@@ -46,6 +46,7 @@ type JsonResponse struct {
 	NodeList        []string `json:"node_list,omitempty"`
 	VolumeList      []any    `json:"volume_list,omitempty"`
 	AllVolumesList  []string `json:"all_volumes_list,omitempty"`
+	ReplicasInfo    []string `json:"replicas_info,omitempty"`
 }
 
 type JsonVolumeUsage struct {

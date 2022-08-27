@@ -43,7 +43,7 @@ func (app *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Reques
 
 	volumeName := exploded[2]
 
-	volume, err := volumes.InspectVolume(app.Conn, volumeName)
+	volume, replicas, err := volumes.InspectVolume(app.Conn, volumeName)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -52,6 +52,7 @@ func (app *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Reques
 	resp := JsonResponse{
 		Error:         false,
 		VolumeInspect: volume,
+		ReplicasInfo:  replicas,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)

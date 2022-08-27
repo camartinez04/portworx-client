@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -44,6 +45,8 @@ func (m *Repository) Volume(w http.ResponseWriter, r *http.Request) {
 		JsonVolumeInspect: volumeInspect,
 		JsonUsageVolume:   volumeUsage,
 	})
+
+	log.Println("Replicas", volumeInspect.VolumeInspect.ReplicaSets)
 }
 
 func InspectVolume(volumeName string) JsonVolumeInspect {

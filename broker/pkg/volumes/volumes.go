@@ -97,13 +97,13 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 }
 
 // inspectVolume generates a json string with Volume information equivalent of pxctl volume inspect <volume> --json
-func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect api.Volume, errorFound error) {
+func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect api.Volume, apiVolumeReplicas []string, errorFound error) {
 
 	// Retrieves the volume ID.
 	volId, errorFound := GetVolumeID(conn, volumeName)
 	if errorFound != nil {
 		fmt.Println(errorFound)
-		return apiVolumeInspect, errorFound
+		return apiVolumeInspect, apiVolumeReplicas, errorFound
 	}
 
 	// Opens the volume client connection.
@@ -118,12 +118,14 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 	)
 	if errorFound != nil {
 		fmt.Println(errorFound)
-		return apiVolumeInspect, errorFound
+		return apiVolumeInspect, apiVolumeReplicas, errorFound
 	}
 
 	apiVolumeInspect = *volumeInspect.Volume
 
-	return apiVolumeInspect, nil
+	apiVolumeReplicas = apiVolumeInspect.ReplicaSets[0].Nodes
+
+	return apiVolumeInspect, apiVolumeReplicas, nil
 
 }
 

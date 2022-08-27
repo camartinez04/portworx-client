@@ -256,16 +256,14 @@
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card position-relative">
                 <div class="card-body">
-                  <p class="card-title">Volume Inspect</p>
+                  <p class="card-title">Volume Inspect of the volume: {{$volume.VolumeInspect.Locator.Name}}</p>
                   <div class="row">
+                    <h5 class="font-weight-light mb-xl-4">{{$volume.VolumeInspect.Locator.Name}}</h5>
                     <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
                       <div class="ml-xl-4">
-                        <h5 class="font-weight-light mb-xl-4">Volume Name</h5>
-                        <h6 class="font-weight-light mb-xl-3">{{printf "%s" $volume.VolumeInspect.Locator.Name  }}</h5>
-                        <h5 class="font-weight-light mb-xl-4">Volume ID</h5>
-                        <h6 class="font-weight-light mb-xl-3">{{printf "%s" $volume.VolumeInspect.ID  }}</h5>
-                        <p class="text-muted mb-2 mb-xl-0">This is the information of your Portworx volume. {{printf "%f" $usage.VolumeAvailablePercent }} </p>
-                        <p class="text-muted mb-2 mb-xl-0">And the current used space: {{printf "%f" $usage.VolumeUsagePercent }} </p>
+                        <h5 class="font-weight-light mb-xl-4">Volume ID:</h5>
+                        <h6 class="font-weight-light mb-xl-3">{{$volume.VolumeInspect.ID}}</h5>
+                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx volume.</p>
                       </div>  
                     </div>
                     <div class="col-md-12 col-xl-9">
@@ -281,6 +279,29 @@
                                 <td class="font-weight-bold mb-0 w-50 px-0">Number of Replicas</td>
                                 <td class="w-50 px-0">
                                   <h5 class="font-weight-normal mb-0">{{printf "%d" $volume.VolumeInspect.Spec.HaLevel }}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Volume attached on:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{$volume.VolumeInspect.AttachedOn}}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Nodes where the volume have a replica:</td>
+                              </tr>
+                              {{ range $index, $element := $volume.ReplicasInfo}}
+                              <tr>
+                                <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} located on node:</td>
+                                <td class="w-50 px-0">
+                                  <h6 class="font-weight-normal mb-0">{{$element}}</h6>
+                                </td>
+                              </tr>
+                              {{end}}
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Device Path:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{$volume.VolumeInspect.DevicePath}}</h5>
                                 </td>
                               </tr>
                             </table>
