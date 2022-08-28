@@ -254,7 +254,10 @@
                             Scheduler Name
                           </th>
                           <th>
-                            Storage used
+                            Storage used by volumes
+                          </th>
+                          <th>
+                            Progress bar
                           </th>
                         </tr>
                       </thead>
@@ -266,11 +269,14 @@
                             {{ printf "%s" $index }}
                           </td>
                           <td>
-                            {{ printf "%s" $element }}
+                            {{ index $element 0}}
+                          </td>
+                          <td>
+                            {{ index $element 1}}
                           </td>
                           <td>
                             <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                           </td>
                         </tr>

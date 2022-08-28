@@ -91,9 +91,9 @@ func removeDuplicateStr(strSlice []string) []string {
 }
 
 // getListOfNodes retrieves a list of nodes from the cluster
-func GetListOfNodes(conn *grpc.ClientConn) (nodeListReturn map[string]string, errorFound error) {
+func GetListOfNodes(conn *grpc.ClientConn) (nodeListReturn map[string][]string, errorFound error) {
 
-	nodeList := make(map[string]string)
+	nodeList := make(map[string][]string)
 
 	// First, get all node node IDs in this cluster
 	nodeclient := api.NewOpenStorageNodeClient(conn)
@@ -118,12 +118,40 @@ func GetListOfNodes(conn *grpc.ClientConn) (nodeListReturn map[string]string, er
 			return nil, errorFound
 		}
 
-		nodeList[nodeID] = node.Node.GetSchedulerNodeName()
+		nodeUsage, errorFound := GetNodeUsage(conn, nodeID)
+		if errorFound != nil {
+			fmt.Println(errorFound)
+			return nil, errorFound
+		}
+
+		mySlice := []string{node.GetNode().GetSchedulerNodeName(), fmt.Sprintf("%d", nodeUsage)}
+
+		nodeList[nodeID] = mySlice
 	}
 
 	nodeListReturn = nodeList
 
 	return nodeListReturn, nil
+
+}
+
+func GetNodeUsage(conn *grpc.ClientConn, nodeID string) (nodeUsage int, errorFound error) {
+
+	nodeclient := api.NewOpenStorageNodeClient(conn)
+	nodeUsageResp, errorFound := nodeclient.VolumeUsageByNode(
+
+		context.Background(),
+		&api.SdkNodeVolumeUsageByNodeRequest{
+			NodeId: nodeID,
+		},
+	)
+
+	if errorFound != nil {
+		fmt.Println(errorFound)
+		return 0, errorFound
+	}
+
+	return nodeUsageResp.GetVolumeUsageInfo().XXX_Size(), nil
 
 }
 
