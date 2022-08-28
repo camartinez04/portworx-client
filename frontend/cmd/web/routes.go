@@ -19,7 +19,23 @@ func routes(app *AppConfig) http.Handler {
 
 	mux.Route("/frontend", func(mux chi.Router) {
 
-		mux.Get("/volume/{volume_name}", Repo.Volume)
+		mux.Get("/cluster", Repo.Cluster)
+
+		mux.Get("/volumes", Repo.Volumes)
+
+		mux.Get("/volume/{volume_name}", Repo.VolumeInfo)
+
+		mux.Get("/nodes", Repo.Nodes)
+
+		mux.Get("/node/{node_name}", Repo.NodeInfo)
+
+		mux.Get("/snapshots", Repo.Snaps)
+
+		mux.Get("/snapshot/{snap_name}", Repo.SnapsInfo)
+
+		mux.Get("/storage-pools", Repo.StoragePools)
+
+		mux.Get("/stogage-pool/{stg_name}", Repo.StoragePoolsInfo)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 

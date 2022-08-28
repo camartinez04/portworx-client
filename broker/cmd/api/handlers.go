@@ -165,7 +165,7 @@ func (app *AppConfig) getNodesOfVolumeHTTP(w http.ResponseWriter, r *http.Reques
 // getListOfNodesHTTP http function to get the list of nodes of the Portworx cluster.
 func (app *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request) {
 
-	nodes, err := nodes.GetListOfNodes(app.Conn)
+	nodeList, err := nodes.GetListOfNodes(app.Conn)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -173,7 +173,7 @@ func (app *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request)
 
 	resp := JsonResponse{
 		Error:    false,
-		NodeList: nodes,
+		NodeList: nodeList,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)

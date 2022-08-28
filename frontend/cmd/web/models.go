@@ -87,6 +87,7 @@ type TemplateData struct {
 	JsonUsageVolume    JsonUsageVolume
 	IoProfileString    string
 	VolumeStatusString string
+	JsonListOfNodes    any
 }
 
 // JsonUsageVolume holds the json data for the usage volume

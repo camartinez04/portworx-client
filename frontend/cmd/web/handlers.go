@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strings"
 )
@@ -31,7 +30,15 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
-func (m *Repository) Volume(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "index.html", &TemplateData{})
+}
+
+func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "volumes.html", &TemplateData{})
+}
+
+func (m *Repository) VolumeInfo(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -45,14 +52,13 @@ func (m *Repository) Volume(w http.ResponseWriter, r *http.Request) {
 
 	volumeUsage := UsageVolume(volumeName)
 
-	Template(w, r, "index.html", &TemplateData{
+	Template(w, r, "volume-specific.html", &TemplateData{
 		JsonVolumeInspect:  volumeInspect,
 		JsonUsageVolume:    volumeUsage,
 		IoProfileString:    io_profile,
 		VolumeStatusString: status,
 	})
 
-	log.Println("Replicas", volumeInspect.VolumeInspect.ReplicaSets)
 }
 
 func InspectVolume(volumeName string) JsonVolumeInspect {
@@ -115,4 +121,65 @@ func UsageVolume(volumeName string) JsonUsageVolume {
 
 	return jsonUsage
 
+}
+
+func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
+
+	nodeList := ListOfNodes()
+
+	Template(w, r, "nodes.html", &TemplateData{
+		JsonListOfNodes: nodeList,
+	})
+
+	fmt.Printf("%+v", nodeList)
+}
+
+func ListOfNodes() (JsonListOfNodes any) {
+
+	url := brokerURL + "/getlistofnodes"
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	json.Unmarshal(body, &JsonListOfNodes)
+
+	fmt.Printf("%+v", JsonListOfNodes)
+
+	return JsonListOfNodes
+
+}
+
+func (m *Repository) NodeInfo(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "node-specific.html", &TemplateData{})
+}
+
+func (m *Repository) Snaps(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "snapshots.html", &TemplateData{})
+}
+
+func (m *Repository) SnapsInfo(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "snap-specific.html", &TemplateData{})
+}
+
+func (m *Repository) StoragePools(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "storage-pools.html", &TemplateData{})
+}
+
+func (m *Repository) StoragePoolsInfo(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "storage-pool-specific.html", &TemplateData{})
 }

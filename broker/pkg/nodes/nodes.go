@@ -91,7 +91,9 @@ func removeDuplicateStr(strSlice []string) []string {
 }
 
 // getListOfNodes retrieves a list of nodes from the cluster
-func GetListOfNodes(conn *grpc.ClientConn) (nodeList []string, errorFound error) {
+func GetListOfNodes(conn *grpc.ClientConn) (nodeListReturn map[string]string, errorFound error) {
+
+	nodeList := make(map[string]string)
 
 	// First, get all node node IDs in this cluster
 	nodeclient := api.NewOpenStorageNodeClient(conn)
@@ -116,10 +118,12 @@ func GetListOfNodes(conn *grpc.ClientConn) (nodeList []string, errorFound error)
 			return nil, errorFound
 		}
 
-		nodeList = append(nodeList, node.Node.GetSchedulerNodeName())
+		nodeList[nodeID] = node.Node.GetSchedulerNodeName()
 	}
 
-	return nodeList, nil
+	nodeListReturn = nodeList
+
+	return nodeListReturn, nil
 
 }
 
