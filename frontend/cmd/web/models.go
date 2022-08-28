@@ -74,17 +74,19 @@ type MailData struct {
 
 // TemplateData holds data sent from handlers to template
 type TemplateData struct {
-	StringMap         map[string]string
-	IntMap            map[string]int
-	FloatMap          map[string]float32
-	Data              map[string]interface{}
-	JsonVolumeInspect JsonVolumeInspect
-	CSRFToken         string
-	Flash             string
-	Warning           string
-	Error             string
-	IsAuthenticated   int
-	JsonUsageVolume   JsonUsageVolume
+	StringMap          map[string]string
+	IntMap             map[string]int
+	FloatMap           map[string]float32
+	Data               map[string]interface{}
+	JsonVolumeInspect  JsonVolumeInspect
+	CSRFToken          string
+	Flash              string
+	Warning            string
+	Error              string
+	IsAuthenticated    int
+	JsonUsageVolume    JsonUsageVolume
+	IoProfileString    string
+	VolumeStatusString string
 }
 
 // JsonUsageVolume holds the json data for the usage volume
@@ -187,5 +189,8 @@ type JsonVolumeInspect struct {
 		} `json:"sharedv4_mount_options,omitempty"`
 		PrevState int `json:"prev_state,omitempty"`
 	} `json:"volume_inspect,omitempty"`
-	ReplicasInfo []string `json:"replicas_info,omitempty"`
+	ReplicasInfo       []string `json:"replicas_info,omitempty"`
+	VolumeNodes        []string `json:"volume_nodes,omitempty"`
+	VolumeStatusString string   `json:"volume_status_string,omitempty"`
+	IoProfileString    string   `json:"io_profile_string,omitempty"`
 }

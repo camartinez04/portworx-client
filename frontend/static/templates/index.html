@@ -22,6 +22,8 @@
 
   {{$usage := .JsonUsageVolume }}
   {{$volume := .JsonVolumeInspect }}
+  {{$ioprofile := .IoProfileString }}
+  {{$volumestatus := .VolumeStatusString }}
 
 </head>
 <body>
@@ -282,6 +284,18 @@
                                 </td>
                               </tr>
                               <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Volume Status:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{printf "%s" $volumestatus}}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">IO Profile:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{printf "%s" $ioprofile}}</h5>
+                                </td>
+                              </tr>
+                              <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Volume attached on:</td>
                                 <td class="w-50 px-0">
                                   <h5 class="font-weight-normal mb-0">{{$volume.VolumeInspect.AttachedOn}}</h5>
@@ -290,7 +304,7 @@
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Nodes where the volume have a replica:</td>
                               </tr>
-                              {{ range $index, $element := $volume.ReplicasInfo}}
+                              {{ range $index, $element := $volume.VolumeNodes}}
                               <tr>
                                 <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} located on node:</td>
                                 <td class="w-50 px-0">

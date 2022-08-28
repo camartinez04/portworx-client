@@ -39,11 +39,17 @@ func (m *Repository) Volume(w http.ResponseWriter, r *http.Request) {
 
 	volumeInspect := InspectVolume(volumeName)
 
+	io_profile := volumeInspect.IoProfileString
+
+	status := volumeInspect.VolumeStatusString
+
 	volumeUsage := UsageVolume(volumeName)
 
 	Template(w, r, "index.html", &TemplateData{
-		JsonVolumeInspect: volumeInspect,
-		JsonUsageVolume:   volumeUsage,
+		JsonVolumeInspect:  volumeInspect,
+		JsonUsageVolume:    volumeUsage,
+		IoProfileString:    io_profile,
+		VolumeStatusString: status,
 	})
 
 	log.Println("Replicas", volumeInspect.VolumeInspect.ReplicaSets)

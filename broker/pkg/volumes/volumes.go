@@ -97,13 +97,13 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 }
 
 // inspectVolume generates a json string with Volume information equivalent of pxctl volume inspect <volume> --json
-func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect api.Volume, apiVolumeReplicas []string, errorFound error) {
+func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect api.Volume, apiVolumeReplicas, volumeNodes []string, apiVolumeStatus, apiIoProfile string, errorFound error) {
 
 	// Retrieves the volume ID.
 	volId, errorFound := GetVolumeID(conn, volumeName)
 	if errorFound != nil {
 		fmt.Println(errorFound)
-		return apiVolumeInspect, apiVolumeReplicas, errorFound
+		return apiVolumeInspect, apiVolumeReplicas, volumeNodes, "", "", errorFound
 	}
 
 	// Opens the volume client connection.
@@ -118,14 +118,45 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 	)
 	if errorFound != nil {
 		fmt.Println(errorFound)
-		return apiVolumeInspect, apiVolumeReplicas, errorFound
+		return apiVolumeInspect, apiVolumeReplicas, volumeNodes, "", "", errorFound
 	}
 
 	apiVolumeInspect = *volumeInspect.Volume
 
 	apiVolumeReplicas = apiVolumeInspect.ReplicaSets[0].Nodes
 
-	return apiVolumeInspect, apiVolumeReplicas, nil
+	apiVolumeStatus = apiVolumeInspect.GetStatus().String()
+
+	apiIoProfile = apiVolumeInspect.Spec.GetIoProfile().String()
+
+	volumeNodes = make([]string, len(apiVolumeReplicas))
+
+	// Opens the node client connection.
+	nodeclient := api.NewOpenStorageNodeClient(conn)
+
+	// For each node ID, get its information
+	for _, nodeID := range apiVolumeInspect.ReplicaSets[0].Nodes {
+
+		// Retrieves the node information.
+		nodeIdResponse, errorFound := nodeclient.Inspect(
+			context.Background(),
+			&api.SdkNodeInspectRequest{
+				NodeId: nodeID,
+			},
+		)
+		if errorFound != nil {
+			fmt.Println(errorFound)
+			return apiVolumeInspect, apiVolumeReplicas, volumeNodes, "", "", errorFound
+		}
+
+		// Retrieves the node name.
+		volumeNodes = append(volumeNodes, nodeIdResponse.GetNode().GetSchedulerNodeName())
+
+	}
+
+	volumeNodes = deleteEmpty(volumeNodes)
+
+	return apiVolumeInspect, apiVolumeReplicas, volumeNodes, apiVolumeStatus, apiIoProfile, nil
 
 }
 
@@ -258,4 +289,28 @@ func GetAllVolumes(conn *grpc.ClientConn) (volumeList []string, errorFound error
 
 	return volumeList, nil
 
+}
+
+// removeDuplicateStr removes duplicate strings from a slice of strings
+func removeDuplicateStr(strSlice []string) []string {
+	allKeys := make(map[string]bool)
+	list := []string{}
+	for _, item := range strSlice {
+		if _, value := allKeys[item]; !value {
+			allKeys[item] = true
+			list = append(list, item)
+		}
+	}
+	return list
+}
+
+// deleteEmpty returns a slice of strings without empty strings.
+func deleteEmpty(s []string) []string {
+	var r []string
+	for _, str := range s {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
 }
