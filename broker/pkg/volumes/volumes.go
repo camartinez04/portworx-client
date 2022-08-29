@@ -291,6 +291,65 @@ func GetAllVolumes(conn *grpc.ClientConn) (volumeList []string, errorFound error
 
 }
 
+// GetAllVolumesComplete returns a list of all volumes with its corresponding SdkVolumeInspectResponse Struct.
+func GetAllVolumesComplete(conn *grpc.ClientConn) (volumesMap map[string]*api.SdkVolumeInspectResponse, errorFound error) {
+
+	var volumeList []string
+
+	// Initializes the volumes map.
+	volumesMap = make(map[string]*api.SdkVolumeInspectResponse)
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Retrieves the volume information.
+	volumeEnumerate, errorFound := volumes.Enumerate(
+		context.Background(),
+		&api.SdkVolumeEnumerateRequest{},
+	)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+		return volumesMap, errorFound
+	}
+
+	volumeList = volumeEnumerate.VolumeIds
+
+	// For each volume ID, get its information and fill it into the Map of volumes.
+	for _, volume := range volumeList {
+		volInspect, errorFound := volumeInspectFromID(conn, volume)
+		if errorFound != nil {
+			fmt.Println(errorFound)
+			return volumesMap, errorFound
+		}
+
+		volumesMap[volume] = volInspect
+	}
+
+	return volumesMap, nil
+
+}
+
+// volumeInspectFromID retrieves the volume information from the volume ID.
+func volumeInspectFromID(conn *grpc.ClientConn, volumeID string) (volumeInspect *api.SdkVolumeInspectResponse, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Retrieves the volume information.
+	volumeInspect, errorFound = volumes.Inspect(
+		context.Background(),
+		&api.SdkVolumeInspectRequest{
+			VolumeId: volumeID,
+		},
+	)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+		return volumeInspect, errorFound
+	}
+
+	return volumeInspect, nil
+}
+
 // removeDuplicateStr removes duplicate strings from a slice of strings
 func removeDuplicateStr(strSlice []string) []string {
 	allKeys := make(map[string]bool)

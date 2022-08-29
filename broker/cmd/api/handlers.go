@@ -256,3 +256,21 @@ func (app *AppConfig) getAllVolumesHTTP(w http.ResponseWriter, r *http.Request) 
 	writeJSON(w, http.StatusAccepted, resp)
 
 }
+
+// getAllVolumesCompleteHTTP http function to get the list of volumes with inspect information included.
+func (app *AppConfig) getAllVolumesCompleteHTTP(w http.ResponseWriter, r *http.Request) {
+
+	volumes, err := volumes.GetAllVolumesComplete(app.Conn)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:          false,
+		AllVolumesList: volumes,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}

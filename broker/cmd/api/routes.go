@@ -32,6 +32,7 @@ func (app *AppConfig) routes() http.Handler {
 	mux.Get("/getlistofnodes", app.getListOfNodesHTTP)
 	mux.Get("/getreplicaspernode", app.getReplicasPerNodeHTTP)
 	mux.Get("/getallvolumes", app.getAllVolumesHTTP)
+	mux.Get("/getallvolumescomplete", app.getAllVolumesCompleteHTTP)
 	mux.Post("/postcreatevolume", app.postCreateNewVolumeHTTP)
 
 	return mux

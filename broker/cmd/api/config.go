@@ -45,7 +45,7 @@ type JsonResponse struct {
 	NodesOfVolume      []string            `json:"nodes_of_volume,omitempty"`
 	NodeList           map[string][]string `json:"node_list,omitempty"`
 	VolumeList         []any               `json:"volume_list,omitempty"`
-	AllVolumesList     []string            `json:"all_volumes_list,omitempty"`
+	AllVolumesList     any                 `json:"all_volumes_list,omitempty"`
 	ReplicasInfo       []string            `json:"replicas_info,omitempty"`
 	VolumeNodes        []string            `json:"volume_nodes,omitempty"`
 	VolumeStatusString string              `json:"volume_status_string,omitempty"`
