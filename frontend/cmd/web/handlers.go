@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 )
 
 var Repo *Repository
@@ -35,7 +37,67 @@ func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "volumes.html", &TemplateData{})
+
+	volumesInfo := GetAllVolumesInfo()
+
+	fmt.Printf("%+v", volumesInfo)
+
+	Template(w, r, "volumes.html", &TemplateData{
+		JsonGetAllVolumesInfo: volumesInfo,
+	})
+}
+
+func GetAllVolumesInfo() (volumesInfo map[string][]any) {
+
+	var allVolumesList map[string]map[string]*api.SdkVolumeInspectResponse
+
+	url := brokerURL + "/getallvolumescomplete"
+
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	json.Unmarshal(body, &allVolumesList)
+
+	volumesInfo = make(map[string][]any)
+
+	for _, volumes := range allVolumesList {
+
+		for volumeID, volumeContent := range volumes {
+
+			volumeName := volumeContent.GetName()
+			volumeReplicas := len(volumeContent.Volume.ReplicaSets[0].GetNodes())
+			volumeStatus := volumeContent.Volume.GetStatus().String()
+			volumeAttachedOn := volumeContent.Volume.GetAttachedOn()
+			volumeDevicePath := volumeContent.Volume.GetDevicePath()
+			volumeTotalSize := volumeContent.Volume.GetSpec().GetSize()
+			volumeUsage := volumeContent.Volume.GetUsage()
+			volumeAvailableSpace := volumeTotalSize - volumeUsage
+			volumePercentageUsed := float64(volumeUsage) / float64(volumeTotalSize) * 100
+			volumePercentageUsedInt := int(volumePercentageUsed)
+
+			volumesInfo[volumeID] = []any{volumeName, volumeReplicas, volumeStatus, volumeAttachedOn, volumeDevicePath, volumeTotalSize, volumeUsage, volumeAvailableSpace, volumePercentageUsed, volumePercentageUsedInt}
+
+		}
+	}
+
+	return volumesInfo
+
 }
 
 func (m *Repository) VolumeInfo(w http.ResponseWriter, r *http.Request) {

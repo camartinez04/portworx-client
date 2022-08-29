@@ -20,12 +20,13 @@
   <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
   {{end}}
 
-  {{$usage := .JsonUsageVolume }}
-  {{$volume := .JsonVolumeInspect }}
-  {{$ioprofile := .IoProfileString }}
-  {{$volumestatus := .VolumeStatusString }}
-
 </head>
+
+{{ $volumesInfo := .JsonGetAllVolumesInfo }}
+
+{{$usage := .JsonUsageVolume }}
+
+
 <body>
 
   <div class="container-scroller">
@@ -251,43 +252,51 @@
                       <thead>
                         <tr>
                           <th>
-                            User
+                            Volume ID
                           </th>
                           <th>
-                            First name
+                            Volume Name
                           </th>
                           <th>
-                            Progress
+                            Number of Replicas
                           </th>
                           <th>
-                            Amount
+                            Status
                           </th>
                           <th>
-                            Deadline
+                            Attached On
+                          </th>
+                          <th>
+                            Usage
                           </th>
                         </tr>
                       </thead>
                       <tbody>
+                        {{ range $index, $element := $volumesInfo }}
                         <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face1.jpg" alt="image"/>
+                          <td>
+                            {{ printf "%s" $index }}
                           </td>
                           <td>
-                            Herman Beck
+                            <a href="volume/{{ index $element 0 }}">{{ index $element 0 }} </a>
+                          </td>
+                          <td>
+                            {{ index $element 1 }}
+                          </td>
+                          <td>
+                            {{ index $element 2 }}
+                          </td>
+                          <td>
+                            {{ index $element 3 }}
                           </td>
                           <td>
                             <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ index $element 9 }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                           </td>
-                          <td>
-                            $ 77.99
-                          </td>
-                          <td>
-                            May 15, 2015
-                          </td>
                         </tr>
-]                      </tbody>
+                        {{ end }}
+                       </tbody>
                     </table>
                   </div>
                 </div>
@@ -346,4 +355,3 @@
 </body>
 
 </html>
-
