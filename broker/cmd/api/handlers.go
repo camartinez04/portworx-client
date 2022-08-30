@@ -293,6 +293,7 @@ func (app *AppConfig) getAllNodesInfoHTTP(w http.ResponseWriter, r *http.Request
 
 }
 
+// getNodeInfoHTTP http function to get the node information.
 func (app *AppConfig) getNodeInfoHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
