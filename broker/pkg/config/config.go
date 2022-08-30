@@ -16,3 +16,20 @@ type NodeInfo struct {
 	PercentUsedMemory float64 `json:"percent_used_memory,omitempty"`
 	StoragelessNode   bool    `json:"storageless,omitempty"`
 }
+
+// VolumeInfo struct to store the volume information.
+type VolumeInfo struct {
+	VolumeName             string  `json:"volume_name,omitempty"`
+	VolumeID               string  `json:"volume_id,omitempty"`
+	VolumeReplicas         int     `json:"volume_replicas,omitempty"`
+	VolumeStatus           string  `json:"volume_status,omitempty"`
+	VolumeSize             uint64  `json:"volume_size,omitempty"`
+	VolumeUsed             uint64  `json:"volume_used,omitempty"`
+	VolumeAvailable        uint64  `json:"volume_available,omitempty"`
+	VolumeUsedPercent      float64 `json:"volume_used_percent,omitempty"`
+	VolumeType             string  `json:"volume_type,omitempty"`
+	VolumeAttachedOn       string  `json:"volume_attached_on,omitempty"`
+	VolumeAttachStatus     string  `json:"volume_attach_status,omitempty"`
+	VolumeDevicePath       string  `json:"volume_device_path,omitempty"`
+	VolumeAggregationLevel uint32  `json:"volume_aggregation_level,omitempty"`
+}

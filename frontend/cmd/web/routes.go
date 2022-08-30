@@ -23,19 +23,19 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/volumes", Repo.Volumes)
 
-		mux.Get("/volume/{volume_name}", Repo.VolumeInfo)
+		mux.Get("/volume/{volume_name}", Repo.VolumeInformation)
 
 		mux.Get("/nodes", Repo.Nodes)
 
-		mux.Get("/node/{node_name}", Repo.NodeInfo)
+		mux.Get("/node/{node_name}", Repo.NodeInformation)
 
 		mux.Get("/snapshots", Repo.Snaps)
 
-		mux.Get("/snapshot/{snap_name}", Repo.SnapsInfo)
+		mux.Get("/snapshot/{snap_name}", Repo.SnapsInformation)
 
 		mux.Get("/storage-pools", Repo.StoragePools)
 
-		mux.Get("/stogage-pool/{stg_name}", Repo.StoragePoolsInfo)
+		mux.Get("/stogage-pool/{stg_name}", Repo.StoragePoolsInformation)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 

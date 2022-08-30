@@ -36,23 +36,41 @@ type VolumeInspect []string
 
 // jsonResponse is the response format for JSON
 type JsonResponse struct {
-	Error              bool                       `json:"error,omitempty"`
-	Message            string                     `json:"message,omitempty"`
-	Data               any                        `json:"data,omitempty"`
-	VolumeID           string                     `json:"volume_id,omitempty"`
-	ClusterCapacity    string                     `json:"cluster_capacity,omitempty"`
-	ClusterUUID        string                     `json:"cluster_uuid,omitempty"`
-	VolumeInspect      any                        `json:"volume_inspect,omitempty"`
-	NodesOfVolume      []string                   `json:"nodes_of_volume,omitempty"`
-	NodeList           map[string][]string        `json:"node_list,omitempty"`
-	VolumeList         []any                      `json:"volume_list,omitempty"`
-	AllVolumesList     any                        `json:"all_volumes_list,omitempty"`
-	ReplicasInfo       []string                   `json:"replicas_info,omitempty"`
-	VolumeNodes        []string                   `json:"volume_nodes,omitempty"`
-	VolumeStatusString string                     `json:"volume_status_string,omitempty"`
-	IoProfileString    string                     `json:"io_profile_string,omitempty"`
-	AllNodesInfo       map[string]config.NodeInfo `json:"all_nodes_info,omitempty"`
-	NodeInfo           config.NodeInfo            `json:"node_info,omitempty"`
+	Error              bool                `json:"error,omitempty"`
+	Message            string              `json:"message,omitempty"`
+	Data               any                 `json:"data,omitempty"`
+	VolumeID           string              `json:"volume_id,omitempty"`
+	ClusterCapacity    string              `json:"cluster_capacity,omitempty"`
+	ClusterUUID        string              `json:"cluster_uuid,omitempty"`
+	VolumeInspect      any                 `json:"volume_inspect,omitempty"`
+	NodesOfVolume      []string            `json:"nodes_of_volume,omitempty"`
+	NodeList           map[string][]string `json:"node_list,omitempty"`
+	VolumeList         []any               `json:"volume_list,omitempty"`
+	AllVolumesList     any                 `json:"all_volumes_list,omitempty"`
+	ReplicasInfo       []string            `json:"replicas_info,omitempty"`
+	VolumeNodes        []string            `json:"volume_nodes,omitempty"`
+	VolumeStatusString string              `json:"volume_status_string,omitempty"`
+	IoProfileString    string              `json:"io_profile_string,omitempty"`
+}
+
+type JsonGetAllVolumesInfo struct {
+	Error          bool                         `json:"error,omitempty"`
+	AllVolumesInfo map[string]config.VolumeInfo `json:"all_volumes_info,omitempty"`
+}
+
+type JsonGetVolumeInfo struct {
+	Error      bool              `json:"error,omitempty"`
+	VolumeInfo config.VolumeInfo `json:"volume_info,omitempty"`
+}
+
+type JsonGetAllNodesInfo struct {
+	Error        bool                       `json:"error,omitempty"`
+	AllNodesInfo map[string]config.NodeInfo `json:"all_nodes_info,omitempty"`
+}
+
+type JsonGetNodeInfo struct {
+	Error    bool            `json:"error,omitempty"`
+	NodeInfo config.NodeInfo `json:"node_info,omitempty"`
 }
 
 type JsonVolumeUsage struct {

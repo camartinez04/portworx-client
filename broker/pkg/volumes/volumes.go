@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -372,4 +373,88 @@ func deleteEmpty(s []string) []string {
 		}
 	}
 	return r
+}
+
+// GetVolumeInfo returns the volume information from the volume ID.
+func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.VolumeInfo, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Retrieves the volume information.
+	volumeInspect, errorFound := volumes.Inspect(
+		context.Background(),
+		&api.SdkVolumeInspectRequest{
+			VolumeId: volumeID,
+		},
+	)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+		return volumeInfo, errorFound
+	}
+
+	volumeName := volumeInspect.Volume.Locator.GetName()
+	volumeReplicas := len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
+	volumeStatus := volumeInspect.Volume.GetStatus().String()
+	volumeAttachedOn := volumeInspect.Volume.GetAttachedOn()
+	volumeDevicePath := volumeInspect.Volume.GetDevicePath()
+	volumeTotalSize := volumeInspect.Volume.GetSpec().GetSize()
+	volumeUsage := volumeInspect.Volume.GetUsage()
+	volumeAvailableSpace := volumeTotalSize - volumeUsage
+	volumePercentageUsed := float64(volumeUsage) / float64(volumeTotalSize) * 100
+	volumeType := volumeInspect.Volume.Format.String()
+	volumeAttachStatus := volumeInspect.Volume.AttachedState.String()
+	volumeAggregationLevel := volumeInspect.Volume.Spec.GetAggregationLevel()
+
+	volumeInfo = config.VolumeInfo{
+		VolumeName:             volumeName,
+		VolumeID:               volumeID,
+		VolumeReplicas:         volumeReplicas,
+		VolumeStatus:           volumeStatus,
+		VolumeAttachedOn:       volumeAttachedOn,
+		VolumeDevicePath:       volumeDevicePath,
+		VolumeSize:             volumeTotalSize,
+		VolumeUsed:             volumeUsage,
+		VolumeAvailable:        volumeAvailableSpace,
+		VolumeUsedPercent:      volumePercentageUsed,
+		VolumeType:             volumeType,
+		VolumeAttachStatus:     volumeAttachStatus,
+		VolumeAggregationLevel: volumeAggregationLevel,
+	}
+
+	return volumeInfo, nil
+}
+
+// GetAllVolumesInfo returns the volume information for all volumes on the cluster.
+func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo map[string]config.VolumeInfo, errorFound error) {
+
+	// Make a map of slice of VolumeInfos
+	AllVolumesInfo = make(map[string]config.VolumeInfo)
+
+	volumeclient := api.NewOpenStorageVolumeClient(conn)
+
+	// First, get all volumes IDs in this cluster
+	volsEnumResp, errorFound := volumeclient.Enumerate(
+		context.Background(),
+		&api.SdkVolumeEnumerateRequest{})
+	if errorFound != nil {
+		fmt.Println(errorFound)
+		return nil, errorFound
+	}
+
+	// For each volume ID, get its information
+	for _, volID := range volsEnumResp.GetVolumeIds() {
+
+		volumeInfo, errorFound := GetVolumeInfo(conn, volID)
+		if errorFound != nil {
+			fmt.Println(errorFound)
+			return nil, errorFound
+		}
+
+		AllVolumesInfo[volID] = volumeInfo
+
+	}
+
+	return AllVolumesInfo, nil
+
 }

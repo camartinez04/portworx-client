@@ -100,7 +100,7 @@ func GetAllVolumesInfo() (volumesInfo map[string][]any) {
 
 }
 
-func (m *Repository) VolumeInfo(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -226,7 +226,7 @@ func ListOfNodes() (JsonListOfNodes any) {
 
 }
 
-func (m *Repository) NodeInfo(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "node-specific.html", &TemplateData{})
 }
 
@@ -234,7 +234,7 @@ func (m *Repository) Snaps(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "snapshots.html", &TemplateData{})
 }
 
-func (m *Repository) SnapsInfo(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) SnapsInformation(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "snap-specific.html", &TemplateData{})
 }
 
@@ -242,6 +242,6 @@ func (m *Repository) StoragePools(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "storage-pools.html", &TemplateData{})
 }
 
-func (m *Repository) StoragePoolsInfo(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) StoragePoolsInformation(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "storage-pool-specific.html", &TemplateData{})
 }
