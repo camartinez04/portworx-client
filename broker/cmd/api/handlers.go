@@ -292,3 +292,24 @@ func (app *AppConfig) getAllNodesInfoHTTP(w http.ResponseWriter, r *http.Request
 	writeJSON(w, http.StatusAccepted, resp)
 
 }
+
+func (app *AppConfig) getNodeInfoHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	nodeID := exploded[2]
+
+	nodeInfo, err := nodes.GetNodeInfo(app.Conn, nodeID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:    false,
+		NodeInfo: nodeInfo,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}

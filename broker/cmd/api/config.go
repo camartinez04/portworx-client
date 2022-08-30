@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	"google.golang.org/grpc"
 )
 
@@ -35,31 +36,32 @@ type VolumeInspect []string
 
 // jsonResponse is the response format for JSON
 type JsonResponse struct {
-	Error              bool                `json:"error,omitempty"`
-	Message            string              `json:"message,omitempty"`
-	Data               any                 `json:"data,omitempty"`
-	VolumeID           string              `json:"volume_id,omitempty"`
-	ClusterCapacity    string              `json:"cluster_capacity,omitempty"`
-	ClusterUUID        string              `json:"cluster_uuid,omitempty"`
-	VolumeInspect      any                 `json:"volume_inspect,omitempty"`
-	NodesOfVolume      []string            `json:"nodes_of_volume,omitempty"`
-	NodeList           map[string][]string `json:"node_list,omitempty"`
-	VolumeList         []any               `json:"volume_list,omitempty"`
-	AllVolumesList     any                 `json:"all_volumes_list,omitempty"`
-	ReplicasInfo       []string            `json:"replicas_info,omitempty"`
-	VolumeNodes        []string            `json:"volume_nodes,omitempty"`
-	VolumeStatusString string              `json:"volume_status_string,omitempty"`
-	IoProfileString    string              `json:"io_profile_string,omitempty"`
-	AllNodesInfo       map[string][]any    `json:"all_nodes_info,omitempty"`
+	Error              bool                       `json:"error,omitempty"`
+	Message            string                     `json:"message,omitempty"`
+	Data               any                        `json:"data,omitempty"`
+	VolumeID           string                     `json:"volume_id,omitempty"`
+	ClusterCapacity    string                     `json:"cluster_capacity,omitempty"`
+	ClusterUUID        string                     `json:"cluster_uuid,omitempty"`
+	VolumeInspect      any                        `json:"volume_inspect,omitempty"`
+	NodesOfVolume      []string                   `json:"nodes_of_volume,omitempty"`
+	NodeList           map[string][]string        `json:"node_list,omitempty"`
+	VolumeList         []any                      `json:"volume_list,omitempty"`
+	AllVolumesList     any                        `json:"all_volumes_list,omitempty"`
+	ReplicasInfo       []string                   `json:"replicas_info,omitempty"`
+	VolumeNodes        []string                   `json:"volume_nodes,omitempty"`
+	VolumeStatusString string                     `json:"volume_status_string,omitempty"`
+	IoProfileString    string                     `json:"io_profile_string,omitempty"`
+	AllNodesInfo       map[string]config.NodeInfo `json:"all_nodes_info,omitempty"`
+	NodeInfo           config.NodeInfo            `json:"node_info,omitempty"`
 }
 
 type JsonVolumeUsage struct {
 	Error                  bool    `json:"error,omitempty"`
-	VolumeUsage            float64 `json:"volume_usage"`
-	AvailableSpace         float64 `json:"available_space"`
-	TotalSize              float64 `json:"total_size"`
-	VolumeUsagePercent     float32 `json:"volume_usage_percent"`
-	VolumeAvailablePercent float32 `json:"volume_available_percent"`
+	VolumeUsage            float64 `json:"volume_usage,omitempty"`
+	AvailableSpace         float64 `json:"available_space,omitempty"`
+	TotalSize              float64 `json:"total_size,omitempty"`
+	VolumeUsagePercent     float32 `json:"volume_usage_percent,omitempty"`
+	VolumeAvailablePercent float32 `json:"volume_available_percent,omitempty"`
 }
 
 const (
