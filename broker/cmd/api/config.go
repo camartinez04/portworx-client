@@ -50,6 +50,7 @@ type JsonResponse struct {
 	VolumeNodes        []string            `json:"volume_nodes,omitempty"`
 	VolumeStatusString string              `json:"volume_status_string,omitempty"`
 	IoProfileString    string              `json:"io_profile_string,omitempty"`
+	AllNodesInfo       map[string][]any    `json:"all_nodes_info,omitempty"`
 }
 
 type JsonVolumeUsage struct {

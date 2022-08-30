@@ -3,6 +3,7 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
@@ -232,6 +233,7 @@ func GetReplicasPerNode(conn *grpc.ClientConn, nodeName string) (volumeList []an
 	return volumeList, nil
 }
 
+// FormVolumeNodes returns a list of nodes that have a volume replica
 func FormVolumeNodes(conn *grpc.ClientConn) {
 
 	nodeList, err := GetListOfNodes(conn)
@@ -276,4 +278,66 @@ func FormVolumeNodes(conn *grpc.ClientConn) {
 
 	}
 
+}
+
+// GetAllNodesInfo returns a list with relevant Node's information
+func GetAllNodesInfo(conn *grpc.ClientConn) (nodeInfo map[string][]any, errorFound error) {
+
+	nodeInfo = make(map[string][]any)
+
+	var sizeNodePool uint64
+	var usedNodePool uint64
+
+	nodeclient := api.NewOpenStorageNodeClient(conn)
+
+	// First, get all node node IDs in this cluster
+	nodeEnumResp, errorFound := nodeclient.Enumerate(
+		context.Background(),
+		&api.SdkNodeEnumerateRequest{})
+	if errorFound != nil {
+		fmt.Println(errorFound)
+		return nil, errorFound
+	}
+
+	// For each node ID, get its information
+	for _, nodeID := range nodeEnumResp.GetNodeIds() {
+
+		apiNodeInfo, errorFound := nodeclient.Inspect(
+			context.Background(),
+			&api.SdkNodeInspectRequest{
+				NodeId: nodeID,
+			},
+		)
+		if errorFound != nil {
+			fmt.Println(errorFound)
+			return nil, errorFound
+		}
+
+		nodeStatus := apiNodeInfo.Node.GetStatus().String()
+		nodeName := apiNodeInfo.Node.GetSchedulerNodeName()
+		nodeAvgLoad := apiNodeInfo.Node.GetAvgLoad()
+		nodePools := apiNodeInfo.Node.GetPools()
+		nodeMemTotal := apiNodeInfo.Node.GetMemTotal() / 1024 / 1024 / 1024
+		nodeMemUsed := apiNodeInfo.Node.GetMemUsed() / 1024 / 1024 / 1024
+		nodeMemFree := apiNodeInfo.Node.GetMemFree() / 1024 / 1024 / 1024
+
+		for _, pool := range nodePools {
+
+			sizeNodePool = sizeNodePool + pool.GetTotalSize()
+			usedNodePool = usedNodePool + pool.GetUsed()
+
+		}
+
+		numberOfPools := len(nodePools)
+		sizeNodePool = sizeNodePool / 1024 / 1024 / 1024
+		usedNodePool = usedNodePool / 1024 / 1024 / 1024
+		percentUsedPoolFloat := float64(usedNodePool) / float64(sizeNodePool) * 100
+		percentUsedMemoryFloat := float64(nodeMemUsed) / float64(nodeMemTotal) * 100
+		percentUsedPool := strconv.FormatFloat(percentUsedPoolFloat, 'f', 2, 64)
+		percentUsedMemory := strconv.FormatFloat(percentUsedMemoryFloat, 'f', 2, 64)
+
+		nodeInfo[nodeID] = []any{nodeName, nodeStatus, nodeAvgLoad, numberOfPools, sizeNodePool, usedNodePool, percentUsedPool, nodeMemTotal, nodeMemUsed, nodeMemFree, percentUsedMemory}
+	}
+
+	return nodeInfo, nil
 }

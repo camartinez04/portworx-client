@@ -274,3 +274,21 @@ func (app *AppConfig) getAllVolumesCompleteHTTP(w http.ResponseWriter, r *http.R
 	writeJSON(w, http.StatusAccepted, resp)
 
 }
+
+// getAllNodesInfoHTTP http function to get the list of nodes with inspect information included.
+func (app *AppConfig) getAllNodesInfoHTTP(w http.ResponseWriter, r *http.Request) {
+
+	nodesInfo, err := nodes.GetAllNodesInfo(app.Conn)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:        false,
+		AllNodesInfo: nodesInfo,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
