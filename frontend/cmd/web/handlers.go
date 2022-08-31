@@ -40,8 +40,6 @@ func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 
 	volumesInfo := GetAllVolumesInfo()
 
-	fmt.Printf("%+v", volumesInfo)
-
 	Template(w, r, "volumes.html", &TemplateData{
 		JsonGetAllVolumesInfo: volumesInfo,
 	})
@@ -193,7 +191,6 @@ func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
 		JsonListOfNodes: nodeList,
 	})
 
-	fmt.Printf("%+v", nodeList)
 }
 
 func ListOfNodes() (JsonListOfNodes any) {
@@ -219,8 +216,6 @@ func ListOfNodes() (JsonListOfNodes any) {
 	}
 
 	json.Unmarshal(body, &JsonListOfNodes)
-
-	fmt.Printf("%+v", JsonListOfNodes)
 
 	return JsonListOfNodes
 
