@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
+	"github.com/camartinez04/portworx-client/broker/pkg/helpers"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -395,31 +396,51 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 
 	volumeName := volumeInspect.Volume.Locator.GetName()
 	volumeReplicas := len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
+	volumeReplicaNodes := volumeInspect.Volume.ReplicaSets[0].GetNodes()
+	volumeIOProfile := volumeInspect.Volume.GetLocator().GetVolumeLabels()["io_profile"]
+	volumeIOPriority := volumeInspect.Volume.GetLocator().GetVolumeLabels()["io_priority"]
 	volumeStatus := volumeInspect.Volume.GetStatus().String()
 	volumeAttachedOn := volumeInspect.Volume.GetAttachedOn()
+	volumeAttachedPath := volumeInspect.Volume.GetAttachPath()
 	volumeDevicePath := volumeInspect.Volume.GetDevicePath()
-	volumeTotalSize := volumeInspect.Volume.GetSpec().GetSize()
-	volumeUsage := volumeInspect.Volume.GetUsage()
-	volumeAvailableSpace := volumeTotalSize - volumeUsage
-	volumePercentageUsed := float64(volumeUsage) / float64(volumeTotalSize) * 100
+	volumeTotalSizeMB := volumeInspect.Volume.GetSpec().GetSize() / 1024 / 1024
+	volumeUsageMB := volumeInspect.Volume.GetUsage() / 1024 / 1024
+	volumeAvailableSpace := volumeTotalSizeMB - volumeUsageMB
+	volumePercentageUsed := helpers.RoundFloat((float64(volumeUsageMB) / float64(volumeTotalSizeMB) * 100), 2)
+	volumePercentageAvailable := 100 - volumePercentageUsed
 	volumeType := volumeInspect.Volume.Format.String()
 	volumeAttachStatus := volumeInspect.Volume.AttachedState.String()
 	volumeAggregationLevel := volumeInspect.Volume.Spec.GetAggregationLevel()
+	volumeConsumers := volumeInspect.Volume.GetVolumeConsumers()
+	volumeEncrypted := volumeInspect.Volume.GetLocator().GetVolumeLabels()["secure"]
+	volumeEncryptionKey := volumeInspect.Volume.GetLocator().GetVolumeLabels()["secret_key"]
+	volumeK8sNamespace := volumeInspect.Volume.GetLocator().GetVolumeLabels()["namespace"]
+	volumeK8sPVCName := volumeInspect.Volume.GetLocator().GetVolumeLabels()["pvc"]
 
 	volumeInfo = config.VolumeInfo{
 		VolumeName:             volumeName,
 		VolumeID:               volumeID,
 		VolumeReplicas:         volumeReplicas,
+		VolumeReplicaNodes:     volumeReplicaNodes,
+		VolumeIOProfile:        volumeIOProfile,
+		VolumeIOPriority:       volumeIOPriority,
 		VolumeStatus:           volumeStatus,
 		VolumeAttachedOn:       volumeAttachedOn,
+		VolumeAttachedPath:     volumeAttachedPath,
 		VolumeDevicePath:       volumeDevicePath,
-		VolumeSize:             volumeTotalSize,
-		VolumeUsed:             volumeUsage,
+		VolumeSizeMB:           volumeTotalSizeMB,
+		VolumeUsedMB:           volumeUsageMB,
 		VolumeAvailable:        volumeAvailableSpace,
 		VolumeUsedPercent:      volumePercentageUsed,
+		VolumeAvailablePercent: volumePercentageAvailable,
 		VolumeType:             volumeType,
 		VolumeAttachStatus:     volumeAttachStatus,
 		VolumeAggregationLevel: volumeAggregationLevel,
+		VolumeConsumers:        volumeConsumers,
+		VolumeEncrypted:        volumeEncrypted,
+		VolumeEncryptionKey:    volumeEncryptionKey,
+		VolumeK8sNamespace:     volumeK8sNamespace,
+		VolumeK8sPVCName:       volumeK8sPVCName,
 	}
 
 	return volumeInfo, nil

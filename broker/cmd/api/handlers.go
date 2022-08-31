@@ -314,3 +314,43 @@ func (app *AppConfig) getNodeInfoHTTP(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusAccepted, resp)
 
 }
+
+// getAllVolumesInfoHTTP http function to get the list of nodes with inspect information included.
+func (app *AppConfig) getAllVolumesInfoHTTP(w http.ResponseWriter, r *http.Request) {
+
+	volumesInformation, err := volumes.GetAllVolumesInfo(app.Conn)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonGetAllVolumesInfo{
+		Error:          false,
+		AllVolumesInfo: volumesInformation,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// getNodeVolumesHTTP http function to get the node information.
+func (app *AppConfig) getVolumeInfoHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
+
+	volumeInformation, err := volumes.GetVolumeInfo(app.Conn, volumeID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonGetVolumeInfo{
+		Error:      false,
+		VolumeInfo: volumeInformation,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}

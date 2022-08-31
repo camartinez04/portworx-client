@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
+	"github.com/camartinez04/portworx-client/broker/pkg/helpers"
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
@@ -329,12 +330,12 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 		percentUsedPool = 0
 		storagelessNode = true
 	} else {
-		percentUsedPool = (float64(usedNodePool) / float64(sizeNodePool)) * 100
+		percentUsedPool = helpers.RoundFloat(((float64(usedNodePool) / float64(sizeNodePool)) * 100), 2)
 		storagelessNode = false
 
 	}
 
-	percentUsedMemory = (float64(nodeMemUsed) / float64(nodeMemTotal)) * 100
+	percentUsedMemory = helpers.RoundFloat(((float64(nodeMemUsed) / float64(nodeMemTotal)) * 100), 2)
 
 	nodeInfo = config.NodeInfo{
 		NodeName:          nodeName,
