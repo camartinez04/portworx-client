@@ -398,6 +398,7 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 	volumeReplicas := len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
 	volumeReplicaNodes := volumeInspect.Volume.ReplicaSets[0].GetNodes()
 	volumeIOProfile := volumeInspect.Volume.GetLocator().GetVolumeLabels()["io_profile"]
+	volumeIOProfileAPI := volumeInspect.Volume.Spec.GetIoProfile().String()
 	volumeIOPriority := volumeInspect.Volume.GetLocator().GetVolumeLabels()["io_priority"]
 	volumeStatus := volumeInspect.Volume.GetStatus().String()
 	volumeAttachedOn := volumeInspect.Volume.GetAttachedOn()
@@ -423,6 +424,7 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 		VolumeReplicas:         volumeReplicas,
 		VolumeReplicaNodes:     volumeReplicaNodes,
 		VolumeIOProfile:        volumeIOProfile,
+		VolumeIOProfileAPI:     volumeIOProfileAPI,
 		VolumeIOPriority:       volumeIOPriority,
 		VolumeStatus:           volumeStatus,
 		VolumeAttachedOn:       volumeAttachedOn,

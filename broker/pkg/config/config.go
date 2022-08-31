@@ -26,6 +26,7 @@ type VolumeInfo struct {
 	VolumeReplicas         int                   `json:"volume_replicas,omitempty"`
 	VolumeReplicaNodes     []string              `json:"volume_replica_nodes,omitempty"`
 	VolumeIOProfile        string                `json:"volume_io_profile,omitempty"`
+	VolumeIOProfileAPI     string                `json:"volume_io_profile_api,omitempty"`
 	VolumeIOPriority       string                `json:"volume_io_priority,omitempty"`
 	VolumeStatus           string                `json:"volume_status,omitempty"`
 	VolumeSizeMB           uint64                `json:"volume_size_mb,omitempty"`
