@@ -338,6 +338,7 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 		UsedNodePool:      usedNodePool,
 		FreeNodePool:      freeNodePool,
 		StoragelessNode:   storagelessNode,
+		StoragePools:      nodePools,
 	}
 
 	return nodeInfo, nil

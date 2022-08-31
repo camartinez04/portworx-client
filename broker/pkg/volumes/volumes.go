@@ -393,32 +393,38 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 	volumeEncryptionKey := volumeInspect.Volume.GetLocator().GetVolumeLabels()["secret_key"]
 	volumeK8sNamespace := volumeInspect.Volume.GetLocator().GetVolumeLabels()["namespace"]
 	volumeK8sPVCName := volumeInspect.Volume.GetLocator().GetVolumeLabels()["pvc"]
+	volumeSharedv4 := volumeInspect.Volume.Spec.GetSharedv4()
+	volumeSharedv4ServiceSpec := volumeInspect.Volume.Spec.GetSharedv4ServiceSpec()
+	volumeIOStrategy := volumeInspect.Volume.Spec.GetIoStrategy()
 
 	volumeInfo = config.VolumeInfo{
-		VolumeName:             volumeName,
-		VolumeID:               volumeID,
-		VolumeReplicas:         volumeReplicas,
-		VolumeReplicaNodes:     volumeReplicaNodes,
-		VolumeIOProfile:        volumeIOProfile,
-		VolumeIOProfileAPI:     volumeIOProfileAPI,
-		VolumeIOPriority:       volumeIOPriority,
-		VolumeStatus:           volumeStatus,
-		VolumeAttachedOn:       volumeAttachedOn,
-		VolumeAttachedPath:     volumeAttachedPath,
-		VolumeDevicePath:       volumeDevicePath,
-		VolumeSizeMB:           volumeTotalSizeMB,
-		VolumeUsedMB:           volumeUsageMB,
-		VolumeAvailable:        volumeAvailableSpace,
-		VolumeUsedPercent:      volumePercentageUsed,
-		VolumeAvailablePercent: volumePercentageAvailable,
-		VolumeType:             volumeType,
-		VolumeAttachStatus:     volumeAttachStatus,
-		VolumeAggregationLevel: volumeAggregationLevel,
-		VolumeConsumers:        volumeConsumers,
-		VolumeEncrypted:        volumeEncrypted,
-		VolumeEncryptionKey:    volumeEncryptionKey,
-		VolumeK8sNamespace:     volumeK8sNamespace,
-		VolumeK8sPVCName:       volumeK8sPVCName,
+		VolumeName:                volumeName,
+		VolumeID:                  volumeID,
+		VolumeK8sNamespace:        volumeK8sNamespace,
+		VolumeK8sPVCName:          volumeK8sPVCName,
+		VolumeReplicas:            volumeReplicas,
+		VolumeReplicaNodes:        volumeReplicaNodes,
+		VolumeIOProfile:           volumeIOProfile,
+		VolumeIOProfileAPI:        volumeIOProfileAPI,
+		VolumeIOPriority:          volumeIOPriority,
+		VolumeIOStrategy:          volumeIOStrategy,
+		VolumeStatus:              volumeStatus,
+		VolumeAttachedOn:          volumeAttachedOn,
+		VolumeAttachedPath:        volumeAttachedPath,
+		VolumeDevicePath:          volumeDevicePath,
+		VolumeSizeMB:              volumeTotalSizeMB,
+		VolumeUsedMB:              volumeUsageMB,
+		VolumeAvailable:           volumeAvailableSpace,
+		VolumeUsedPercent:         volumePercentageUsed,
+		VolumeAvailablePercent:    volumePercentageAvailable,
+		VolumeType:                volumeType,
+		VolumeAttachStatus:        volumeAttachStatus,
+		VolumeAggregationLevel:    volumeAggregationLevel,
+		VolumeConsumers:           volumeConsumers,
+		VolumeEncrypted:           volumeEncrypted,
+		VolumeEncryptionKey:       volumeEncryptionKey,
+		VolumeSharedv4:            volumeSharedv4,
+		VolumeSharedv4ServiceSpec: volumeSharedv4ServiceSpec,
 	}
 
 	return volumeInfo, nil
