@@ -73,23 +73,10 @@ func FindVolumeNodes(conn *grpc.ClientConn, volumeName string) (volumeNodes []st
 	}
 
 	// Remove duplicate node entries for HA 2 or HA 1
-	volumeNodes = removeDuplicateStr(volumeNodes)
+	volumeNodes = helpers.RemoveDuplicateStr(volumeNodes)
 
 	return volumeNodes, nil
 
-}
-
-// removeDuplicateStr removes duplicate strings from a slice of strings
-func removeDuplicateStr(strSlice []string) []string {
-	allKeys := make(map[string]bool)
-	list := []string{}
-	for _, item := range strSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-			list = append(list, item)
-		}
-	}
-	return list
 }
 
 // getListOfNodes retrieves a list of nodes from the cluster

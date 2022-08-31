@@ -156,7 +156,7 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 
 	}
 
-	volumeNodes = deleteEmpty(volumeNodes)
+	volumeNodes = helpers.DeleteEmpty(volumeNodes)
 
 	return apiVolumeInspect, apiVolumeReplicas, volumeNodes, apiVolumeStatus, apiIoProfile, nil
 
@@ -350,30 +350,6 @@ func volumeInspectFromID(conn *grpc.ClientConn, volumeID string) (volumeInspect 
 	}
 
 	return volumeInspect, nil
-}
-
-// removeDuplicateStr removes duplicate strings from a slice of strings
-func removeDuplicateStr(strSlice []string) []string {
-	allKeys := make(map[string]bool)
-	list := []string{}
-	for _, item := range strSlice {
-		if _, value := allKeys[item]; !value {
-			allKeys[item] = true
-			list = append(list, item)
-		}
-	}
-	return list
-}
-
-// deleteEmpty returns a slice of strings without empty strings.
-func deleteEmpty(s []string) []string {
-	var r []string
-	for _, str := range s {
-		if str != "" {
-			r = append(r, str)
-		}
-	}
-	return r
 }
 
 // GetVolumeInfo returns the volume information from the volume ID.
