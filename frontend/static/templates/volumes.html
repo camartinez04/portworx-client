@@ -255,7 +255,10 @@
                             Volume Name
                           </th>
                           <th>
-                            Number of Replicas
+                            K8s PVC Name
+                          </th>
+                          <th>
+                            Replicas
                           </th>
                           <th>
                             Status
@@ -264,7 +267,10 @@
                             Attached On
                           </th>
                           <th>
-                            Usage
+                            Encrypted
+                          </th> 
+                          <th>
+                            Volume Usage
                           </th>
                         </tr>
                       </thead>
@@ -278,6 +284,8 @@
                             <a href="volume/{{ $volume.VolumeName }}">{{ $volume.VolumeName }} </a>
                           </td>
                           <td>
+                            {{ $volume.VolumeK8sPVCName }}
+                          <td>
                             {{ $volume.VolumeReplicas }}
                           </td>
                           <td>
@@ -285,6 +293,9 @@
                           </td>
                           <td>
                             {{ $volume.VolumeAttachedOn }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeEncrypted }}
                           </td>
                           <td>
                             <div class="progress">

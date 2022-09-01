@@ -23,8 +23,8 @@ type TemplateData struct {
 	JsonGetAllVolumesInfo map[string][]any
 	JsonNodeInfo          NodeInfo
 	JsonVolumeInfo        VolumeInfo
-	JsonAllVolumesInfo    any
-	JsonAllNodesInfo      map[string]NodeInfo
+	JsonAllVolumesInfo    AllVolumesInfoResponse
+	JsonAllNodesInfo      AllNodesInfoResponse
 }
 
 // JsonUsageVolume holds the json data for the usage volume
@@ -133,9 +133,15 @@ type JsonVolumeInspect struct {
 	IoProfileString    string   `json:"io_profile_string,omitempty"`
 }
 
+// Slice of AllNodesInfoResponse
+type AllNodesInfoResponse struct {
+	AllNodesInfo []NodeInfo `json:"all_nodes_info,omitempty"`
+}
+
 // NodeInfo struct to store the node information.
 type NodeInfo struct {
 	NodeName          string             `json:"node_name,omitempty"`
+	NodeID            string             `json:"node_id,omitempty"`
 	NodeStatus        string             `json:"node_status,omitempty"`
 	NodeAvgLoad       int64              `json:"node_avg_load,omitempty"`
 	NumberOfPools     int                `json:"number_of_pools,omitempty"`

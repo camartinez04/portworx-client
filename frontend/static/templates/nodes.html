@@ -20,10 +20,10 @@
   <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
   {{end}}
 
-  {{$nodes := .JsonListOfNodes }}
-  {{$usage := .JsonUsageVolume }}
-
 </head>
+
+{{ $AllNodesInfo := .JsonAllNodesInfo.AllNodesInfo }}
+
 <body>
 
   <div class="container-scroller">
@@ -249,39 +249,43 @@
                       <thead>
                         <tr>
                           <th>
-                            Node-ID
+                            Node ID
                           </th>
                           <th>
                             Scheduler Name
                           </th>
                           <th>
-                            Storage used by volumes
+                            Node Status
                           </th>
                           <th>
-                            Progress bar
+                            Storage available on node
+                          </th>
+                          <th>
+                            Percent used of storage
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {{ range $key, $value := $nodes }}
-                          {{ range $index, $element := $value }}
+                        {{ range $node := $AllNodesInfo }}
                         <tr>
                           <td>
-                            {{ printf "%s" $index }}
+                            {{ $node.NodeID }}
                           </td>
                           <td>
-                            {{ index $element 0}}
+                            {{ $node.NodeName }}
                           </td>
                           <td>
-                            {{ index $element 1}}
+                            {{ $node.NodeStatus }}
+                          </td>
+                          <td>
+                            {{ $node.SizeNodePool }}  GB
                           </td>
                           <td>
                             <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 75%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ $node.PercentUsedPool }}%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                           </td>
                         </tr>
-                          {{ end }}
                         {{ end }}
                       </tbody>
                     </table>

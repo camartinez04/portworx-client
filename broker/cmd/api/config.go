@@ -58,14 +58,14 @@ type JsonGetAllVolumesInfo struct {
 	AllVolumesInfo []config.VolumeInfo `json:"all_volumes_info,omitempty"`
 }
 
+type JsonGetAllNodesInfo struct {
+	Error        bool              `json:"error,omitempty"`
+	AllNodesInfo []config.NodeInfo `json:"all_nodes_info,omitempty"`
+}
+
 type JsonGetVolumeInfo struct {
 	Error      bool              `json:"error,omitempty"`
 	VolumeInfo config.VolumeInfo `json:"volume_info,omitempty"`
-}
-
-type JsonGetAllNodesInfo struct {
-	Error        bool                       `json:"error,omitempty"`
-	AllNodesInfo map[string]config.NodeInfo `json:"all_nodes_info,omitempty"`
 }
 
 type JsonGetNodeInfo struct {

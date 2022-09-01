@@ -5,6 +5,7 @@ import api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 // NodeInfo struct to store the node information.
 type NodeInfo struct {
 	NodeName          string             `json:"node_name,omitempty"`
+	NodeID            string             `json:"node_id,omitempty"`
 	NodeStatus        string             `json:"node_status,omitempty"`
 	NodeAvgLoad       int64              `json:"node_avg_load,omitempty"`
 	NumberOfPools     int                `json:"number_of_pools,omitempty"`

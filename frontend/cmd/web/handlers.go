@@ -53,7 +53,6 @@ func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 func GetAllVolumesInfo() (JsonAllVolumesInfo AllVolumesInfoResponse, errorFound error) {
 
 	url := brokerURL + "/getallvolumesinfo"
-
 	method := "GET"
 
 	client := &http.Client{}
@@ -169,11 +168,48 @@ func UsageVolume(volumeName string) JsonUsageVolume {
 
 func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
 
-	nodeList := ListOfNodes()
+	nodesInfo, err := GetAllNodesInfo()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//fmt.Printf("nodesInfo: %v", nodesInfo.AllNodesInfo[0].NodeName)
+	//You have to range over the array to get the values
 
 	Template(w, r, "nodes.html", &TemplateData{
-		JsonListOfNodes: nodeList,
+		JsonAllNodesInfo: nodesInfo,
 	})
+
+}
+
+func GetAllNodesInfo() (JsonAllNodesInfo AllNodesInfoResponse, errorFound error) {
+
+	url := brokerURL + "/getallnodesinfo"
+	method := "GET"
+
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+
+	json.Unmarshal(body, &JsonAllNodesInfo)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+
+	return JsonAllNodesInfo, nil
 
 }
 

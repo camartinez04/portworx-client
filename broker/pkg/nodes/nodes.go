@@ -326,6 +326,7 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 
 	nodeInfo = config.NodeInfo{
 		NodeName:          nodeName,
+		NodeID:            nodeID,
 		NodeStatus:        nodeStatus,
 		NodeAvgLoad:       nodeAvgLoad,
 		NumberOfPools:     numberOfPools,
@@ -346,10 +347,7 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 }
 
 // GetAllNodesInfo returns a list with relevant Node's information
-func GetAllNodesInfo(conn *grpc.ClientConn) (AllNodesInfo map[string]config.NodeInfo, errorFound error) {
-
-	// Make a map of slice of NodeInfos
-	AllNodesInfo = make(map[string]config.NodeInfo)
+func GetAllNodesInfo(conn *grpc.ClientConn) (AllNodesInfo []config.NodeInfo, errorFound error) {
 
 	nodeclient := api.NewOpenStorageNodeClient(conn)
 
@@ -371,7 +369,7 @@ func GetAllNodesInfo(conn *grpc.ClientConn) (AllNodesInfo map[string]config.Node
 			return nil, errorFound
 		}
 
-		AllNodesInfo[nodeID] = nodeInfo
+		AllNodesInfo = append(AllNodesInfo, nodeInfo)
 
 	}
 
