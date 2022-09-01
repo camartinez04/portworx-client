@@ -34,6 +34,7 @@ func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "index.html", &TemplateData{})
 }
 
+// Volumes serves the volumes page
 func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 
 	volumesInfo, err := GetAllVolumesInfo()
@@ -81,29 +82,56 @@ func GetAllVolumesInfo() (JsonAllVolumesInfo AllVolumesInfoResponse, errorFound 
 
 }
 
+// VolumeInformation serves the volume information page
 func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeName := exploded[3]
+	volumeID := exploded[3]
 
-	volumeInspect := InspectVolume(volumeName)
+	volumeInfoResponse, err := VolumeInfofromID(volumeID)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	io_profile := volumeInspect.IoProfileString
-
-	status := volumeInspect.VolumeStatusString
-
-	volumeUsage := UsageVolume(volumeName)
+	//fmt.Printf("volumeInfo: %v", volumeInfoResponse.VolumeInfo.VolumeSizeMB)
 
 	Template(w, r, "volume-specific.html", &TemplateData{
-		JsonVolumeInspect:  volumeInspect,
-		JsonUsageVolume:    volumeUsage,
-		IoProfileString:    io_profile,
-		VolumeStatusString: status,
+		JsonVolumeInfo: volumeInfoResponse,
 	})
 
 }
 
+// VolumeInfofromID retrieves from the broker /getvolumeinfo/{volumeID} and sends it back as struct VolumeInfo
+func VolumeInfofromID(volumeID string) (jsonVolumeInfo VolumeInfoResponse, errorFound error) {
+
+	url := brokerURL + "/getvolumeinfo/" + volumeID
+	method := "GET"
+
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+
+	json.Unmarshal(body, &jsonVolumeInfo)
+
+	return jsonVolumeInfo, nil
+
+}
+
+// InspectVolume retrieves from the broker /inspectvolume/{volumeName} and sends it back as struct JsonVolumeInspect
 func InspectVolume(volumeName string) JsonVolumeInspect {
 
 	var jsonVolume JsonVolumeInspect
@@ -135,6 +163,7 @@ func InspectVolume(volumeName string) JsonVolumeInspect {
 
 }
 
+// UsageVolume retrieves from the broker /usagevolume/{volumeName} and sends it back as struct JsonUsageVolume
 func UsageVolume(volumeName string) JsonUsageVolume {
 
 	var jsonUsage JsonUsageVolume
@@ -166,6 +195,7 @@ func UsageVolume(volumeName string) JsonUsageVolume {
 
 }
 
+// Nodes serves the nodes page
 func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
 
 	nodesInfo, err := GetAllNodesInfo()
@@ -182,6 +212,7 @@ func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetAllNodesInfo retrieves from the broker /getallnodesinfo and sends it back as struct AllNodesInfoResponse
 func GetAllNodesInfo() (JsonAllNodesInfo AllNodesInfoResponse, errorFound error) {
 
 	url := brokerURL + "/getallnodesinfo"
@@ -213,6 +244,7 @@ func GetAllNodesInfo() (JsonAllNodesInfo AllNodesInfoResponse, errorFound error)
 
 }
 
+// ListOfNodes retrieves from the broker /getlistofnodes and sends it back as JsonListOfNodes of any
 func ListOfNodes() (JsonListOfNodes any) {
 
 	url := brokerURL + "/getlistofnodes"

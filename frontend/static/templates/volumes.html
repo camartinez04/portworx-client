@@ -278,10 +278,10 @@
                         {{ range $volume := $AllVolumesInfo }}
                         <tr>
                           <td>
-                            {{ $volume.VolumeID }}
+                            <a href="volume/{{ $volume.VolumeID }}">{{ $volume.VolumeID }} </a>
                           </td>
                           <td>
-                            <a href="volume/{{ $volume.VolumeName }}">{{ $volume.VolumeName }} </a>
+                            {{ $volume.VolumeName }}
                           </td>
                           <td>
                             {{ $volume.VolumeK8sPVCName }}
@@ -329,16 +329,12 @@
   <!-- container-scroller -->
   {{block "js" .}}
 
-  {{$volume :=  .JsonVolumeInspect }}
-
-  {{$usageGolang := .JsonUsageVolume }}
-
   <script>
-    var usagePercent = "{{$usageGolang.VolumeUsagePercent}}";
-    var availablePercent = "{{$usageGolang.VolumeAvailablePercent}}";
-    var usage = "{{$usageGolang.VolumeUsage}}";
-    var available = "{{$usageGolang.AvailableSpace}}";
-    var total = "{{$usageGolang.TotalSize}}";
+    var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
+    var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
+    var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
+    var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
+    var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
 
   </script>
   <!-- plugins:js -->
@@ -356,7 +352,7 @@
   <script src="/frontend/static/templates/js/todolist.js"></script>
   <!-- endinject -->
   <!-- Custom js for this page-->
-  <script src="/frontend/static/templates/js/dashboard.js"> </script>
+  <script src="/frontend/static/templates/js/dashboard.js" defer> </script>
   <!-- End custom js for this page-->
   {{end}}
 

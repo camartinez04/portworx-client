@@ -20,13 +20,12 @@
   <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
   {{end}}
 
-  {{$usage := .JsonUsageVolume }}
-  {{$volume := .JsonVolumeInspect }}
-  {{$ioprofile := .IoProfileString }}
-  {{$volumestatus := .VolumeStatusString }}
-
 </head>
 <body>
+
+  {{block "content" .}}
+  {{ $volume := .JsonVolumeInfo.VolumeInfo }}
+
 
   <div class="container-scroller">
     <div class="row p-0 m-0 proBanner" id="proBanner">
@@ -242,13 +241,13 @@
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card position-relative">
                 <div class="card-body">
-                  <p class="card-title">Volume Inspect of the volume: {{$volume.VolumeInspect.Locator.Name}}</p>
+                  <p class="card-title">Volume Inspect of the volume: {{ $volume.VolumeName }}</p>
                   <div class="row">
-                    <h5 class="font-weight-light mb-xl-4">{{$volume.VolumeInspect.Locator.Name}}</h5>
+                    <h5 class="font-weight-light mb-xl-4">{{ $volume.VolumeK8sPVCName }}</h5>
                     <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
                       <div class="ml-xl-4">
                         <h5 class="font-weight-light mb-xl-4">Volume ID:</h5>
-                        <h6 class="font-weight-light mb-xl-3">{{$volume.VolumeInspect.ID}}</h5>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeID }}</h5>
                         <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx volume.</p>
                       </div>  
                     </div>
@@ -264,42 +263,42 @@
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Number of Replicas</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{printf "%d" $volume.VolumeInspect.Spec.HaLevel }}</h5>
+                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeReplicas }}</h5>
                                 </td>
                               </tr>
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Volume Status:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{printf "%s" $volumestatus}}</h5>
+                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeStatus }}</h5>
                                 </td>
                               </tr>
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">IO Profile:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{printf "%s" $ioprofile}}</h5>
+                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeIOProfile }}</h5>
                                 </td>
                               </tr>
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Volume attached on:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{$volume.VolumeInspect.AttachedOn}}</h5>
+                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeAttachedOn }}</h5>
                                 </td>
                               </tr>
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Nodes where the volume have a replica:</td>
                               </tr>
-                              {{ range $index, $element := $volume.VolumeNodes}}
+                              {{ range $index, $replica := $volume.VolumeReplicaNodes}}
                               <tr>
                                 <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} located on node:</td>
                                 <td class="w-50 px-0">
-                                  <h6 class="font-weight-normal mb-0">{{$element}}</h6>
+                                  <h6 class="font-weight-normal mb-0">{{$replica}}</h6>
                                 </td>
                               </tr>
                               {{end}}
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Device Path:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{$volume.VolumeInspect.DevicePath}}</h5>
+                                  <h5 class="font-weight-normal mb-0">{{$volume.VolumeDevicePath}}</h5>
                                 </td>
                               </tr>
                             </table>
@@ -330,17 +329,12 @@
   <!-- container-scroller -->
   {{block "js" .}}
 
-  {{$volume :=  .JsonVolumeInspect }}
-
-  {{$usageGolang := .JsonUsageVolume }}
-
   <script>
-    var usagePercent = "{{$usageGolang.VolumeUsagePercent}}";
-    var availablePercent = "{{$usageGolang.VolumeAvailablePercent}}";
-    var usage = "{{$usageGolang.VolumeUsage}}";
-    var available = "{{$usageGolang.AvailableSpace}}";
-    var total = "{{$usageGolang.TotalSize}}";
-
+    var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
+    var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
+    var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
+    var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
+    var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
   </script>
   <!-- plugins:js -->
   <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
@@ -360,7 +354,7 @@
   <script src="/frontend/static/templates/js/dashboard.js"> </script>
   <!-- End custom js for this page-->
   {{end}}
-
+  {{end}}
 </body>
 
 </html>

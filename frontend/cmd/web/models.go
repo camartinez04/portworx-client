@@ -21,8 +21,8 @@ type TemplateData struct {
 	VolumeStatusString    string
 	JsonListOfNodes       any
 	JsonGetAllVolumesInfo map[string][]any
-	JsonNodeInfo          NodeInfo
-	JsonVolumeInfo        VolumeInfo
+	JsonNodeInfo          NodeInfoResponse
+	JsonVolumeInfo        VolumeInfoResponse
 	JsonAllVolumesInfo    AllVolumesInfoResponse
 	JsonAllNodesInfo      AllNodesInfoResponse
 }
@@ -138,6 +138,11 @@ type AllNodesInfoResponse struct {
 	AllNodesInfo []NodeInfo `json:"all_nodes_info,omitempty"`
 }
 
+// Slice of VolumeInfoResponse
+type NodeInfoResponse struct {
+	NodeInfo VolumeInfo `json:"node_info,omitempty"`
+}
+
 // NodeInfo struct to store the node information.
 type NodeInfo struct {
 	NodeName          string             `json:"node_name,omitempty"`
@@ -160,6 +165,11 @@ type NodeInfo struct {
 // Slice of VolumeInfoAllVolumesInfoResponse
 type AllVolumesInfoResponse struct {
 	AllVolumesInfo []VolumeInfo `json:"all_volumes_info,omitempty"`
+}
+
+// Slice of VolumeInfoResponse
+type VolumeInfoResponse struct {
+	VolumeInfo VolumeInfo `json:"volume_info,omitempty"`
 }
 
 // VolumeInfo struct to store the volume information.
