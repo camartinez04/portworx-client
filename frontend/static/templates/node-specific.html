@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+{{block "css" . }}
 
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
-  {{block "css" . }}
 
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Portworx</title>
@@ -18,13 +18,14 @@
   <link rel="stylesheet" href="/frontend/static/templates/css/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
-  {{end}}
 
 </head>
+{{end}}
 
-{{ $AllNodesInfo := .JsonAllNodesInfo.AllNodesInfo }}
-
+{{block "body" . }}
+{{ $node := .JsonNodeInfo.NodeInfo }}
 <body>
+
 
   <div class="container-scroller">
     <div class="row p-0 m-0 proBanner" id="proBanner">
@@ -183,50 +184,52 @@
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
           <li class="nav-item">
-            <a class="nav-link" href="cluster">
+            <a class="nav-link" href="../cluster">
               <i class="ti-server menu-icon"></i>
               <span class="menu-title">Cluster</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+              aria-controls="ui-basic">
               <i class="ti-panel menu-icon"></i>
               <span class="menu-title">Advanced</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="./pages/ui-features/buttons.html">Buttons</a></li>
-                <li class="nav-item"> <a class="nav-link" href="./pages/ui-features/typography.html">Typography</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../pages/ui-features/buttons.html">Buttons</a></li>
+                <li class="nav-item"> <a class="nav-link" href="../pages/ui-features/typography.html">Typography</a>
+                </li>
               </ul>
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="../nodes">
               <i class="ti-linux menu-icon"></i>
               <span class="menu-title">Nodes</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="volumes">
+            <a class="nav-link" href="../volumes">
               <i class="ti-pie-chart menu-icon"></i>
               <span class="menu-title">Volumes</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="snapshots">
+            <a class="nav-link" href="../snapshots">
               <i class="ti-save menu-icon"></i>
               <span class="menu-title">Snapshots</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="storage-pools">
+            <a class="nav-link" href="../storage-pools">
               <i class="ti-harddrives menu-icon"></i>
               <span class="menu-title">Storage Pools</span>
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="documentation/documentation.html">
+            <a class="nav-link" href="../documentation/documentation.html">
               <i class="ti-write menu-icon"></i>
               <span class="menu-title">Documentation</span>
             </a>
@@ -237,49 +240,141 @@
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
                 <div class="card-body">
-                  <h4 class="card-title">Nodes</h4>
+                  <p class="card-title">{{ $node.NodeName }}</p>
+                  <div class="row">
+                    <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Node Name:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $node.NodeName }}</h6>
+                      </div>
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Node ID:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $node.NodeID }}</h6>
+                      </div>
+                      <div>
+                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx node.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-xl-9">
+                      <div class="row">
+                        <div class="col-md-6 mt-3 col-xl-5">
+                          <canvas id="node-chart"></canvas>
+                          <div id="node-legend"></div>
+                        </div>
+                        <div class="col-md-6 col-xl-7">
+                          <div class="table-responsive mb-3 mb-md-0">
+                            <table class="table table-borderless report-table">
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Node Status:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeStatus }}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Node Average Load:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeAvgLoad }} %</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0"> Node Memory Used:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeMemUsed }} GB</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Node Memory Total:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeMemTotal }} GB</h5>
+                                </td>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Storage Pools of the Node:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NumberOfPools }}</h5>
+                                </td>
+                              </tr>
+                              {{ range $index, $pool := $node.StoragePools}}
+                              <tr>
+                                <td class="font-weight-light mb-0 w-50 px-0">Storage Pool {{$index}}:</td>
+                                <td class="w-50 px-0">
+                                  <h6 class="font-weight-normal mb-0">{{$pool.Uuid}}</h6>
+                                </td>
+                              </tr>
+                              {{end}}
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                  <h4 class="card-title">Volumes</h4>
                   <div class="table-responsive">
                     <table class="table table-striped">
                       <thead>
                         <tr>
                           <th>
-                            Node ID
+                            Volume ID
                           </th>
                           <th>
-                            Scheduler Name
+                            Volume Name
                           </th>
                           <th>
-                            Node Status
+                            K8s PVC Name
                           </th>
                           <th>
-                            Storage available on node
+                            Replicas
                           </th>
                           <th>
-                            Percent used of storage
+                            Status
+                          </th>
+                          <th>
+                            Attached On
+                          </th>
+                          <th>
+                            Encrypted
+                          </th>
+                          <th>
+                            Volume Usage
                           </th>
                         </tr>
                       </thead>
                       <tbody>
-                        {{ range $node := $AllNodesInfo }}
+                        {{ range $index, $volume := .JsonReplicaPerNode.VolumeList }}
                         <tr>
                           <td>
-                            <a href="node/{{ $node.NodeID }}">{{ $node.NodeID }} </a>
+                            <a href="../volume/{{ $index }}">{{ $index }} </a>
                           </td>
                           <td>
-                            {{ $node.NodeName }}
+                            {{ $volume.VolumeName }}
                           </td>
                           <td>
-                            {{ $node.NodeStatus }}
+                            {{ $volume.VolumeK8sPVCName }}
+                          <td>
+                            {{ $volume.VolumeReplicas }}
                           </td>
                           <td>
-                            {{ $node.SizeNodePool }} MB
+                            {{ $volume.VolumeStatus }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeAttachedOn }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeEncrypted }}
                           </td>
                           <td>
                             <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ $node.PercentUsedPool }}%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                              <div class="progress-bar bg-success" role="progressbar"
+                                style="width: {{ $volume.VolumeUsedPercent }}%" aria-valuenow="50" aria-valuemin="0"
+                                aria-valuemax="100"></div>
                             </div>
                           </td>
                         </tr>
@@ -296,8 +391,10 @@
         <!-- partial:partials/_footer.html -->
         <footer class="footer">
           <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © <a href="https://www.purestorage.com" target="_blank">Pure Storage Inc. </a>2022</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Portworx by Pure Storage <a href="https://portworx.com" target="_blank"> Check our products! </a> </span>
+            <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © <a
+                href="https://www.purestorage.com" target="_blank">Pure Storage Inc. </a>2022</span>
+            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Portworx by Pure Storage <a
+                href="https://portworx.com" target="_blank"> Check our products! </a> </span>
           </div>
         </footer>
         <!-- partial -->
@@ -307,10 +404,16 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
+  <script>
+    var usagePercent = "{{.JsonNodeInfo.NodeInfo.PercentUsedPool}}";
+    var availablePercent = "{{.JsonNodeInfo.NodeInfo.PercentAvailablePool}}";
+    var usage = "{{.JsonNodeInfo.NodeInfo.UsedNodePool}}";
+    var available = "{{.JsonNodeInfo.NodeInfo.FreeNodePool}}";
+    var total = "{{.JsonNodeInfo.NodeInfo.SizeNodePool}}";
+  </script>
   {{block "js" .}}
   <!-- plugins:js -->
   <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
-
   <!-- endinject -->
   <!-- Plugin js for this page-->
   <script src="/frontend/static/templates/vendors/chart.js/Chart.min.js"></script>
@@ -325,9 +428,8 @@
   <!-- Custom js for this page-->
   <script src="/frontend/static/templates/js/dashboard.js"> </script>
   <!-- End custom js for this page-->
-  {{end}}
-
 </body>
+{{end}}
+{{end}}
 
 </html>
-

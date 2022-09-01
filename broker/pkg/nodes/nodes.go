@@ -257,6 +257,7 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 	var sizeNodePool uint64
 	var usedNodePool uint64
 	var percentUsedPool float64
+	var percentAvailablePool float64
 	var percentUsedMemory float64
 	var storagelessNode bool
 
@@ -291,38 +292,41 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 
 	}
 
-	sizeNodePool = sizeNodePool / 1024 / 1024 / 1024
-	usedNodePool = usedNodePool / 1024 / 1024 / 1024
+	sizeNodePool = sizeNodePool / 1024 / 1024
+	usedNodePool = usedNodePool / 1024 / 1024
 	freeNodePool := sizeNodePool - usedNodePool
 
 	// prevent storageless issue when calculating percent used pool
 	if numberOfPools == 0 {
 		percentUsedPool = 0
 		storagelessNode = true
+		percentAvailablePool = 0
 	} else {
 		percentUsedPool = helpers.RoundFloat(((float64(usedNodePool) / float64(sizeNodePool)) * 100), 2)
 		storagelessNode = false
+		percentAvailablePool = 100 - percentUsedPool
 
 	}
 
 	percentUsedMemory = helpers.RoundFloat(((float64(nodeMemUsed) / float64(nodeMemTotal)) * 100), 2)
 
 	nodeInfo = config.NodeInfo{
-		NodeName:          nodeName,
-		NodeID:            nodeID,
-		NodeStatus:        nodeStatus,
-		NodeAvgLoad:       nodeAvgLoad,
-		NumberOfPools:     numberOfPools,
-		NodeMemTotal:      nodeMemTotal,
-		NodeMemUsed:       nodeMemUsed,
-		NodeMemFree:       nodeMemFree,
-		PercentUsedMemory: percentUsedMemory,
-		PercentUsedPool:   percentUsedPool,
-		SizeNodePool:      sizeNodePool,
-		UsedNodePool:      usedNodePool,
-		FreeNodePool:      freeNodePool,
-		StoragelessNode:   storagelessNode,
-		StoragePools:      nodePools,
+		NodeName:             nodeName,
+		NodeID:               nodeID,
+		NodeStatus:           nodeStatus,
+		NodeAvgLoad:          nodeAvgLoad,
+		NumberOfPools:        numberOfPools,
+		NodeMemTotal:         nodeMemTotal,
+		NodeMemUsed:          nodeMemUsed,
+		NodeMemFree:          nodeMemFree,
+		PercentUsedMemory:    percentUsedMemory,
+		PercentUsedPool:      percentUsedPool,
+		PercentAvailablePool: percentAvailablePool,
+		SizeNodePool:         sizeNodePool,
+		UsedNodePool:         usedNodePool,
+		FreeNodePool:         freeNodePool,
+		StoragelessNode:      storagelessNode,
+		StoragePools:         nodePools,
 	}
 
 	return nodeInfo, nil

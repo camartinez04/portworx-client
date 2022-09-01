@@ -426,17 +426,8 @@
   <!-- container-scroller -->
   {{block "js" .}}
 
-
-  <script>
-    var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
-    var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
-    var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
-    var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
-    var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
-  </script>
   <!-- plugins:js -->
   <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
-
   <!-- endinject -->
   <!-- Plugin js for this page-->
   <script src="/frontend/static/templates/vendors/chart.js/Chart.min.js"></script>

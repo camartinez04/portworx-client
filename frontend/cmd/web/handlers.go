@@ -273,8 +273,75 @@ func ListOfNodes() (JsonListOfNodes any) {
 
 }
 
+// NodeInformation serves the node information page
 func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "node-specific.html", &TemplateData{})
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	nodeID := exploded[3]
+
+	nodeInfoResponse, replicaPerNodeResponse, err := NodeInfoFromID(nodeID)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//fmt.Printf("nodeInfoResponse: %v", nodeInfoResponse.NodeInfo.NodeName)
+	//fmt.Printf("replicaPerNodeResponse: %v", replicaPerNodeResponse.VolumeList["1014695385474634270"].VolumeName)
+
+	Template(w, r, "node-specific.html", &TemplateData{
+		JsonNodeInfo:       nodeInfoResponse,
+		JsonReplicaPerNode: replicaPerNodeResponse,
+	})
+}
+
+// NodeInfoFromID retrieves from the broker /getvolumeinfo/{volumeID} and sends it back as struct VolumeInfo
+func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPerNode ReplicasPerNodeResponse, errorFound error) {
+
+	url := brokerURL + "/getnodeinfo/" + nodeID
+	method := "GET"
+
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+
+	json.Unmarshal(body, &jsonNodeInfo)
+
+	url = brokerURL + "/getreplicaspernode/" + nodeID
+
+	client = &http.Client{}
+	req, errorFound = http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	res, errorFound = client.Do(req)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+	defer res.Body.Close()
+
+	body, errorFound = ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		fmt.Println(errorFound)
+	}
+
+	json.Unmarshal(body, &jsonReplicaPerNode)
+
+	return jsonNodeInfo, jsonReplicaPerNode, nil
+
 }
 
 func (m *Repository) Snaps(w http.ResponseWriter, r *http.Request) {

@@ -20,11 +20,6 @@
   <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
   {{end}}
 
-  {{$usage := .JsonUsageVolume }}
-  {{$volume := .JsonVolumeInspect }}
-  {{$ioprofile := .IoProfileString }}
-  {{$volumestatus := .VolumeStatusString }}
-
 </head>
 <body>
 
@@ -426,18 +421,6 @@
   <!-- container-scroller -->
   {{block "js" .}}
 
-  {{$volume :=  .JsonVolumeInspect }}
-
-  {{$usageGolang := .JsonUsageVolume }}
-
-  <script>
-    var usagePercent = "{{$usageGolang.VolumeUsagePercent}}";
-    var availablePercent = "{{$usageGolang.VolumeAvailablePercent}}";
-    var usage = "{{$usageGolang.VolumeUsage}}";
-    var available = "{{$usageGolang.AvailableSpace}}";
-    var total = "{{$usageGolang.TotalSize}}";
-
-  </script>
   <!-- plugins:js -->
   <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
 

@@ -302,7 +302,7 @@
                               <tr>
                                 <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} located on node:</td>
                                 <td class="w-50 px-0">
-                                  <h6 class="font-weight-normal mb-0">{{$replica}}</h6>
+                                  <h6 class="font-weight-normal mb-0"><a href="../node/{{ $replica }}">{{ $replica }} </a></h6>
                                 </td>
                               </tr>
                               {{end}}
@@ -338,8 +338,6 @@
     <!-- page-body-wrapper ends -->
   </div>
   <!-- container-scroller -->
-  {{block "js" .}}
-
   <script>
     var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
     var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
@@ -347,6 +345,7 @@
     var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
     var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
   </script>
+    {{block "js" .}}
   <!-- plugins:js -->
   <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
 

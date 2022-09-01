@@ -1,4 +1,4 @@
-# portworx-cli
+# portworx-client
 A Portworx Client with Go
 
 - Built in Go version 1.19

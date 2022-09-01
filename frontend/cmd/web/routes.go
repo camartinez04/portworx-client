@@ -27,7 +27,7 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/nodes", Repo.Nodes)
 
-		mux.Get("/node/{node_name}", Repo.NodeInformation)
+		mux.Get("/node/{node_id}", Repo.NodeInformation)
 
 		mux.Get("/snapshots", Repo.Snaps)
 
