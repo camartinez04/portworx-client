@@ -22,10 +22,7 @@
 
 </head>
 
-{{ $volumesInfo := .JsonGetAllVolumesInfo }}
-
-{{$usage := .JsonUsageVolume }}
-
+{{ $AllVolumesInfo := .JsonAllVolumesInfo.AllVolumesInfo }}
 
 <body>
 
@@ -272,26 +269,26 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {{ range $index, $element := $volumesInfo }}
+                        {{ range $volume := $AllVolumesInfo }}
                         <tr>
                           <td>
-                            {{ printf "%s" $index }}
+                            {{ $volume.VolumeID }}
                           </td>
                           <td>
-                            <a href="volume/{{ index $element 0 }}">{{ index $element 0 }} </a>
+                            <a href="volume/{{ $volume.VolumeName }}">{{ $volume.VolumeName }} </a>
                           </td>
                           <td>
-                            {{ index $element 1 }}
+                            {{ $volume.VolumeReplicas }}
                           </td>
                           <td>
-                            {{ index $element 2 }}
+                            {{ $volume.VolumeStatus }}
                           </td>
                           <td>
-                            {{ index $element 3 }}
+                            {{ $volume.VolumeAttachedOn }}
                           </td>
                           <td>
                             <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ index $element 9 }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ $volume.VolumeUsedPercent }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                           </td>
                         </tr>

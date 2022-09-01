@@ -431,10 +431,7 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 }
 
 // GetAllVolumesInfo returns the volume information for all volumes on the cluster.
-func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo map[string]config.VolumeInfo, errorFound error) {
-
-	// Make a map of slice of VolumeInfos
-	AllVolumesInfo = make(map[string]config.VolumeInfo)
+func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo []config.VolumeInfo, errorFound error) {
 
 	volumeclient := api.NewOpenStorageVolumeClient(conn)
 
@@ -444,7 +441,7 @@ func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo map[string]config.
 		&api.SdkVolumeEnumerateRequest{})
 	if errorFound != nil {
 		fmt.Println(errorFound)
-		return nil, errorFound
+		return AllVolumesInfo, errorFound
 	}
 
 	// For each volume ID, get its information
@@ -453,10 +450,10 @@ func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo map[string]config.
 		volumeInfo, errorFound := GetVolumeInfo(conn, volID)
 		if errorFound != nil {
 			fmt.Println(errorFound)
-			return nil, errorFound
+			return AllVolumesInfo, errorFound
 		}
 
-		AllVolumesInfo[volID] = volumeInfo
+		AllVolumesInfo = append(AllVolumesInfo, volumeInfo)
 
 	}
 

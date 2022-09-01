@@ -6,8 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
-
-	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 )
 
 var Repo *Repository
@@ -38,63 +36,49 @@ func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
 
 func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 
-	volumesInfo := GetAllVolumesInfo()
+	volumesInfo, err := GetAllVolumesInfo()
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	//fmt.Printf("volumesInfo: %v", volumesInfo.AllVolumesInfo[0].VolumeName)
+	//You have to range over the array to get the values
 
 	Template(w, r, "volumes.html", &TemplateData{
-		JsonGetAllVolumesInfo: volumesInfo,
+		JsonAllVolumesInfo: volumesInfo,
 	})
 }
 
-func GetAllVolumesInfo() (volumesInfo map[string][]any) {
+// GetAllVolumesInfo retrieves from the broker /getallvolumesinfo and sends it back as struct JsonAllVolumesInfo
+func GetAllVolumesInfo() (JsonAllVolumesInfo AllVolumesInfoResponse, errorFound error) {
 
-	var allVolumesList map[string]map[string]*api.SdkVolumeInspectResponse
-
-	url := brokerURL + "/getallvolumescomplete"
+	url := brokerURL + "/getallvolumesinfo"
 
 	method := "GET"
 
 	client := &http.Client{}
-	req, err := http.NewRequest(method, url, nil)
+	req, errorFound := http.NewRequest(method, url, nil)
 
-	if err != nil {
-		fmt.Println(err)
+	if errorFound != nil {
+		fmt.Println(errorFound)
 	}
-	res, err := client.Do(req)
-	if err != nil {
-		fmt.Println(err)
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		fmt.Println(errorFound)
 	}
 	defer res.Body.Close()
 
-	body, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		fmt.Println(err)
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		fmt.Println(errorFound)
 	}
 
-	json.Unmarshal(body, &allVolumesList)
-
-	volumesInfo = make(map[string][]any)
-
-	for _, volumes := range allVolumesList {
-
-		for volumeID, volumeContent := range volumes {
-
-			volumeName := volumeContent.GetName()
-			volumeReplicas := len(volumeContent.Volume.ReplicaSets[0].GetNodes())
-			volumeStatus := volumeContent.Volume.GetStatus().String()
-			volumeAttachedOn := volumeContent.Volume.GetAttachedOn()
-			volumeDevicePath := volumeContent.Volume.GetDevicePath()
-			volumeTotalSize := volumeContent.Volume.GetSpec().GetSize()
-			volumeUsage := volumeContent.Volume.GetUsage()
-			volumeAvailableSpace := volumeTotalSize - volumeUsage
-			volumePercentageUsed := float64(volumeUsage) / float64(volumeTotalSize) * 100
-			volumePercentageUsedInt := int(volumePercentageUsed)
-
-			volumesInfo[volumeID] = []any{volumeName, volumeReplicas, volumeStatus, volumeAttachedOn, volumeDevicePath, volumeTotalSize, volumeUsage, volumeAvailableSpace, volumePercentageUsed, volumePercentageUsedInt}
-
-		}
+	json.Unmarshal(body, &JsonAllVolumesInfo)
+	if errorFound != nil {
+		fmt.Println(errorFound)
 	}
 
-	return volumesInfo
+	return JsonAllVolumesInfo, nil
 
 }
 

@@ -21,6 +21,10 @@ type TemplateData struct {
 	VolumeStatusString    string
 	JsonListOfNodes       any
 	JsonGetAllVolumesInfo map[string][]any
+	JsonNodeInfo          NodeInfo
+	JsonVolumeInfo        VolumeInfo
+	JsonAllVolumesInfo    any
+	JsonAllNodesInfo      map[string]NodeInfo
 }
 
 // JsonUsageVolume holds the json data for the usage volume
@@ -145,6 +149,11 @@ type NodeInfo struct {
 	PercentUsedMemory float64            `json:"percent_used_memory,omitempty"`
 	StoragelessNode   bool               `json:"storageless,omitempty"`
 	StoragePools      []*api.StoragePool `json:"storage_pools,omitempty"`
+}
+
+// Slice of VolumeInfoAllVolumesInfoResponse
+type AllVolumesInfoResponse struct {
+	AllVolumesInfo []VolumeInfo `json:"all_volumes_info,omitempty"`
 }
 
 // VolumeInfo struct to store the volume information.
