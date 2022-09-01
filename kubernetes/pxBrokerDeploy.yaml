@@ -42,4 +42,25 @@ spec:
           value: "portworx-api.kube-system:9020"
         ports:
         - containerPort: 8080
-
+        livenessProbe:
+          exec:
+            command:
+              - sh
+              - -ec
+              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/ping || exit 1'
+          initialDelaySeconds: 7
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
+        readinessProbe:
+          exec:
+            command:
+              - sh
+              - -ec
+              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/ping || exit 1'
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 6
