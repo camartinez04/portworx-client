@@ -182,9 +182,11 @@ func (app *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request)
 
 func (app *AppConfig) getReplicasPerNodeHTTP(w http.ResponseWriter, r *http.Request) {
 
-	nodeName := r.Header.Get("Node-Name")
+	exploded := strings.Split(r.RequestURI, "/")
 
-	volumes, err := nodes.GetReplicasPerNode(app.Conn, nodeName)
+	nodeID := exploded[2]
+
+	volumes, err := nodes.GetReplicasPerNode(app.Conn, nodeID)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

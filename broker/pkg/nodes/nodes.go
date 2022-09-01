@@ -144,78 +144,61 @@ func GetNodeUsage(conn *grpc.ClientConn, nodeID string) (nodeUsage int, errorFou
 
 }
 
-// GetReplicasPerNode returns a list of volume replicas located on a node
-func GetReplicasPerNode(conn *grpc.ClientConn, nodeName string) (volumeList []any, errorFound error) {
+// GetReplicasPerNode returns a list of volumes that are on the given node
+func GetReplicasPerNode(conn *grpc.ClientConn, nodeID string) (volumeList map[string]config.VolumeInfo, errorFound error) {
 
-	nodeclient := api.NewOpenStorageNodeClient(conn)
+	volumeList = make(map[string]config.VolumeInfo)
 
-	nodeEnumResp, errorFound := nodeclient.Enumerate(
+	volumeclient := api.NewOpenStorageVolumeClient(conn)
+
+	volumeEnumResp, errorFound := volumeclient.Enumerate(
 		context.Background(),
-		&api.SdkNodeEnumerateRequest{})
+		&api.SdkVolumeEnumerateRequest{})
 	if errorFound != nil {
-		fmt.Println("error ennumerating nodes")
+		fmt.Println("error enumerating volumes")
 		fmt.Println(errorFound)
 		return nil, errorFound
 	}
 
-	for _, nodeID := range nodeEnumResp.GetNodeIds() {
-		node, errorFound := nodeclient.Inspect(
+	// For each volume ID, get its information
+	for _, volumeReplica := range volumeEnumResp.VolumeIds {
+
+		volumeInspect, errorFound := volumeclient.Inspect(
 			context.Background(),
-			&api.SdkNodeInspectRequest{
-				NodeId: nodeID,
+			&api.SdkVolumeInspectRequest{
+				VolumeId: volumeReplica,
 			},
 		)
 		if errorFound != nil {
-			fmt.Println("error inspecting node")
+			fmt.Println("error inspecting volume")
 			fmt.Println(errorFound)
 			return nil, errorFound
 		}
 
-		if node.Node.GetSchedulerNodeName() == nodeName {
+		// Retrieves the replica sets of a volume
+		for _, volumeReplicaNode := range volumeInspect.Volume.GetReplicaSets() {
 
-			nodeIDReturn := node.Node.Id
+			// Retrieves the node ID of a replica set
+			for _, volumeReplicaNodeID := range volumeReplicaNode.Nodes {
 
-			volumeclient := api.NewOpenStorageVolumeClient(conn)
+				// If the node ID matches the node ID passed in, add the volume to the list
+				if volumeReplicaNodeID == nodeID {
 
-			volumeEnumResp, errorFound := volumeclient.Enumerate(
-				context.Background(),
-				&api.SdkVolumeEnumerateRequest{})
-			if errorFound != nil {
-				fmt.Println("error enumerating volumes")
-				fmt.Println(errorFound)
-				return nil, errorFound
-			}
-
-			for _, volumeReplica := range volumeEnumResp.VolumeIds {
-
-				volumeInspect, errorFound := volumeclient.Inspect(
-					context.Background(),
-					&api.SdkVolumeInspectRequest{
-						VolumeId: volumeReplica,
-					},
-				)
-				if errorFound != nil {
-					fmt.Println("error inspecting volume")
-					fmt.Println(errorFound)
-					return nil, errorFound
-				}
-
-				for _, volumeReplicaNode := range volumeInspect.Volume.GetReplicaSets() {
-
-					for _, volumeReplicaNodeID := range volumeReplicaNode.Nodes {
-
-						if volumeReplicaNodeID == nodeIDReturn {
-
-							volumeList = append(volumeList, volumeReplica)
-
-						}
-
+					volumeInfo, errorFound := volumes.GetVolumeInfo(conn, volumeReplica)
+					if errorFound != nil {
+						fmt.Println("error getting volume info")
+						fmt.Println(errorFound)
+						return nil, errorFound
 					}
 
+					volumeList[volumeReplica] = volumeInfo
+
 				}
 
 			}
+
 		}
+
 	}
 
 	return volumeList, nil
