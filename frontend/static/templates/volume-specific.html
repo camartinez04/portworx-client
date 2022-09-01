@@ -243,13 +243,24 @@
                 <div class="card-body">
                   <p class="card-title">Volume Inspect of the volume: {{ $volume.VolumeName }}</p>
                   <div class="row">
-                    <h5 class="font-weight-light mb-xl-4">{{ $volume.VolumeK8sPVCName }}</h5>
+                    <h6 class="font-weight-light mb-xl-4">Kubernetes PVC Name: </h6>
+                    <h6 class="font-weight-light mb-xl-4">{{ $volume.VolumeK8sPVCName }}</h6>
                     <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
                       <div class="ml-xl-4">
-                        <h5 class="font-weight-light mb-xl-4">Volume ID:</h5>
-                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeID }}</h5>
-                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx volume.</p>
+                        <h6 class="font-weight-light mb-xl-4">Volume Name:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeName }}</h6>                        
+                      </div>
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Volume ID:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeID }}</h6>
                       </div>  
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Kubernetes Namespace:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeK8sNamespace }}</h6>
+                      </div>
+                      <div> 
+                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx volume.</p>
+                      </div>
                     </div>
                     <div class="col-md-12 col-xl-9">
                       <div class="row">
