@@ -270,7 +270,8 @@
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Node Status:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeStatus }}</h5>
+                                  <h5 class="font-weight-normal mb-0" id="check-node-status" title="{{ $node.NodeStatus }}">
+                                  </h5>
                                 </td>
                               </tr>
                               <tr>
@@ -348,10 +349,11 @@
                         </tr>
                       </thead>
                       <tbody>
-                        {{ range $index, $volume := .JsonReplicaPerNode.VolumeList }}
+                        {{$count := 0}}
+                        {{ range $indexvol, $volume := .JsonReplicaPerNode.VolumeList }}
                         <tr>
                           <td>
-                            <a href="../volume/{{ $index }}">{{ $index }} </a>
+                            <a href="../volume/{{ $indexvol }}">{{ $indexvol }} </a>
                           </td>
                           <td>
                             {{ $volume.VolumeName }}
@@ -361,8 +363,8 @@
                           <td>
                             {{ $volume.VolumeReplicas }}
                           </td>
-                          <td>
-                            {{ $volume.VolumeStatus }}
+                          <td class="check-volume" id="{{$indexvol}}" title="{{ $volume.VolumeStatus }}">
+                            <div id="check-volume-{{$count}}"> </div>
                           </td>
                           <td>
                             {{ $volume.VolumeAttachedOn }}
@@ -378,6 +380,7 @@
                             </div>
                           </td>
                         </tr>
+                        {{$count = add $count 1}}
                         {{ end }}
                       </tbody>
                     </table>
@@ -411,6 +414,93 @@
     var available = "{{.JsonNodeInfo.NodeInfo.FreeNodePool}}";
     var total = "{{.JsonNodeInfo.NodeInfo.SizeNodePool}}";
   </script>
+
+<script >
+
+  var element = document.getElementById("check-node-status");
+
+
+    if(element.title == "STATUS_OK") {
+
+      let btn = document.createElement("button");
+      btn.innerHTML = "Node Up";
+      btn.type = "button";
+      btn.name = "formBtn";
+      btn.classList = "btn btn-inverse-success btn-fw";
+      element.appendChild(btn);
+
+      console.log("Node Up");
+
+    } else if (element.value == "STATUS_STORAGE_DOWN" || element.value == "STATUS_ERROR" || element.value == "STATUS_DECOMMISSION" || element.value == "STATUS_OFFLINE"  || element.value == "STATUS_NONE") {
+      
+      let btn = document.createElement("button");
+      btn.innerHTML = "Node Down";
+      btn.type = "button";
+      btn.name = "formBtn";
+      btn.classList = "btn btn-inverse-danger btn-fw";
+      element.appendChild(btn);
+
+      console.log("Node Down");
+
+    } else {
+
+      let btn = document.createElement("button");
+      btn.innerHTML = "Node Warning";
+      btn.type = "button";
+      btn.name = "formBtn";
+      btn.classList = "btn btn-inverse-warning btn-fw";
+      element.appendChild(btn);
+
+      console.log("Node Warning");
+
+  }
+
+</script>
+
+<script >
+
+  var elements = document.getElementsByClassName("check-volume");
+
+  for (var i = 0; i < elements.length; i++) {
+
+    if(elements.item(i).title == "VOLUME_STATUS_UP") {
+
+      let btn = document.createElement("button");
+      btn.innerHTML = "Volume Up";
+      btn.type = "button";
+      btn.name = "formBtn";
+      btn.classList = "btn btn-inverse-success btn-fw";
+      document.getElementById("check-volume-" + i).appendChild(btn);
+
+      console.log("Volume Up");
+
+    } else if (elements.item(i).value == "VOLUME_STATUS_DEGRADED"  ) {
+      
+      let btn = document.createElement("button");
+      btn.innerHTML = "Volume Degraded";
+      btn.type = "button";
+      btn.name = "formBtn";
+      btn.classList = "btn btn-inverse-warning btn-fw";
+      document.getElementById("check-volume-" + i).appendChild(btn);
+
+      console.log("Volume Degraded");
+
+    } else {
+
+      let btn = document.createElement("button");
+      btn.innerHTML = "Volume Down";
+      btn.type = "button";
+      btn.name = "formBtn";
+      btn.classList = "btn btn-inverse-danger btn-fw";
+      document.getElementById("check-volume-" + i).appendChild(btn);
+
+      console.log("Volume Down");
+
+    } 
+  }
+
+</script>
+
   {{block "js" .}}
   <!-- plugins:js -->
   <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
