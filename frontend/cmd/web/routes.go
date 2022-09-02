@@ -37,6 +37,10 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/stogage-pool/{stg_name}", Repo.StoragePoolsInformation)
 
+		mux.Get("/create-volume", Repo.CreateVolume)
+
+		mux.Post("/create-volume", Repo.CreateVolume)
+
 		fileServer := http.FileServer(http.Dir("./static/"))
 
 		mux.Handle("/static/*", http.StripPrefix("/frontend/static", fileServer))

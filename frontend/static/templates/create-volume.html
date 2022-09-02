@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    {{block "css" . }}
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Portworx</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="/frontend/static/templates/vendors/ti-icons/css/themify-icons.css">
+    <link rel="stylesheet" href="/frontend/static/templates/vendors/base/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- plugin css for this page -->
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="/frontend/static/templates/css/style.css">
+    <!-- endinject -->
+    <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
+    {{end}}
+
+</head>
+
+<body>
+
+    {{block "content" .}}
+
+
+    <div class="container-scroller">
+        <div class="row p-0 m-0 proBanner" id="proBanner">
+            <div class="col-md-12 p-0 m-0">
+                <div class="card-body card-body-padding d-flex align-items-center justify-content-between">
+                    <div class="ps-lg-1">
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <a href="https://www.bootstrapdash.com/product/royalui/"><i
+                                class="ti-home me-3 text-white"></i></a>
+                        <button id="bannerClose" class="btn border-0 p-0">
+                            <i class="ti-close text-white me-0"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- partial:partials/_navbar.html -->
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:partials/_sidebar.html -->
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./cluster">
+                            <i class="ti-server menu-icon"></i>
+                            <span class="menu-title">Cluster</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                            aria-controls="ui-basic">
+                            <i class="ti-panel menu-icon"></i>
+                            <span class="menu-title">Advanced</span>
+                            <i class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="ui-basic">
+                            <ul class="nav flex-column sub-menu">
+                                <li class="nav-item"> <a class="nav-link"
+                                        href="./pages/ui-features/buttons.html">Buttons</a></li>
+                                <li class="nav-item"> <a class="nav-link"
+                                        href="./pages/ui-features/typography.html">Typography</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="nodes">
+                            <i class="ti-linux menu-icon"></i>
+                            <span class="menu-title">Nodes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="volumes">
+                            <i class="ti-pie-chart menu-icon"></i>
+                            <span class="menu-title">Volumes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="snapshots">
+                            <i class="ti-save menu-icon"></i>
+                            <span class="menu-title">Snapshots</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="storage-pools">
+                            <i class="ti-harddrives menu-icon"></i>
+                            <span class="menu-title">Storage Pools</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="documentation/documentation.html">
+                            <i class="ti-write menu-icon"></i>
+                            <span class="menu-title">Documentation</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-md-12 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Create Volume</h4>
+                                    <p class="card-description">
+                                        Fill the form to create a new Portworx volume.
+                                    </p>
+                                    <form class="forms-sample">
+                                        <div class="form-group">
+                                            <label>Large input</label>
+                                            <input type="text" class="form-control form-control-lg"
+                                                placeholder="Username" aria-label="Username">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Default input</label>
+                                            <input type="text" class="form-control" placeholder="Username"
+                                                aria-label="Username">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlSelect1">Large select</label>
+                                            <select class="form-control form-control-lg" id="exampleFormControlSelect1">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlSelect2">Default select</label>
+                                            <select class="form-control" id="exampleFormControlSelect2">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleFormControlSelect3">Small select</label>
+                                            <select class="form-control form-control-sm" id="exampleFormControlSelect3">
+                                                <option>1</option>
+                                                <option>2</option>
+                                                <option>3</option>
+                                                <option>4</option>
+                                                <option>5</option>
+                                            </select>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary me-2">Submit</button>
+                                        <button class="btn btn-light">Cancel</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- content-wrapper ends -->
+            <!-- partial:partials/_footer.html -->
+            <footer class="footer">
+                <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © <a
+                            href="https://www.purestorage.com" target="_blank">Pure Storage Inc. </a>2022</span>
+                    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Portworx by Pure Storage <a
+                            href="https://portworx.com" target="_blank"> Check our products! </a> </span>
+                </div>
+            </footer>
+            <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+    <!-- container-scroller -->
+
+    {{block "js" .}}
+    <!-- plugins:js -->
+    <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
+
+    <!-- endinject -->
+    <!-- Plugin js for this page-->
+    <script src="/frontend/static/templates/vendors/chart.js/Chart.min.js"></script>
+    <script src="/frontend/static/templates/js/jquery.cookie.js" type="text/javascript"></script>
+    <!-- End plugin js for this page-->
+    <!-- inject:js -->
+    <script src="/frontend/static/templates/js/off-canvas.js"></script>
+    <script src="/frontend/static/templates/js/hoverable-collapse.js"></script>
+    <script src="/frontend/static/templates/js/template.js"></script>
+    <script src="/frontend/static/templates/js/todolist.js"></script>
+    <!-- endinject -->
+    <!-- Custom js for this page-->
+    <script src="/frontend/static/templates/js/dashboard.js"> </script>
+    <!-- End custom js for this page-->
+    {{end}}
+    {{end}}
+</body>
+
+</html>

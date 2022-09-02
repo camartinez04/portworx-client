@@ -359,3 +359,9 @@ func (m *Repository) StoragePools(w http.ResponseWriter, r *http.Request) {
 func (m *Repository) StoragePoolsInformation(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "storage-pool-specific.html", &TemplateData{})
 }
+
+func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
+
+	Template(w, r, "create-volume.html", &TemplateData{})
+
+}
