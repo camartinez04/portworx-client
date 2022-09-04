@@ -16,6 +16,8 @@ func routes(app *AppConfig) http.Handler {
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
+	mux.Use(NoSurf)
+	mux.Use(SessionLoad)
 
 	mux.Route("/frontend", func(mux chi.Router) {
 
@@ -37,9 +39,9 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/stogage-pool/{stg_name}", Repo.StoragePoolsInformation)
 
-		mux.Get("/create-volume", Repo.CreateVolume)
+		mux.Get("/create-volume", Repo.GetCreateVolume)
 
-		mux.Post("/create-volume", Repo.CreateVolume)
+		mux.Post("/create-volume", Repo.PostCreateVolume)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 

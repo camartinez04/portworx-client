@@ -5,6 +5,8 @@ import (
 	"html/template"
 	"log"
 	"os"
+
+	"github.com/alexedwards/scs/v2"
 )
 
 // AppConfig holds the application config
@@ -13,6 +15,7 @@ type AppConfig struct {
 	TemplateCache map[string]*template.Template
 	InfoLog       *log.Logger
 	ErrorLog      *log.Logger
+	Session       *scs.SessionManager
 	InProduction  bool
 	//Creates the channel MailChan from the model MailData
 }

@@ -1,8 +1,12 @@
 package main
 
 import (
+	"encoding/gob"
 	"log"
 	"net/http"
+	"time"
+
+	"github.com/alexedwards/scs/v2"
 )
 
 const portNumber = ":8081"
@@ -10,6 +14,7 @@ const portNumber = ":8081"
 var app AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
+var session *scs.SessionManager
 
 func main() {
 
@@ -18,6 +23,19 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot create template cache")
 	}
+
+	gob.Register(map[string]int{})
+	gob.Register(CreateVolume{})
+
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+
+	app.InProduction = false
+
+	app.Session = session
 
 	app.TemplateCache = tc
 	app.UseCache = false

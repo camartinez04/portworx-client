@@ -9,7 +9,8 @@ type TemplateData struct {
 	StringMap             map[string]string
 	IntMap                map[string]int
 	FloatMap              map[string]float32
-	Data                  map[string]interface{}
+	Data                  map[string]any
+	Form                  *Form
 	JsonVolumeInspect     JsonVolumeInspect
 	CSRFToken             string
 	Flash                 string
@@ -208,4 +209,14 @@ type VolumeInfo struct {
 	VolumeSharedv4            bool                     `json:"volume_sharedv4,omitempty"`
 	VolumeSharedv4ServiceSpec *api.Sharedv4ServiceSpec `json:"volume_sharedv4_service_spec,omitempty"`
 	VolumeIOStrategy          *api.IoStrategy          `json:"volume_io_strategy,omitempty"`
+}
+
+type CreateVolume struct {
+	VolumeName      string `json:"volume_name,omitempty"`
+	VolumeSize      uint64 `json:"volume_size,omitempty"`
+	VolumeIOProfile string `json:"volume_io_profile,omitempty"`
+	VolumeHALevel   uint32 `json:"volume_ha_level,omitempty"`
+	VolumeEncrypted bool   `json:"volume_encrypted,omitempty"`
+	VolumeSharedv4  bool   `json:"volume_sharedv4,omitempty"`
+	VolumeNoDiscard bool   `json:"volume_no_discard,omitempty"`
 }

@@ -360,8 +360,28 @@ func (m *Repository) StoragePoolsInformation(w http.ResponseWriter, r *http.Requ
 	Template(w, r, "storage-pool-specific.html", &TemplateData{})
 }
 
-func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) GetCreateVolume(w http.ResponseWriter, r *http.Request) {
 
-	Template(w, r, "create-volume.html", &TemplateData{})
+	res, ok := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)
+	if !ok {
+		m.App.Session.Put(r.Context(), "error", "can't get volume create from session")
+		http.Redirect(w, r, "/frontend", http.StatusSeeOther)
+		return
+	}
+
+	m.App.Session.Put(r.Context(), "create-volume", res)
+
+	data := make(map[string]any)
+
+	data["create-volume"] = res
+
+	Template(w, r, "create-volume.html", &TemplateData{
+		Form: New(nil),
+		Data: data,
+	})
+
+}
+
+func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 }

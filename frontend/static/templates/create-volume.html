@@ -104,29 +104,30 @@
             <div class="main-panel">
                 <div class="content-wrapper">
                     <div class="row">
-                        <div class="col-md-12 grid-margin stretch-card">
+                        <div class="col-lg-12 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <h4 class="card-title">Create Volume</h4>
+                                    <h4 class="card-title">Create a Portworx Volume</h4>
                                     <p class="card-description">
-                                        Fill the form to create a new Portworx volume.
+                                        Customize your new Portworx volume.
                                     </p>
-                                    <form class="forms-sample">
+                                    <form method="post" action="/frontend/create-volume" class="forms-sample" novalidate>
+                                        <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
                                         <div class="form-group">
-                                            <label>Volume Name</label>
+                                            <label>Volume Name (no spaces)</label>
                                             <input type="text" class="form-control form-control"
-                                                placeholder="Volume Name" aria-label="Volume Name">
+                                                placeholder="portworx-volume" aria-label="Volume Name">
                                         </div>
                                         <div class="form-group">
-                                            <label>Volume Size</label>
-                                            <input type="text" class="form-control" placeholder="Volume Size"
+                                            <label>Volume Size (in GB)</label>
+                                            <input type="text" class="form-control" placeholder="10"
                                                 aria-label="Volume Size">
                                         </div>
                                         <div class="form-group">
                                             <label for="ioprofile">IO Profile</label>
                                             <select class="form-control" id="ioprofile">
-                                                <option>db_remote</option>
                                                 <option>auto</option>
+                                                <option>db_remote</option>
                                                 <option>db</option>
                                                 <option>sequential</option>
                                                 <option>sync_shared</option>
@@ -157,8 +158,8 @@
                                         <div class="form-group">
                                             <label for="encryption">Volume Nodiscard</label>
                                             <select class="form-control" id="encryption">
-                                                <option>false</option>
                                                 <option>true</option>
+                                                <option>false</option>
                                             </select>
                                         </div>
                                         <button type="submit" class="btn btn-primary me-2">Submit</button>
@@ -187,6 +188,9 @@
     <!-- page-body-wrapper ends -->
     <!-- container-scroller -->
 
+    <script>
+        console.log("{{.CSRFToken}}" + " is the CSRF token");
+    </script>
     {{block "js" .}}
     <!-- plugins:js -->
     <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>

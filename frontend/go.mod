@@ -6,6 +6,7 @@ require github.com/mitchellh/mapstructure v1.5.0
 
 require (
 	github.com/alexedwards/scs/v2 v2.5.0 // indirect
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
