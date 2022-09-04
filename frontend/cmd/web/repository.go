@@ -110,7 +110,7 @@ func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (m *Repository) GetCreateVolume(w http.ResponseWriter, r *http.Request) {
+func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	res, _ := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)
 

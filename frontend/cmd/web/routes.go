@@ -41,7 +41,7 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/stogage-pool/{stg_name}", Repo.StoragePoolsInformation)
 
-		mux.Get("/create-volume", Repo.GetCreateVolume)
+		mux.Get("/create-volume", Repo.CreateVolume)
 
 		mux.Post("/create-volume", Repo.PostCreateVolume)
 
