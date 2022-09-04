@@ -55,6 +55,8 @@ kubectl port-forward svc/portworx-api -n kube-system 9020:9020
 
 export PORTWORX_GRPC_URL=localhost:9020
 
+cd portworx-client/broker
+
 go run cmd/api/*.go
 
 ```

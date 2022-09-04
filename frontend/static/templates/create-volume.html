@@ -23,7 +23,6 @@
 </head>
 
 <body>
-
     <div class="container-scroller">
         <div class="row p-0 m-0 proBanner" id="proBanner">
             <div class="col-lg-18 p-0 m-0">
@@ -41,6 +40,141 @@
             </div>
         </div>
         <!-- partial:partials/_navbar.html -->
+        <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+            <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
+              <a class="navbar-brand brand-logo me-6" href="index.html"><img src="/frontend/static/templates/images/portworx-logo.svg" class="me-5" alt="logo"/></a>
+              <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/frontend/static/templates/images/portworx-mini.svg" alt="logo"/></a>
+            </div>
+            <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
+              <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                <span class="ti-view-list"></span>
+              </button>
+              <ul class="navbar-nav mr-lg-2">
+                <li class="nav-item nav-search d-none d-lg-block">
+                  <div class="input-group">
+                    <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
+                      <span class="input-group-text" id="search">
+                        <i class="ti-search"></i>
+                      </span>
+                    </div>
+                    <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now" aria-label="search" aria-describedby="search">
+                  </div>
+                </li>
+              </ul>
+              <ul class="navbar-nav navbar-nav-right">
+                <li class="nav-item dropdown me-1">
+                  <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-bs-toggle="dropdown">
+                    <i class="ti-email mx-0"></i>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="messageDropdown">
+                    <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
+                    <a class="dropdown-item">
+                      <div class="item-thumbnail">
+                          <img src="/frontend/static/templates/images/faces/face4.jpg" alt="image" class="profile-pic">
+                      </div>
+                      <div class="item-content flex-grow">
+                        <h6 class="ellipsis font-weight-normal">David Grey
+                        </h6>
+                        <p class="font-weight-light small-text text-muted mb-0">
+                          The meeting is cancelled
+                        </p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item">
+                      <div class="item-thumbnail">
+                          <img src="/frontend/static/templates/images/faces/face2.jpg" alt="image" class="profile-pic">
+                      </div>
+                      <div class="item-content flex-grow">
+                        <h6 class="ellipsis font-weight-normal">Dana Smith
+                        </h6>
+                        <p class="font-weight-light small-text text-muted mb-0">
+                          New product launch
+                        </p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item">
+                      <div class="item-thumbnail">
+                          <img src="/frontend/static/templates/images/faces/face3.jpg" alt="image" class="profile-pic">
+                      </div>
+                      <div class="item-content flex-grow">
+                        <h6 class="ellipsis font-weight-normal"> Johnson
+                        </h6>
+                        <p class="font-weight-light small-text text-muted mb-0">
+                          Upcoming board meeting
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+                    <i class="ti-bell mx-0"></i>
+                    <span class="count"></span>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="notificationDropdown">
+                    <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
+                    <a class="dropdown-item">
+                      <div class="item-thumbnail">
+                        <div class="item-icon bg-success">
+                          <i class="ti-info-alt mx-0"></i>
+                        </div>
+                      </div>
+                      <div class="item-content">
+                        <h6 class="font-weight-normal">Application Error</h6>
+                        <p class="font-weight-light small-text mb-0 text-muted">
+                          Just now
+                        </p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item">
+                      <div class="item-thumbnail">
+                        <div class="item-icon bg-warning">
+                          <i class="ti-settings mx-0"></i>
+                        </div>
+                      </div>
+                      <div class="item-content">
+                        <h6 class="font-weight-normal">Settings</h6>
+                        <p class="font-weight-light small-text mb-0 text-muted">
+                          Private message
+                        </p>
+                      </div>
+                    </a>
+                    <a class="dropdown-item">
+                      <div class="item-thumbnail">
+                        <div class="item-icon bg-info">
+                          <i class="ti-user mx-0"></i>
+                        </div>
+                      </div>
+                      <div class="item-content">
+                        <h6 class="font-weight-normal">New user registration</h6>
+                        <p class="font-weight-light small-text mb-0 text-muted">
+                          2 days ago
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                </li>
+                <li class="nav-item nav-profile dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
+                    <img src="/frontend/static/templates/images/faces/face21.jpg" alt="profile"/>
+                  </a>
+                  <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
+                    <a class="dropdown-item">
+                      <i class="ti-settings text-primary"></i>
+                      Settings
+                    </a>
+                    <a class="dropdown-item">
+                      <i class="ti-power-off text-primary"></i>
+                      Logout
+                    </a>
+                  </div>
+                </li>
+              </ul>
+              <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                <span class="ti-view-list"></span>
+              </button>
+            </div>
+          </nav>
         <!-- partial -->
         <div class="container-fluid page-body-wrapper">
             <!-- partial:partials/_sidebar.html -->
@@ -61,8 +195,7 @@
                         </a>
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link"
-                                        href="">Create Volume</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="">Create Volume</a></li>
                                 <li class="nav-item"> <a class="nav-link"
                                         href="./pages/ui-features/typography.html">Typography</a></li>
                             </ul>
@@ -118,23 +251,28 @@
                                         <div class="form-group">
                                             <label>Volume Name (no spaces)</label>
                                             {{with .Form.Errors.Get "volume_name"}}
-                                                <label class="text-danger">{{.}}</label>
+                                            <label class="text-danger">{{.}}</label>
                                             {{end}}
-                                            <input  name="volume_name" type="text" class="form-control" id="volume_name" placeholder="portworx-volume" value="{{$newVolume.VolumeName}}" aria-label="volume_name">
+                                            <input name="volume_name" type="text" class="form-control" id="volume_name"
+                                                placeholder="portworx-volume" value="{{$newVolume.VolumeName}}"
+                                                aria-label="volume_name">
                                         </div>
                                         <div class="form-group">
                                             <label>Volume Size (in GB)</label>
                                             {{with .Form.Errors.Get "volume_size"}}
-                                                <label class="text-danger">{{.}}</label>
+                                            <label class="text-danger">{{.}}</label>
                                             {{end}}
-                                            <input name="volume_size" type="number" class="form-control" id="volume_size" value="{{$newVolume.VolumeSize}}" placeholder="10" aria-label="volume_size">
+                                            <input name="volume_size" type="number" class="form-control"
+                                                id="volume_size" value="{{$newVolume.VolumeSize}}" placeholder="10"
+                                                aria-label="volume_size">
                                         </div>
                                         <div class="form-group">
                                             <label for="ioprofile">IO Profile</label>
                                             {{with .Form.Errors.Get "volume_io_profile"}}
-                                                <label class="text-danger">{{.}}</label>
+                                            <label class="text-danger">{{.}}</label>
                                             {{end}}
-                                            <select name="volume_io_profile" class="form-control" id="volume_io_profile" value="{{$newVolume.VolumeIOProfile}}" >
+                                            <select name="volume_io_profile" class="form-control" id="volume_io_profile"
+                                                value="{{$newVolume.VolumeIOProfile}}">
                                                 <option>auto</option>
                                                 <option>db_remote</option>
                                                 <option>db</option>
@@ -145,9 +283,10 @@
                                         <div class="form-group">
                                             <label for="halevel">HA Level</label>
                                             {{with .Form.Errors.Get "volume_ha_level"}}
-                                                <label class="text-danger">{{.}}</label>
+                                            <label class="text-danger">{{.}}</label>
                                             {{end}}
-                                            <select name="volume_ha_level" class="form-control" id="volume_ha_level" type="number" value="{{$newVolume.VolumeHALevel}}" >
+                                            <select name="volume_ha_level" class="form-control" id="volume_ha_level"
+                                                type="number" value="{{$newVolume.VolumeHALevel}}">
                                                 <option>3</option>
                                                 <option>2</option>
                                                 <option>1</option>
@@ -156,9 +295,10 @@
                                         <div class="form-group">
                                             <label for="encryption">Encryption Enabled</label>
                                             {{with .Form.Errors.Get "volume_encrypted"}}
-                                                <label class="text-danger">{{.}}</label>
+                                            <label class="text-danger">{{.}}</label>
                                             {{end}}
-                                            <select name="volume_encrypted" class="form-control" type="checkbox" id="volume_encrypted" value="{{$newVolume.VolumeEncrypted}}" checked>
+                                            <select name="volume_encrypted" class="form-control" type="checkbox"
+                                                id="volume_encrypted" value="{{$newVolume.VolumeEncrypted}}" checked>
                                                 <option>false</option>
                                                 <option>true</option>
                                             </select>
@@ -166,9 +306,10 @@
                                         <div class="form-group">
                                             <label for="encryption">Sharedv4 Enabled</label>
                                             {{with .Form.Errors.Get "volume_sharedv4"}}
-                                                <label class="text-danger">{{.}}</label>
+                                            <label class="text-danger">{{.}}</label>
                                             {{end}}
-                                            <select name="volume_sharedv4" class="form-control" type="checkbox" id="volume_sharedv4" value="{{$newVolume.VolumeSharedv4}}" checked>
+                                            <select name="volume_sharedv4" class="form-control" type="checkbox"
+                                                id="volume_sharedv4" value="{{$newVolume.VolumeSharedv4}}" checked>
                                                 <option>false</option>
                                                 <option>true</option>
                                             </select>
@@ -176,9 +317,10 @@
                                         <div class="form-group">
                                             <label for="encryption">Volume Nodiscard</label>
                                             {{with .Form.Errors.Get "volume_no_discard"}}
-                                                <label class="text-danger">{{.}}</label>
+                                            <label class="text-danger">{{.}}</label>
                                             {{end}}
-                                            <select name="volume_no_discard" class="form-control" type="checkbox" id="volume_no_discard" value="{{$newVolume.VolumeNoDiscard}}" checked>
+                                            <select name="volume_no_discard" class="form-control" type="checkbox"
+                                                id="volume_no_discard" value="{{$newVolume.VolumeNoDiscard}}" checked>
                                                 <option>true</option>
                                                 <option>false</option>
                                             </select>
@@ -192,6 +334,8 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div>
             <!-- content-wrapper ends -->
             <!-- partial:partials/_footer.html -->
             <footer class="footer">
