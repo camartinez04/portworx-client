@@ -49,6 +49,8 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Handle("/static/*", http.StripPrefix("/frontend/static", fileServer))
 
+		mux.Get("/documentation/documentation", Repo.Documentation)
+
 	})
 
 	return mux

@@ -35,6 +35,10 @@ func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "index.html", &TemplateData{})
 }
 
+func (m *Repository) Documentation(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "documentation/documentation.html", &TemplateData{})
+}
+
 // Volumes serves the volumes page
 func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 
