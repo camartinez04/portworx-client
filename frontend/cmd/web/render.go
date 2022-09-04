@@ -18,7 +18,7 @@ func NewRenderer(a *AppConfig) {
 	app = *a
 }
 
-//AddDefaultData adds data for all templates
+// AddDefaultData adds data for all templates
 func AddDefaultData(td *TemplateData, r *http.Request) *TemplateData {
 
 	td.CSRFToken = nosurf.Token(r)
@@ -60,7 +60,7 @@ func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateD
 
 }
 
-//Map of functions available to the templates
+// Map of functions available to the templates
 var functions = template.FuncMap{
 	"humanDate":  HumanDate,
 	"formatDate": FormatDate,
@@ -68,25 +68,25 @@ var functions = template.FuncMap{
 	"add":        Add,
 }
 
-//HumanDate returns time in yyyy-mm-dd format
+// HumanDate returns time in yyyy-mm-dd format
 func HumanDate(t time.Time) string {
 
 	return t.Format("2006-01-02")
 }
 
-//FormatDate helps to format numeric date into string date
+// FormatDate helps to format numeric date into string date
 func FormatDate(t time.Time, f string) string {
 
 	return t.Format(f)
 }
 
-//Add add two numbers
+// Add add two numbers
 func Add(a, b int) int {
 
 	return a + b
 }
 
-//Iterate performs a for loop
+// Iterate performs a for loop
 func Iterate(count int) []int {
 	var i int
 	var items []int
@@ -103,7 +103,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob(fmt.Sprintf("%s/*.html", pathToTemplates))
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.html", pathToTemplates))
 
 	if err != nil {
 		return myCache, err
@@ -115,12 +115,12 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 		if err != nil {
 			return myCache, err
 		}
-		matches, err := filepath.Glob(fmt.Sprintf("%s/*.html", pathToTemplates))
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.html", pathToTemplates))
 		if err != nil {
 			return myCache, err
 		}
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.html", pathToTemplates))
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.html", pathToTemplates))
 
 			if err != nil {
 				return myCache, err

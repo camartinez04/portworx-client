@@ -1,0 +1,260 @@
+{{template "secondary" .}}
+
+  {{ define "content" }}
+
+    {{ $node := .JsonNodeInfo.NodeInfo }}
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                  <p class="card-title">{{ $node.NodeName }}</p>
+                  <div class="row">
+                    <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Node Name:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $node.NodeName }}</h6>
+                      </div>
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Node ID:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $node.NodeID }}</h6>
+                      </div>
+                      <div>
+                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx node.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-xl-9">
+                      <div class="row">
+                        <div class="col-md-6 mt-3 col-xl-5">
+                          <canvas id="node-chart"></canvas>
+                          <div id="node-legend"></div>
+                        </div>
+                        <div class="col-md-6 col-xl-7">
+                          <div class="table-responsive mb-3 mb-md-0">
+                            <table class="table table-borderless report-table">
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Node Status:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="check-node-status" title="{{ $node.NodeStatus }}">
+                                  </h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Node Average Load:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeAvgLoad }} %</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0"> Node Memory Used:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeMemUsed }} GB</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Node Memory Total:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NodeMemTotal }} GB</h5>
+                                </td>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Storage Pools of the Node:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $node.NumberOfPools }}</h5>
+                                </td>
+                              </tr>
+                              {{ range $index, $pool := $node.StoragePools}}
+                              <tr>
+                                <td class="font-weight-light mb-0 w-50 px-0">Storage Pool {{$index}}:</td>
+                                <td class="w-50 px-0">
+                                  <h6 class="font-weight-normal mb-0">{{$pool.Uuid}}</h6>
+                                </td>
+                              </tr>
+                              {{end}}
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                  <h4 class="card-title">Volumes on this Node</h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>
+                            Volume ID
+                          </th>
+                          <th>
+                            Volume Name
+                          </th>
+                          <th>
+                            K8s PVC Name
+                          </th>
+                          <th>
+                            Replicas
+                          </th>
+                          <th>
+                            Status
+                          </th>
+                          <th>
+                            Attached On
+                          </th>
+                          <th>
+                            Encrypted
+                          </th>
+                          <th>
+                            Volume Usage
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{$count := 0}}
+                        {{ range $indexvol, $volume := .JsonReplicaPerNode.VolumeList }}
+                        <tr>
+                          <td>
+                            <a href="../volume/{{ $indexvol }}">{{ $indexvol }} </a>
+                          </td>
+                          <td>
+                            {{ $volume.VolumeName }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeK8sPVCName }}
+                          <td>
+                            {{ $volume.VolumeReplicas }}
+                          </td>
+                          <td class="check-volume" id="{{$indexvol}}" title="{{ $volume.VolumeStatus }}">
+                            <div id="check-volume-{{$count}}"> </div>
+                          </td>
+                          <td>
+                            {{ $volume.VolumeAttachedOn }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeEncrypted }}
+                          </td>
+                          <td>
+                            <div class="progress">
+                              <div class="progress-bar bg-success" role="progressbar"
+                                style="width: {{ $volume.VolumeUsedPercent }}%" aria-valuenow="50" aria-valuemin="0"
+                                aria-valuemax="100"></div>
+                            </div>
+                          </td>
+                        </tr>
+                        {{$count = add $count 1}}
+                        {{ end }}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  {{ end }}
+
+  {{ define "js" }}
+
+    <script>
+      var usagePercent = "{{.JsonNodeInfo.NodeInfo.PercentUsedPool}}";
+      var availablePercent = "{{.JsonNodeInfo.NodeInfo.PercentAvailablePool}}";
+      var usage = "{{.JsonNodeInfo.NodeInfo.UsedNodePool}}";
+      var available = "{{.JsonNodeInfo.NodeInfo.FreeNodePool}}";
+      var total = "{{.JsonNodeInfo.NodeInfo.SizeNodePool}}";
+    </script>
+
+    <script >
+
+      var element = document.getElementById("check-node-status");
+
+
+        if(element.title == "STATUS_OK") {
+
+          let btn = document.createElement("button");
+          btn.innerHTML = "Node Up";
+          btn.type = "button";
+          btn.name = "formBtn";
+          btn.classList = "btn btn-inverse-success btn-fw";
+          element.appendChild(btn);
+
+          console.log("Node Up");
+
+        } else if (element.value == "STATUS_STORAGE_DOWN" || element.value == "STATUS_ERROR" || element.value == "STATUS_DECOMMISSION" || element.value == "STATUS_OFFLINE"  || element.value == "STATUS_NONE") {
+          
+          let btn = document.createElement("button");
+          btn.innerHTML = "Node Down";
+          btn.type = "button";
+          btn.name = "formBtn";
+          btn.classList = "btn btn-inverse-danger btn-fw";
+          element.appendChild(btn);
+
+          console.log("Node Down");
+
+        } else {
+
+          let btn = document.createElement("button");
+          btn.innerHTML = "Node Warning";
+          btn.type = "button";
+          btn.name = "formBtn";
+          btn.classList = "btn btn-inverse-warning btn-fw";
+          element.appendChild(btn);
+
+          console.log("Node Warning");
+
+      }
+
+    </script>
+
+    <script>
+
+      var elements = document.getElementsByClassName("check-volume");
+
+      for (var i = 0; i < elements.length; i++) {
+
+        if(elements.item(i).title == "VOLUME_STATUS_UP") {
+
+          let btn = document.createElement("button");
+          btn.innerHTML = "Volume Up";
+          btn.type = "button";
+          btn.name = "formBtn";
+          btn.classList = "btn btn-inverse-success btn-fw";
+          document.getElementById("check-volume-" + i).appendChild(btn);
+
+          console.log("Volume Up");
+
+        } else if (elements.item(i).value == "VOLUME_STATUS_DEGRADED"  ) {
+          
+          let btn = document.createElement("button");
+          btn.innerHTML = "Volume Degraded";
+          btn.type = "button";
+          btn.name = "formBtn";
+          btn.classList = "btn btn-inverse-warning btn-fw";
+          document.getElementById("check-volume-" + i).appendChild(btn);
+
+          console.log("Volume Degraded");
+
+        } else {
+
+          let btn = document.createElement("button");
+          btn.innerHTML = "Volume Down";
+          btn.type = "button";
+          btn.name = "formBtn";
+          btn.classList = "btn btn-inverse-danger btn-fw";
+          document.getElementById("check-volume-" + i).appendChild(btn);
+
+          console.log("Volume Down");
+
+        } 
+      }
+
+    </script>
+    <!-- Custom js for this page-->
+    <script src="/frontend/static/js/dashboard.js"> </script>
+    <!-- End custom js for this page-->
+  {{end}}

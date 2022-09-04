@@ -29,11 +29,11 @@ func NewHandlers(r *Repository) {
 }
 
 func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "index.html", &TemplateData{})
+	Template(w, r, "index.page.html", &TemplateData{})
 }
 
 func (m *Repository) Documentation(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "documentation.html", &TemplateData{})
+	Template(w, r, "documentation.page.html", &TemplateData{})
 }
 
 // Volumes serves the volumes page
@@ -47,7 +47,7 @@ func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 	//fmt.Printf("volumesInfo: %v", volumesInfo.AllVolumesInfo[0].VolumeName)
 	//You have to range over the array to get the values
 
-	Template(w, r, "volumes.html", &TemplateData{
+	Template(w, r, "volumes.page.html", &TemplateData{
 		JsonAllVolumesInfo: volumesInfo,
 	})
 }
@@ -66,7 +66,7 @@ func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 
 	//fmt.Printf("volumeInfo: %v", volumeInfoResponse.VolumeInfo.VolumeSizeMB)
 
-	Template(w, r, "volume-specific.html", &TemplateData{
+	Template(w, r, "volume-specific.page.html", &TemplateData{
 		JsonVolumeInfo: volumeInfoResponse,
 	})
 
@@ -83,7 +83,7 @@ func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
 	//fmt.Printf("nodesInfo: %v", nodesInfo.AllNodesInfo[0].NodeName)
 	//You have to range over the array to get the values
 
-	Template(w, r, "nodes.html", &TemplateData{
+	Template(w, r, "nodes.page.html", &TemplateData{
 		JsonAllNodesInfo: nodesInfo,
 	})
 
@@ -104,7 +104,7 @@ func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
 	//fmt.Printf("nodeInfoResponse: %v", nodeInfoResponse.NodeInfo.NodeName)
 	//fmt.Printf("replicaPerNodeResponse: %v", replicaPerNodeResponse.VolumeList["1014695385474634270"].VolumeName)
 
-	Template(w, r, "node-specific.html", &TemplateData{
+	Template(w, r, "node-specific.page.html", &TemplateData{
 		JsonNodeInfo:       nodeInfoResponse,
 		JsonReplicaPerNode: replicaPerNodeResponse,
 	})
@@ -120,7 +120,7 @@ func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	data["create-volume"] = res
 
-	Template(w, r, "create-volume.html", &TemplateData{
+	Template(w, r, "create-volume.page.html", &TemplateData{
 		Form: New(nil),
 		Data: data,
 	})
@@ -128,17 +128,17 @@ func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Snaps(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "snapshots.html", &TemplateData{})
+	Template(w, r, "snapshots.page.html", &TemplateData{})
 }
 
 func (m *Repository) SnapsInformation(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "snap-specific.html", &TemplateData{})
+	Template(w, r, "snap-specific.page.html", &TemplateData{})
 }
 
 func (m *Repository) StoragePools(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "storage-pools.html", &TemplateData{})
+	Template(w, r, "storage-pools.page.html", &TemplateData{})
 }
 
 func (m *Repository) StoragePoolsInformation(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "storage-pool-specific.html", &TemplateData{})
+	Template(w, r, "storage-pool-specific.page.html", &TemplateData{})
 }

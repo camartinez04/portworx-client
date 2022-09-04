@@ -1,0 +1,154 @@
+{{template "secondary" .}}
+
+  {{ define "content" }}
+    {{ $volume := .JsonVolumeInfo.VolumeInfo }}
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                  <p class="card-title">Volume Inspect of the volume: {{ $volume.VolumeName }}</p>
+                  <div class="row">
+                    <h6 class="font-weight-light mb-xl-4">Kubernetes PVC Name: </h6>
+                    <h6 class="font-weight-light mb-xl-4">{{ $volume.VolumeK8sPVCName }}</h6>
+                    <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Volume Name:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeName }}</h6>                        
+                      </div>
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Volume ID:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeID }}</h6>
+                      </div>  
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Kubernetes Namespace:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeK8sNamespace }}</h6>
+                      </div>
+                      <div> 
+                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx volume.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-xl-9">
+                      <div class="row">
+                        <div class="col-md-6 mt-3 col-xl-5">
+                          <canvas id="volume-utilization-chart"></canvas>
+                          <div id="volume-utilization-legend"></div>
+                        </div>
+                        <div class="col-md-6 col-xl-7">
+                          <div class="table-responsive mb-3 mb-md-0">
+                            <table class="table table-borderless report-table">
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0" >Volume Status:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="check-volume-status" title="{{ $volume.VolumeStatus  }}"></h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Number of Replicas</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeReplicas }}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">IO Profile:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeIOProfile }}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Volume attached on:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeAttachedOn }}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Device Path:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{$volume.VolumeDevicePath}}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Nodes where the volume have a replica:</td>
+                              </tr>
+                              {{ range $index, $replica := $volume.VolumeReplicaNodes}}
+                              <tr>
+                                <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} located on node:</td>
+                                <td class="w-50 px-0">
+                                  <h6 class="font-weight-normal mb-0"><a href="../node/{{ $replica }}">{{ $replica }} </a></h6>
+                                </td>
+                              </tr>
+                              {{end}}
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  {{ end }}
+
+  {{ define "js" }}
+
+  <script>
+
+    var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
+    var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
+    var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
+    var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
+    var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
+    
+  </script>
+
+  <script >
+
+    var element = document.getElementById("check-volume-status");
+  
+      if(element.title == "VOLUME_STATUS_UP") {
+  
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Up";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-success btn-fw";
+        element.appendChild(btn);
+  
+        console.log("Volume Up");
+  
+      } else if (element.value == "VOLUME_STATUS_DEGRADED"  ) {
+        
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Degraded";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-warning btn-fw";
+        element.appendChild(btn);
+  
+        console.log("Volume Degraded");
+  
+      } else {
+  
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Down";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        element.appendChild(btn);
+  
+        console.log("Volume Down");
+  
+      } 
+
+  </script>
+
+  <!-- Custom js for this page-->
+  <script src="/frontend/static/js/dashboard.js"> </script>
+  <!-- End custom js for this page-->
+
+  {{ end }}

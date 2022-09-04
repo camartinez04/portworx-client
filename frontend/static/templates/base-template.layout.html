@@ -1,28 +1,26 @@
+{{define "base"}}
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
-  {{block "css" . }}
-
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Portworx</title>
   <!-- plugins:css -->
-  <link rel="stylesheet" href="/frontend/static/templates/vendors/ti-icons/css/themify-icons.css">
-  <link rel="stylesheet" href="/frontend/static/templates/vendors/base/vendor.bundle.base.css">
+  <link rel="stylesheet" href="/frontend/static/vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="/frontend/static/vendors/base/vendor.bundle.base.css">
   <!-- endinject -->
   <!-- plugin css for this page -->
   <!-- End plugin css for this page -->
   <!-- inject:css -->
-  <link rel="stylesheet" href="/frontend/static/templates/css/style.css">
+  <link rel="stylesheet" href="/frontend/static/css/style.css">
   <!-- endinject -->
-  <link rel="shortcut icon" href="/frontend/static/templates/images/favicon.png" />
-  {{end}}
+  <link rel="shortcut icon" href="/frontend/static/images/favicon.png" />
+    {{block "css" .}} 
 
+    {{end}}
 </head>
-
-{{ $AllVolumesInfo := .JsonAllVolumesInfo.AllVolumesInfo }}
 
 <body>
 
@@ -44,8 +42,8 @@
     <!-- partial:partials/_navbar.html -->
     <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
       <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-center">
-        <a class="navbar-brand brand-logo me-6" href="index.html"><img src="/frontend/static/templates/images/portworx-logo.svg" class="me-5" alt="logo"/></a>
-        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/frontend/static/templates/images/portworx-mini.svg" alt="logo"/></a>
+        <a class="navbar-brand brand-logo me-6" href="index.html"><img src="/frontend/static/images/portworx-logo.svg" class="me-5" alt="logo"/></a>
+        <a class="navbar-brand brand-logo-mini" href="index.html"><img src="/frontend/static/images/portworx-mini.svg" alt="logo"/></a>
       </div>
       <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
         <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
@@ -72,7 +70,7 @@
               <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
               <a class="dropdown-item">
                 <div class="item-thumbnail">
-                    <img src="/frontend/static/templates/images/faces/face4.jpg" alt="image" class="profile-pic">
+                    <img src="/frontend/static/images/faces/face4.jpg" alt="image" class="profile-pic">
                 </div>
                 <div class="item-content flex-grow">
                   <h6 class="ellipsis font-weight-normal">David Grey
@@ -84,7 +82,7 @@
               </a>
               <a class="dropdown-item">
                 <div class="item-thumbnail">
-                    <img src="/frontend/static/templates/images/faces/face2.jpg" alt="image" class="profile-pic">
+                    <img src="/frontend/static/images/faces/face2.jpg" alt="image" class="profile-pic">
                 </div>
                 <div class="item-content flex-grow">
                   <h6 class="ellipsis font-weight-normal">Dana Smith
@@ -96,7 +94,7 @@
               </a>
               <a class="dropdown-item">
                 <div class="item-thumbnail">
-                    <img src="/frontend/static/templates/images/faces/face3.jpg" alt="image" class="profile-pic">
+                    <img src="/frontend/static/images/faces/face3.jpg" alt="image" class="profile-pic">
                 </div>
                 <div class="item-content flex-grow">
                   <h6 class="ellipsis font-weight-normal"> Johnson
@@ -158,7 +156,7 @@
           </li>
           <li class="nav-item nav-profile dropdown">
             <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" id="profileDropdown">
-              <img src="/frontend/static/templates/images/faces/face21.jpg" alt="profile"/>
+              <img src="/frontend/static/images/faces/face21.jpg" alt="profile"/>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
               <a class="dropdown-item">
@@ -207,7 +205,7 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="">
+            <a class="nav-link" href="volumes">
               <i class="ti-pie-chart menu-icon"></i>
               <span class="menu-title">Volumes</span>
             </a>
@@ -233,81 +231,9 @@
         </ul>
       </nav>
       <!-- partial -->
-      <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="row">
-            <div class="col-lg-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Volumes</h4>
-                  <div class="table-responsive">
-                    <table class="table table-striped">
-                      <thead>
-                        <tr>
-                          <th>
-                            Volume ID
-                          </th>
-                          <th>
-                            Volume Name
-                          </th>
-                          <th>
-                            K8s PVC Name
-                          </th>
-                          <th>
-                            Replicas
-                          </th>
-                          <th>
-                            Status
-                          </th>
-                          <th>
-                            Attached On
-                          </th>
-                          <th>
-                            Encrypted
-                          </th> 
-                          <th>
-                            Volume Usage
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {{ range $index, $volume := $AllVolumesInfo }}
-                        <tr>
-                          <td>
-                            <a href="volume/{{ $volume.VolumeID }}">{{ $volume.VolumeID }} </a>
-                          </td>
-                          <td>
-                            {{ $volume.VolumeName }}
-                          </td>
-                          <td>
-                            {{ $volume.VolumeK8sPVCName }}
-                          <td>
-                            {{ $volume.VolumeReplicas }}
-                          </td>
-                          <td class="check-volume" title="{{$volume.VolumeStatus}}">
-                              <div id="check-volume-{{$index}}"> </div>
-                          </td>
-                          <td>
-                            {{ $volume.VolumeAttachedOn }}
-                          </td>
-                          <td>
-                            {{ $volume.VolumeEncrypted }}
-                          </td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ $volume.VolumeUsedPercent }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                        </tr>
-                        {{ end }}
-                       </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+    {{block "content" .}}
+
+    {{end}}
         <!-- content-wrapper ends -->
         <!-- partial:partials/_footer.html -->
         <footer class="footer">
@@ -322,72 +248,24 @@
     </div>
     <!-- page-body-wrapper ends -->
   </div>
-  
-  <script >
-
-    var elements = document.getElementsByClassName("check-volume");
-
-    for (var i = 0; i < elements.length; i++) {
-
-      if(elements.item(i).title == "VOLUME_STATUS_UP") {
-
-        let btn = document.createElement("button");
-        btn.innerHTML = "Volume Up";
-        btn.type = "button";
-        btn.name = "formBtn";
-        btn.classList = "btn btn-inverse-success btn-fw";
-        document.getElementById("check-volume-" + i).appendChild(btn);
-
-        console.log("Volume Up");
-
-      } else if (elements.item(i).value == "VOLUME_STATUS_DEGRADED"  ) {
-        
-        let btn = document.createElement("button");
-        btn.innerHTML = "Volume Degraded";
-        btn.type = "button";
-        btn.name = "formBtn";
-        btn.classList = "btn btn-inverse-warning btn-fw";
-        document.getElementById("check-volume-" + i).appendChild(btn);
-
-        console.log("Volume Degraded");
-
-      } else {
-
-        let btn = document.createElement("button");
-        btn.innerHTML = "Volume Down";
-        btn.type = "button";
-        btn.name = "formBtn";
-        btn.classList = "btn btn-inverse-danger btn-fw";
-        document.getElementById("check-volume-" + i).appendChild(btn);
-
-        console.log("Volume Down");
-
-      } 
-    }
-
-  </script>
   <!-- container-scroller -->
-  {{block "js" .}}
-
   <!-- plugins:js -->
-  <script src="/frontend/static/templates/vendors/base/vendor.bundle.base.js"></script>
-
+  <script src="/frontend/static/vendors/base/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page-->
-  <script src="/frontend/static/templates/vendors/chart.js/Chart.min.js"></script>
-  <script src="/frontend/static/templates/js/jquery.cookie.js" type="text/javascript"></script>
+  <script src="/frontend/static/vendors/chart.js/Chart.min.js"></script>
+  <script src="/frontend/static/js/jquery.cookie.js" type="text/javascript"></script>
   <!-- End plugin js for this page-->
   <!-- inject:js -->
-  <script src="/frontend/static/templates/js/off-canvas.js"></script>
-  <script src="/frontend/static/templates/js/hoverable-collapse.js"></script>
-  <script src="/frontend/static/templates/js/template.js"></script>
-  <script src="/frontend/static/templates/js/todolist.js"></script>
+  <script src="/frontend/static/js/off-canvas.js"></script>
+  <script src="/frontend/static/js/hoverable-collapse.js"></script>
+  <script src="/frontend/static/js/template.js"></script>
+  <script src="/frontend/static/js/todolist.js"></script>
   <!-- endinject -->
-  <!-- Custom js for this page-->
-  <script src="/frontend/static/templates/js/dashboard.js" defer> </script>
-  <!-- End custom js for this page-->
-  {{end}}
+  {{block "js" .}}
 
+  {{end}}
 </body>
 
 </html>
+{{end}}

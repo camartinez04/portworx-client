@@ -1,0 +1,101 @@
+{{template "base" .}}
+
+  {{ define "content" }}
+
+    {{$newVolume := index .Data "create-volume"}}
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Create a Portworx Volume</h4>
+                  <p class="card-description"> Customize your new Portworx volume.</p>
+                  <form method="post" action="create-volume" class="forms-sample" novalidate>
+                      <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                      <div class="form-group">
+                        <label>Volume Name (no spaces)</label>
+                        {{with .Form.Errors.Get "volume_name"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input name="volume_name" type="text" class="form-control" id="volume_name" placeholder="portworx-volume" value="{{$newVolume.VolumeName}}" aria-label="volume_name">
+                      </div>
+                      <div class="form-group">
+                        <label>Volume Size (in GB)</label>
+                        {{with .Form.Errors.Get "volume_size"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input name="volume_size" type="number" class="form-control" id="volume_size" value="{{$newVolume.VolumeSize}}" placeholder="10" aria-label="volume_size">
+                      </div>
+                      <div class="form-group">
+                        <label for="ioprofile">IO Profile</label>
+                        {{with .Form.Errors.Get "volume_io_profile"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <select name="volume_io_profile" class="form-control" id="volume_io_profile" value="{{$newVolume.VolumeIOProfile}}">
+                          <option>auto</option>
+                          <option>db_remote</option>
+                          <option>db</option>
+                          <option>sequential</option>
+                          <option>sync_shared</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="halevel">HA Level</label>
+                        {{with .Form.Errors.Get "volume_ha_level"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <select name="volume_ha_level" class="form-control" id="volume_ha_level" type="number" value="{{$newVolume.VolumeHALevel}}">
+                          <option>3</option>
+                          <option>2</option>
+                          <option>1</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="encryption">Encryption Enabled</label>
+                        {{with .Form.Errors.Get "volume_encrypted"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <select name="volume_encrypted" class="form-control" type="checkbox" id="volume_encrypted" value="{{$newVolume.VolumeEncrypted}}" checked>
+                          <option>false</option>
+                          <option>true</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="sharedv4">Sharedv4 Enabled</label>
+                        {{with .Form.Errors.Get "volume_sharedv4"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <select name="volume_sharedv4" class="form-control" type="checkbox" id="volume_sharedv4" value="{{$newVolume.VolumeSharedv4}}" checked>
+                          <option>false</option>
+                          <option>true</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label for="no_discard">Volume Nodiscard</label>
+                        {{with .Form.Errors.Get "volume_no_discard"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <select name="volume_no_discard" class="form-control" type="checkbox" id="volume_no_discard" value="{{$newVolume.VolumeNoDiscard}}" checked>
+                          <option>true</option>
+                          <option>false</option>
+                        </select>
+                      </div>
+                    <button type="submit" class="btn btn-primary me-2">Submit</button>
+                    <button class="btn btn-light">Cancel</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div>
+
+  {{ end }}
+
+  {{ define "js" }}
+
+  {{ end }}

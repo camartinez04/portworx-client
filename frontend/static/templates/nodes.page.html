@@ -1,0 +1,136 @@
+{{ template "base" . }}
+
+  {{ define "content" }}
+
+    {{ $AllNodesInfo := .JsonAllNodesInfo.AllNodesInfo }}
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Nodes</h4>
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>
+                            Node ID
+                          </th>
+                          <th>
+                            Scheduler Name
+                          </th>
+                          <th>
+                            Node Status
+                          </th>
+                          <th>
+                            Storage available on node
+                          </th>
+                          <th>
+                            Storage used
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {{ range $index, $node := $AllNodesInfo }}
+                        <tr>
+                          <td>
+                            <a href="node/{{ $node.NodeID }}">{{ $node.NodeID }} </a>
+                          </td>
+                          <td>
+                            {{ $node.NodeName }}
+                          </td>
+                          <td class="check-node" title="{{$node.NodeStatus}}">
+
+                            <div id="check-node-{{$index}}"> </div>
+
+                          </td>
+                          <td>
+
+                            {{ if ne $node.SizeNodePool 0 }}
+
+                              {{  $node.SizeNodePool  }} MB
+                              
+                            {{ else }}
+
+                              Storageless Node
+
+                            {{ end }}
+                          </td>
+                          <td>
+                              {{ if eq $node.SizeNodePool 0 }}
+
+                              {{ else }}
+                              <div class="progress">
+
+                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ $node.PercentUsedPool }}%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                              
+                              </div>
+
+                              {{ end }}
+
+                          </td>
+                        </tr>
+                        {{ end }}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  {{ end }}
+
+  {{ define "js" }}
+
+  <script >
+
+    var elements = document.getElementsByClassName("check-node");
+
+    for (var i = 0; i < elements.length; i++) {
+
+      if(elements.item(i).title == "STATUS_OK") {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node Up";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-success btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+
+        console.log("Node Up");
+
+      } else if (elements.item(i).value == "STATUS_STORAGE_DOWN" || elements.item(i).value == "STATUS_ERROR" || elements.item(i).value == "STATUS_DECOMMISSION" || elements.item(i).value == "STATUS_OFFLINE"  || elements.item(i).value == "STATUS_NONE") {
+        
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node Down";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+
+        console.log("Node Down");
+
+      } else {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node Warning";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-warning btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+
+        console.log("Node Warning");
+
+      } 
+    }
+
+  </script>
+
+  <!-- Custom js for this page-->
+  <script src="/frontend/static/templates/js/dashboard.js"> </script>
+  <!-- End custom js for this page-->
+  {{ end }}
