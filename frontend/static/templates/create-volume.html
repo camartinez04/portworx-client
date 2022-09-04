@@ -113,43 +113,52 @@
                                     </p>
                                     <form class="forms-sample">
                                         <div class="form-group">
-                                            <label>Large input</label>
-                                            <input type="text" class="form-control form-control-lg"
-                                                placeholder="Username" aria-label="Username">
+                                            <label>Volume Name</label>
+                                            <input type="text" class="form-control form-control"
+                                                placeholder="Volume Name" aria-label="Volume Name">
                                         </div>
                                         <div class="form-group">
-                                            <label>Default input</label>
-                                            <input type="text" class="form-control" placeholder="Username"
-                                                aria-label="Username">
+                                            <label>Volume Size</label>
+                                            <input type="text" class="form-control" placeholder="Volume Size"
+                                                aria-label="Volume Size">
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleFormControlSelect1">Large select</label>
-                                            <select class="form-control form-control-lg" id="exampleFormControlSelect1">
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                            <label for="ioprofile">IO Profile</label>
+                                            <select class="form-control" id="ioprofile">
+                                                <option>db_remote</option>
+                                                <option>auto</option>
+                                                <option>db</option>
+                                                <option>sequential</option>
+                                                <option>sync_shared</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleFormControlSelect2">Default select</label>
-                                            <select class="form-control" id="exampleFormControlSelect2">
-                                                <option>1</option>
-                                                <option>2</option>
+                                            <label for="halevel">HA Level</label>
+                                            <select class="form-control" id="halevel">
                                                 <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                                <option>2</option>
+                                                <option>1</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleFormControlSelect3">Small select</label>
-                                            <select class="form-control form-control-sm" id="exampleFormControlSelect3">
-                                                <option>1</option>
-                                                <option>2</option>
-                                                <option>3</option>
-                                                <option>4</option>
-                                                <option>5</option>
+                                            <label for="encryption">Encryption Enabled</label>
+                                            <select class="form-control" id="encryption">
+                                                <option>false</option>
+                                                <option>true</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="encryption">Sharedv4 Enabled</label>
+                                            <select class="form-control" id="encryption">
+                                                <option>false</option>
+                                                <option>true</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="encryption">Volume Nodiscard</label>
+                                            <select class="form-control" id="encryption">
+                                                <option>false</option>
+                                                <option>true</option>
                                             </select>
                                         </div>
                                         <button type="submit" class="btn btn-primary me-2">Submit</button>
