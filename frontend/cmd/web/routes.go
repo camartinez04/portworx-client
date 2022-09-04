@@ -45,11 +45,11 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Post("/create-volume", Repo.PostCreateVolume)
 
+		mux.Get("/documentation", Repo.Documentation)
+
 		fileServer := http.FileServer(http.Dir("./static/"))
 
 		mux.Handle("/static/*", http.StripPrefix("/frontend/static", fileServer))
-
-		mux.Get("/documentation/documentation", Repo.Documentation)
 
 	})
 
