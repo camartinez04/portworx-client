@@ -49,17 +49,35 @@ func GetVolumeID(conn *grpc.ClientConn, volumeName string) (volumeID string, err
 }
 
 // createVolume Creates a new Portworx volume, if Sharedv4 enabled, sets to service ClusterIP by default.
-func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64, volumeHALevel int64, encryptionEnabled bool, sharedv4Enabled bool, noDiscard bool) error {
+func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64, volumeIOProfile string, volumeHALevel int64, encryptionEnabled bool, sharedv4Enabled bool, noDiscard bool) (volumeID string, newError error) {
 
 	// Opens the volume client connection.
 	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// default volume IO profile to auto
+	intIOProfile := api.IoProfile_IO_PROFILE_AUTO
 
 	// Verifies if the volume already exists. If it does, returns an error.
 	_, err := GetVolumeID(conn, volumeName)
 	if err == nil {
 		newError := fmt.Sprintf("a volume called \"%s\" already exists! volume will not be created", volumeName)
 		fmt.Println(newError)
-		return errors.New(newError)
+		return errors.New(newError), nil
+
+	if volumeIOProfile == "db_remote" {
+		intIOProfile = api.IoProfile_IO_PROFILE_DB_REMOTE
+	}
+
+	if volumeIOProfile == "db" {
+		intIOProfile = api.IoProfile_IO_PROFILE_DB
+	}
+
+	if volumeIOProfile == "sequential" {
+		intIOProfile = api.IoProfile_IO_PROFILE_SEQUENTIAL
+	}
+
+	if volumeIOProfile == "sync_shared" {
+		intIOProfile = api.IoProfile_IO_PROFILE_SYNC_SHARED
 	}
 
 	// Creates the volume.
@@ -70,7 +88,7 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 			Spec: &api.VolumeSpec{
 				Size:      volumeGBSize * 1024 * 1024 * 1024,
 				HaLevel:   volumeHALevel,
-				IoProfile: api.IoProfile_IO_PROFILE_DB_REMOTE,
+				IoProfile: intIOProfile,
 				Cos:       api.CosType_HIGH,
 				Format:    api.FSType_FS_TYPE_EXT4,
 				Encrypted: encryptionEnabled,
@@ -89,13 +107,15 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 		gerr, _ := status.FromError(err)
 		newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
 		fmt.Println(newError)
-		return errors.New(newError)
+		return errors.New(newError), nil
 	}
+
+	newVolumeID := volume.GetVolumeId()
 
 	fmt.Printf("Volume %s of %dGi created with id %s\n", volumeName, volumeGBSize, volume.GetVolumeId())
 	fmt.Println()
 
-	return nil
+	return newVolumeID, nil
 }
 
 // inspectVolume generates a json string with Volume information equivalent of pxctl volume inspect <volume> --json

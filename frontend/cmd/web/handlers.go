@@ -363,10 +363,7 @@ func (m *Repository) StoragePoolsInformation(w http.ResponseWriter, r *http.Requ
 
 func (m *Repository) GetCreateVolume(w http.ResponseWriter, r *http.Request) {
 
-	res, ok := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)
-	if !ok {
-		fmt.Println("can't get create-volume from session")
-	}
+	res, _ := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)
 
 	m.App.Session.Put(r.Context(), "create-volume", res)
 
@@ -399,7 +396,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	volumeHALevel, err := strconv.ParseUint(r.Form.Get("volume_ha_level"), 10, 32)
+	volumeHALevel, err := strconv.ParseInt(r.Form.Get("volume_ha_level"), 10, 64)
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		fmt.Println("invalid volume ha level!")
@@ -443,8 +440,68 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("successfully created the struct createVolume!")
 
+	fmt.Printf("Post to send: %v", createVolume)
+
 	m.App.Session.Put(r.Context(), "create-volume", createVolume)
 
-	http.Redirect(w, r, "/frontend/new-volume-summary", http.StatusSeeOther)
+	volumeIDResp, err := createNewVolume(createVolume)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't create volume!")
+		fmt.Println("can't create volume!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	fmt.Println("successfully created the volume!")
+
+	result := "/frontend/volume/" + volumeIDResp
+
+	http.Redirect(w, r, result, http.StatusAccepted)
+
+}
+
+func createNewVolume(createVolume CreateVolume) (volumeID string, errorFound error) {
+
+	url := brokerURL + "/postcreatevolume"
+
+	method := "POST"
+
+	volResponse := CreateVolumeResponse{}
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	req.Header.Add("Volume-Name", createVolume.VolumeName)
+	req.Header.Add("Volume-Size", strconv.FormatUint(createVolume.VolumeSize, 10))
+	req.Header.Add("Volume-Ha-Level", strconv.FormatInt(createVolume.VolumeHALevel, 10))
+	req.Header.Add("Volume-Encryption-Enabled", strconv.FormatBool(createVolume.VolumeEncrypted))
+	req.Header.Add("Volume-Sharedv4-Enabled", strconv.FormatBool(createVolume.VolumeSharedv4))
+	req.Header.Add("Volume-No-Discard", strconv.FormatBool(createVolume.VolumeNoDiscard))
+	req.Header.Add("Volume-IO-Profile", createVolume.VolumeIOProfile)
+
+	res, err := client.Do(req)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(string(body))
+
+	json.Unmarshal(body, &volResponse)
+
+	volumeID = volResponse.VolumeID
+
+	return volumeID, nil
 
 }

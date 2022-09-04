@@ -101,6 +101,8 @@ func (app *AppConfig) postCreateNewVolumeHTTP(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	volumeIOProfile := r.Header.Get("Volume-IO-Profile")
+
 	volumeHALevel, err := strconv.ParseInt((r.Header.Get("Volume-Ha-Level")), 10, 64)
 	if err != nil {
 		app.errorJSON(w, err)
@@ -125,15 +127,16 @@ func (app *AppConfig) postCreateNewVolumeHTTP(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err = volumes.CreateVolume(app.Conn, volumeName, volumeGBSize, volumeHALevel, encryptionEnabled, sharedv4Enabled, noDiscard)
+	newVolumeID, err := volumes.CreateVolume(app.Conn, volumeName, volumeGBSize, volumeIOProfile, volumeHALevel, encryptionEnabled, sharedv4Enabled, noDiscard)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
 	resp := JsonResponse{
-		Error:   false,
-		Message: "Volume created successfully",
+		Error:    false,
+		Message:  "Volume created successfully",
+		volumeID: newVolumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)

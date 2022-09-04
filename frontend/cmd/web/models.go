@@ -215,8 +215,14 @@ type CreateVolume struct {
 	VolumeName      string `json:"volume_name,omitempty"`
 	VolumeSize      uint64 `json:"volume_size,omitempty"`
 	VolumeIOProfile string `json:"volume_io_profile,omitempty"`
-	VolumeHALevel   uint64 `json:"volume_ha_level,omitempty"`
+	VolumeHALevel   int64  `json:"volume_ha_level,omitempty"`
 	VolumeEncrypted bool   `json:"volume_encrypted,omitempty"`
 	VolumeSharedv4  bool   `json:"volume_sharedv4,omitempty"`
 	VolumeNoDiscard bool   `json:"volume_no_discard,omitempty"`
+}
+
+type CreateVolumeResponse struct {
+	Error    bool   `json:"error,omitempty"`
+	Message  string `json:"message,omitempty"`
+	VolumeID string `json:"volume_id,omitempty"`
 }
