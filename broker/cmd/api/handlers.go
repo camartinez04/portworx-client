@@ -136,7 +136,7 @@ func (app *AppConfig) postCreateNewVolumeHTTP(w http.ResponseWriter, r *http.Req
 	resp := JsonResponse{
 		Error:    false,
 		Message:  "Volume created successfully",
-		volumeID: newVolumeID,
+		VolumeID: newVolumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)

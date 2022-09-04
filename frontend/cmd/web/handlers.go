@@ -456,7 +456,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	result := "/frontend/volume/" + volumeIDResp
 
-	http.Redirect(w, r, result, http.StatusAccepted)
+	http.Redirect(w, r, result, http.StatusTemporaryRedirect)
 
 }
 
@@ -501,6 +501,8 @@ func createNewVolume(createVolume CreateVolume) (volumeID string, errorFound err
 	json.Unmarshal(body, &volResponse)
 
 	volumeID = volResponse.VolumeID
+
+	method = "GET"
 
 	return volumeID, nil
 

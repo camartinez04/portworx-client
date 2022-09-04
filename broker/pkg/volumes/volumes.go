@@ -49,7 +49,7 @@ func GetVolumeID(conn *grpc.ClientConn, volumeName string) (volumeID string, err
 }
 
 // createVolume Creates a new Portworx volume, if Sharedv4 enabled, sets to service ClusterIP by default.
-func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64, volumeIOProfile string, volumeHALevel int64, encryptionEnabled bool, sharedv4Enabled bool, noDiscard bool) (volumeID string, newError error) {
+func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64, volumeIOProfile string, volumeHALevel int64, encryptionEnabled bool, sharedv4Enabled bool, noDiscard bool) (string, error) {
 
 	// Opens the volume client connection.
 	volumes := api.NewOpenStorageVolumeClient(conn)
@@ -62,7 +62,9 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 	if err == nil {
 		newError := fmt.Sprintf("a volume called \"%s\" already exists! volume will not be created", volumeName)
 		fmt.Println(newError)
-		return errors.New(newError), nil
+		return "", errors.New(newError)
+
+	}
 
 	if volumeIOProfile == "db_remote" {
 		intIOProfile = api.IoProfile_IO_PROFILE_DB_REMOTE
@@ -107,7 +109,7 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 		gerr, _ := status.FromError(err)
 		newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
 		fmt.Println(newError)
-		return errors.New(newError), nil
+		return "", errors.New(newError)
 	}
 
 	newVolumeID := volume.GetVolumeId()

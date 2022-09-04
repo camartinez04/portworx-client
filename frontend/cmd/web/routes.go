@@ -25,7 +25,9 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/volumes", Repo.Volumes)
 
-		mux.Get("/volume/{volume_name}", Repo.VolumeInformation)
+		mux.Get("/volume/{volume_id}", Repo.VolumeInformation)
+
+		mux.Post("/volume/{volume_id}", Repo.VolumeInformation)
 
 		mux.Get("/nodes", Repo.Nodes)
 
