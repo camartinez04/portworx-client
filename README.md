@@ -4,7 +4,7 @@ A Portworx Client with Go
 - Built in Go version 1.19
 - Uses [libopenstorage](https://github.com/libopenstorage/openstorage-sdk-clients)
 - Uses [gRPC](https://pkg.go.dev/google.golang.org/grpc) to consume the Portworx API
-- Uses [alex edwards](github.com/alexedwards/scs/v2) SCS session manager
+- Uses [alex edwards](https://github.com/alexedwards/scs) SCS session manager
 - Uses [chi router](https://github.com/go-chi/chi) to serve the pages
 - Uses [nosurf](https://github.com/justinas/nosurf) for middleware operations
 
