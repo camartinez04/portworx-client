@@ -1,0 +1,6 @@
+* linguist-vendored
+*.go linguist-vendored=false
+*.js linguist-vendored=false
+*.dockerfile linguist-vendored=false
+*.yaml linguist-vendored=false
+Makefile linguist-vendored=false
