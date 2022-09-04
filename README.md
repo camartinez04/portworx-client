@@ -52,8 +52,21 @@ kubectl port-forward svc/portworx-api -n kube-system 9020:9020
 
 export PORTWORX_GRPC_URL=localhost:9020
 
+go run cmd/api/*.go
 
-./broker/brokerApp
 ```
 
 Open a Web Brower and try the routes included on broker/cmd/api/routes.go
+
+# Test the Frontend on Development mode
+
+You need the broker on your laptop or a valid endpoint where your broker is already running.
+
+```
+export BROKER_URL=http://localhost:8080
+
+cd portworx-client/frontend
+
+go run cmd/web/*.go
+
+```
