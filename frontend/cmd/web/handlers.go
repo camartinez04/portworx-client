@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -364,9 +365,7 @@ func (m *Repository) GetCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	res, ok := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)
 	if !ok {
-		m.App.Session.Put(r.Context(), "error", "can't get volume create from session")
-		http.Redirect(w, r, "/frontend", http.StatusSeeOther)
-		return
+		fmt.Println("can't get create-volume from session")
 	}
 
 	m.App.Session.Put(r.Context(), "create-volume", res)
@@ -383,5 +382,69 @@ func (m *Repository) GetCreateVolume(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't parse form!")
+		fmt.Println("can't parse form!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	volumeSize, err := strconv.ParseUint(r.Form.Get("volume_size"), 10, 64)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "invalid data!")
+		fmt.Println("invalid volume size!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	volumeHALevel, err := strconv.ParseUint(r.Form.Get("volume_ha_level"), 10, 32)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "invalid data!")
+		fmt.Println("invalid volume ha level!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	volumeEncrypted, err := strconv.ParseBool(r.Form.Get("volume_encrypted"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "invalid data!")
+		fmt.Println("invalid volume encrypted value!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	volumeSharedv4, err := strconv.ParseBool(r.Form.Get("volume_sharedv4"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "invalid data!")
+		fmt.Println("invalid volume sharedv4 value!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	volumeNodiscard, err := strconv.ParseBool(r.Form.Get("volume_no_discard"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "invalid data!")
+		fmt.Println("invalid volume nodiscard value!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	createVolume := CreateVolume{
+		VolumeName:      r.FormValue("volume_name"),
+		VolumeSize:      volumeSize,
+		VolumeIOProfile: r.FormValue("volume_io_profile"),
+		VolumeHALevel:   volumeHALevel,
+		VolumeEncrypted: volumeEncrypted,
+		VolumeSharedv4:  volumeSharedv4,
+		VolumeNoDiscard: volumeNodiscard,
+	}
+
+	fmt.Println("successfully created the struct createVolume!")
+
+	m.App.Session.Put(r.Context(), "create-volume", createVolume)
+
+	http.Redirect(w, r, "/frontend/new-volume-summary", http.StatusSeeOther)
 
 }
