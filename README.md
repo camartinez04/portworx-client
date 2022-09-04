@@ -14,6 +14,10 @@ The Broker service consumes the Portworx API on gRPC and serves a customized API
 
 [api documentation](https://documenter.getpostman.com/view/17794050/VUqpsxJW)
 
+# Frontend view
+
+![Portworx Client, node view](./images/node-view.png)
+
 # Docker Compose way for developing
 
 You need Docker running on your laptop and docker-compose installed as well in advance.
