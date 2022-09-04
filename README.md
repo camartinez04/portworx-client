@@ -1,19 +1,22 @@
-# portworx-client
+# portworx-client Web UI
 A Portworx Client with Go
 
 - Built in Go version 1.19
 - Uses [libopenstorage](https://github.com/libopenstorage/openstorage-sdk-clients)
-- Uses [gRPC](https://pkg.go.dev/google.golang.org/grpc)
-- Uses [chi router](https://github.com/go-chi/chi)
-- Uses [nosurf](https://github.com/justinas/nosurf)
+- Uses [gRPC](https://pkg.go.dev/google.golang.org/grpc) to consume the Portworx API
+- Uses [alex edwards](github.com/alexedwards/scs/v2) SCS session manager
+- Uses [chi router](https://github.com/go-chi/chi) to serve the pages
+- Uses [nosurf](https://github.com/justinas/nosurf) for middleware operations
 
 # API Reference
+
+The Broker service consumes the Portworx API on gRPC and serves a customized API Rest which reference can be found here:
 
 [api documentation](https://documenter.getpostman.com/view/17794050/VUqpsxJW)
 
 # Docker Compose way for developing
 
-Have Docker running on your laptop and docker-compose installed as well.
+You need Docker running on your laptop and docker-compose installed as well in advance.
 
 ```
 cd project
@@ -41,9 +44,9 @@ Check on the frontend that the mock volume was created:
 
 [http://localhost:8081/frontend/volume/postman-volume](http://localhost:8081/frontend/volume/postman-volume) 
 
-# Test the Broker on Kubernetes
+# Test the Broker on Kubernetes (testing with a real Portworx cluster)
 
-You need Portworx running on your Kubernetes cluster
+You need Portworx running on your Kubernetes cluster.
 
 Forward the portworx-api service that usually will be located on kube-system namespace.
 
@@ -70,3 +73,7 @@ cd portworx-client/frontend
 go run cmd/web/*.go
 
 ```
+
+Open a browser and navigate into:
+
+[http://localhost:8081/frontend/cluster](http://localhost:8081/frontend/cluster) 
