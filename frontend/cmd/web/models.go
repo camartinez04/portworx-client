@@ -211,6 +211,7 @@ type VolumeInfo struct {
 	VolumeIOStrategy          *api.IoStrategy          `json:"volume_io_strategy,omitempty"`
 }
 
+// CreateVolume struct to store the volume creation information.
 type CreateVolume struct {
 	VolumeName      string `json:"volume_name,omitempty"`
 	VolumeSize      uint64 `json:"volume_size,omitempty"`
@@ -221,6 +222,7 @@ type CreateVolume struct {
 	VolumeNoDiscard bool   `json:"volume_no_discard,omitempty"`
 }
 
+// CreateVolumeResponse struct to store the volume creation response.
 type CreateVolumeResponse struct {
 	Error    bool   `json:"error,omitempty"`
 	Message  string `json:"message,omitempty"`

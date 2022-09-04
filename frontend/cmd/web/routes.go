@@ -7,11 +7,8 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+// routes sets up the routing for the application.
 func routes(app *AppConfig) http.Handler {
-
-	//mux := pat.New()
-	//mux.Get("/hello-world", http.HandlerFunc(handlers.Repo.Home))
-	//mux.Get("/about", http.HandlerFunc(handlers.Repo.About))
 
 	mux := chi.NewRouter()
 
@@ -20,6 +17,8 @@ func routes(app *AppConfig) http.Handler {
 	mux.Use(SessionLoad)
 
 	mux.Route("/frontend", func(mux chi.Router) {
+
+		mux.Use(middleware.Heartbeat("/ping"))
 
 		mux.Get("/cluster", Repo.Cluster)
 
