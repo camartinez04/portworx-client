@@ -16,9 +16,9 @@ func routes(app *AppConfig) http.Handler {
 	mux.Use(NoSurf)
 	mux.Use(SessionLoad)
 
-	mux.Route("/frontend", func(mux chi.Router) {
+	mux.Use(middleware.Heartbeat("/ping"))
 
-		mux.Use(middleware.Heartbeat("/ping"))
+	mux.Route("/frontend", func(mux chi.Router) {
 
 		mux.Get("/cluster", Repo.Cluster)
 
