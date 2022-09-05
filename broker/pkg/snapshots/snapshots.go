@@ -3,7 +3,6 @@ package snapshots
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -30,19 +29,19 @@ func createSnapshot(conn *grpc.ClientConn, volumeName string) {
 		context.Background(),
 		&api.SdkVolumeSnapshotCreateRequest{
 			VolumeId: volumeID,
-			Name:     fmt.Sprintf("snap-%v", time.Now().Unix()),
+			Name:     log.Sprintf("snap-%v", time.Now().Unix()),
 		},
 	)
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		os.Exit(1)
 	}
-	fmt.Printf("Snapshot with id %s was create for volume %s\n",
+	log.Printf("Snapshot with id %s was create for volume %s\n",
 		snap.GetSnapshotId(),
 		volumeID)
-	fmt.Println()
+	log.Println()
 
 }
 
@@ -64,11 +63,11 @@ func createCloudSnap(conn *grpc.ClientConn, volumeName string) {
 		})
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		os.Exit(1)
 	}
-	fmt.Printf("Backup started for volume %s with task id %s\n",
+	log.Printf("Backup started for volume %s with task id %s\n",
 		volumeID,
 		backupCreateResp.GetTaskId())
 
@@ -91,7 +90,7 @@ func statusCloudSnap(conn *grpc.ClientConn, volumeName string) {
 		})
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		os.Exit(1)
 	}
@@ -99,7 +98,7 @@ func statusCloudSnap(conn *grpc.ClientConn, volumeName string) {
 		// There will be only one value in the map, but we use
 		// a for-loop as an example.
 		b, _ := json.MarshalIndent(status, "", "  ")
-		fmt.Printf("Backup status for taskId: %s\n"+
+		log.Printf("Backup status for taskId: %s\n"+
 			"Volume: %s\n"+
 			"Type: %s\n"+
 			"Status: %s\n"+
@@ -110,7 +109,7 @@ func statusCloudSnap(conn *grpc.ClientConn, volumeName string) {
 			status.GetStatus().String(),
 			string(b))
 	}
-	fmt.Println()
+	log.Println()
 
 }
 
@@ -131,21 +130,21 @@ func cloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 		})
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		os.Exit(1)
 	}
 
-	fmt.Printf("Backup history for volume %s:\n", volumeID)
+	log.Printf("Backup history for volume %s:\n", volumeID)
 	for _, history := range historyResp.GetHistoryList() {
 
 		timestamp, _ := ptypes.Timestamp(history.GetTimestamp())
-		fmt.Printf("Volume:%s \tttime:%v \tstatus:%v\n",
+		log.Printf("Volume:%s \tttime:%v \tstatus:%v\n",
 			history.GetSrcVolumeId(),
 			timestamp,
 			history.GetStatus())
 	}
-	fmt.Println()
+	log.Println()
 }
 
 // createCloudCredentials creates a new cloud credential for the given provider
@@ -170,11 +169,11 @@ func createS3CloudCredentials(conn *grpc.ClientConn, credName string, bucketName
 		})
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		os.Exit(1)
 	}
 	credID := credResponse.GetCredentialId()
-	fmt.Printf("Credential named %s created with id %s\n", credName, credID)
-	fmt.Println()
+	log.Printf("Credential named %s created with id %s\n", credName, credID)
+	log.Println()
 }

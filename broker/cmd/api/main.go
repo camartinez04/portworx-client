@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/x509"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -63,7 +62,7 @@ func main() {
 	log.Printf("Connected to Portworx's OpenStorage via gRPC to %s", *address)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%s", webPort),
+		Addr:    webPort,
 		Handler: app.routes(),
 	}
 

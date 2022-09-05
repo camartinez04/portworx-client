@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -41,7 +41,7 @@ func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 
 	volumesInfo, err := GetAllVolumesInfo()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	//fmt.Printf("volumesInfo: %v", volumesInfo.AllVolumesInfo[0].VolumeName)
@@ -61,7 +61,7 @@ func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 
 	volumeInfoResponse, err := VolumeInfofromID(volumeID)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	//fmt.Printf("volumeInfo: %v", volumeInfoResponse.VolumeInfo.VolumeSizeMB)
@@ -77,7 +77,7 @@ func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
 
 	nodesInfo, err := GetAllNodesInfo()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	//fmt.Printf("nodesInfo: %v", nodesInfo.AllNodesInfo[0].NodeName)
@@ -98,7 +98,7 @@ func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
 
 	nodeInfoResponse, replicaPerNodeResponse, err := NodeInfoFromID(nodeID)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	//fmt.Printf("nodeInfoResponse: %v", nodeInfoResponse.NodeInfo.NodeName)

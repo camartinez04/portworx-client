@@ -2,8 +2,8 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -18,22 +18,22 @@ func GetAllVolumesInfo() (JsonAllVolumesInfo AllVolumesInfoResponse, errorFound 
 	req, errorFound := http.NewRequest(method, url, nil)
 
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	res, errorFound := client.Do(req)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	defer res.Body.Close()
 
 	body, errorFound := ioutil.ReadAll(res.Body)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 
 	json.Unmarshal(body, &JsonAllVolumesInfo)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 
 	return JsonAllVolumesInfo, nil
@@ -50,17 +50,17 @@ func VolumeInfofromID(volumeID string) (jsonVolumeInfo VolumeInfoResponse, error
 	req, errorFound := http.NewRequest(method, url, nil)
 
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	res, errorFound := client.Do(req)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	defer res.Body.Close()
 
 	body, errorFound := ioutil.ReadAll(res.Body)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 
 	json.Unmarshal(body, &jsonVolumeInfo)
@@ -82,17 +82,17 @@ func InspectVolume(volumeName string) JsonVolumeInspect {
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	json.Unmarshal(body, &jsonVolume)
@@ -114,17 +114,17 @@ func UsageVolume(volumeName string) JsonUsageVolume {
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	json.Unmarshal(body, &jsonUsage)
@@ -143,22 +143,22 @@ func GetAllNodesInfo() (JsonAllNodesInfo AllNodesInfoResponse, errorFound error)
 	req, errorFound := http.NewRequest(method, url, nil)
 
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	res, errorFound := client.Do(req)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	defer res.Body.Close()
 
 	body, errorFound := ioutil.ReadAll(res.Body)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 
 	json.Unmarshal(body, &JsonAllNodesInfo)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 
 	return JsonAllNodesInfo, nil
@@ -175,17 +175,17 @@ func ListOfNodes() (JsonListOfNodes any) {
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	json.Unmarshal(body, &JsonListOfNodes)
@@ -204,17 +204,17 @@ func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPe
 	req, errorFound := http.NewRequest(method, url, nil)
 
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	res, errorFound := client.Do(req)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	defer res.Body.Close()
 
 	body, errorFound := ioutil.ReadAll(res.Body)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 
 	json.Unmarshal(body, &jsonNodeInfo)
@@ -225,17 +225,17 @@ func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPe
 	req, errorFound = http.NewRequest(method, url, nil)
 
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	res, errorFound = client.Do(req)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 	defer res.Body.Close()
 
 	body, errorFound = ioutil.ReadAll(res.Body)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 	}
 
 	json.Unmarshal(body, &jsonReplicaPerNode)
@@ -250,7 +250,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't parse form!")
-		fmt.Println("can't parse form!")
+		log.Println("can't parse form!")
 		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
 		return
 	}
@@ -258,7 +258,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	volumeSize, err := strconv.ParseUint(r.Form.Get("volume_size"), 10, 64)
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
-		fmt.Println("invalid volume size!")
+		log.Println("invalid volume size!")
 		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
 		return
 	}
@@ -266,7 +266,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	volumeHALevel, err := strconv.ParseInt(r.Form.Get("volume_ha_level"), 10, 64)
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
-		fmt.Println("invalid volume ha level!")
+		log.Println("invalid volume ha level!")
 		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
 		return
 	}
@@ -274,7 +274,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	volumeEncrypted, err := strconv.ParseBool(r.Form.Get("volume_encrypted"))
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
-		fmt.Println("invalid volume encrypted value!")
+		log.Println("invalid volume encrypted value!")
 		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
 		return
 	}
@@ -282,7 +282,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	volumeSharedv4, err := strconv.ParseBool(r.Form.Get("volume_sharedv4"))
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
-		fmt.Println("invalid volume sharedv4 value!")
+		log.Println("invalid volume sharedv4 value!")
 		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
 		return
 	}
@@ -290,7 +290,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	volumeNodiscard, err := strconv.ParseBool(r.Form.Get("volume_no_discard"))
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
-		fmt.Println("invalid volume nodiscard value!")
+		log.Println("invalid volume nodiscard value!")
 		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
 		return
 	}
@@ -305,23 +305,26 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 		VolumeNoDiscard: volumeNodiscard,
 	}
 
-	fmt.Println("successfully created the struct createVolume!")
+	log.Println("successfully created the struct createVolume!")
 
-	fmt.Printf("Post to send: %v", createVolume)
+	log.Printf("Post to send: %v", createVolume)
 
 	m.App.Session.Put(r.Context(), "create-volume", createVolume)
 
 	volumeIDResp, err := createNewVolume(createVolume)
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't create volume!")
-		fmt.Println("can't create volume!")
+		log.Println("can't create volume!")
 		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
 		return
 	}
 
-	fmt.Println("successfully created the volume!")
+	log.Println("successfully created the volume!")
 
 	result := "/frontend/volume/" + volumeIDResp
+
+	//remove the context when the volume is created
+	m.App.Session.Remove(r.Context(), "create-volume")
 
 	http.Redirect(w, r, result, http.StatusTemporaryRedirect)
 
@@ -340,7 +343,7 @@ func createNewVolume(createVolume CreateVolume) (volumeID string, errorFound err
 	req, err := http.NewRequest(method, url, nil)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -354,17 +357,17 @@ func createNewVolume(createVolume CreateVolume) (volumeID string, errorFound err
 
 	res, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
-	fmt.Println(string(body))
+	log.Println(string(body))
 
 	json.Unmarshal(body, &volResponse)
 

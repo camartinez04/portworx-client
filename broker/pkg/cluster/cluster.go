@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 
+	"log"
+
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -17,7 +19,7 @@ const (
 	GB    = MB * uint64(1024)
 )
 
-//clusterInfo prints the Portworx cluster information
+// clusterInfo prints the Portworx cluster information
 func ClusterInfo(conn *grpc.ClientConn) (string, error) {
 
 	// Create a cluster client
@@ -29,7 +31,7 @@ func ClusterInfo(conn *grpc.ClientConn) (string, error) {
 		&api.SdkClusterInspectCurrentRequest{})
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		os.Exit(1)
 	}
@@ -39,7 +41,7 @@ func ClusterInfo(conn *grpc.ClientConn) (string, error) {
 	return clusteruuid, nil
 }
 
-//clusterCapacity prints the Portworx cluster total capacity
+// clusterCapacity prints the Portworx cluster total capacity
 func ClusterCapacity(conn *grpc.ClientConn) (string, error) {
 
 	// --- Get Cluster capacity ---
@@ -50,7 +52,7 @@ func ClusterCapacity(conn *grpc.ClientConn) (string, error) {
 		&api.SdkNodeEnumerateRequest{})
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		os.Exit(1)
 	}
@@ -68,7 +70,7 @@ func ClusterCapacity(conn *grpc.ClientConn) (string, error) {
 		)
 		if err != nil {
 			gerr, _ := status.FromError(err)
-			fmt.Printf("Error Code[%d] Message[%s]\n",
+			log.Printf("Error Code[%d] Message[%s]\n",
 				gerr.Code(), gerr.Message())
 			os.Exit(1)
 		}

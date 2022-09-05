@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/justinas/nosurf"
@@ -9,7 +9,7 @@ import (
 
 func WriteToConsole(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Hit the page")
+		log.Println("Hit the page")
 		next.ServeHTTP(w, r)
 	})
 }

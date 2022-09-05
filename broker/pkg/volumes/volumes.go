@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	"github.com/camartinez04/portworx-client/broker/pkg/helpers"
@@ -26,7 +27,7 @@ func GetVolumeID(conn *grpc.ClientConn, volumeName string) (volumeID string, err
 		})
 	if err != nil {
 		errorFound = fmt.Errorf("volume id not found of %s", volumeName)
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return "", errorFound
 	}
 
@@ -36,11 +37,11 @@ func GetVolumeID(conn *grpc.ClientConn, volumeName string) (volumeID string, err
 		volumeID = volume.VolumeIds[0]
 	case len(volume.VolumeIds) == 0:
 		errorFound = fmt.Errorf("no volume found given \"%s\" as volume name", volumeName)
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return "", errorFound
 	case len(volume.VolumeIds) > 1:
 		errorFound = fmt.Errorf("more than one volume found given \"%s\" as volume name", volumeName)
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return "", errorFound
 	}
 
@@ -61,7 +62,7 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 	_, err := GetVolumeID(conn, volumeName)
 	if err == nil {
 		newError := fmt.Sprintf("a volume called \"%s\" already exists! volume will not be created", volumeName)
-		fmt.Println(newError)
+		log.Println(newError)
 		return "", errors.New(newError)
 
 	}
@@ -108,14 +109,14 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 	if err != nil {
 		gerr, _ := status.FromError(err)
 		newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
-		fmt.Println(newError)
+		log.Println(newError)
 		return "", errors.New(newError)
 	}
 
 	newVolumeID := volume.GetVolumeId()
 
-	fmt.Printf("Volume %s of %dGi created with id %s\n", volumeName, volumeGBSize, volume.GetVolumeId())
-	fmt.Println()
+	log.Printf("Volume %s of %dGi created with id %s\n", volumeName, volumeGBSize, volume.GetVolumeId())
+	log.Println()
 
 	return newVolumeID, nil
 }
@@ -126,7 +127,7 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 	// Retrieves the volume ID.
 	volId, errorFound := GetVolumeID(conn, volumeName)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return apiVolumeInspect, apiVolumeReplicas, volumeNodes, "", "", errorFound
 	}
 
@@ -141,7 +142,7 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 		},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return apiVolumeInspect, apiVolumeReplicas, volumeNodes, "", "", errorFound
 	}
 
@@ -169,7 +170,7 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 			},
 		)
 		if errorFound != nil {
-			fmt.Println(errorFound)
+			log.Println(errorFound)
 			return apiVolumeInspect, apiVolumeReplicas, volumeNodes, "", "", errorFound
 		}
 
@@ -190,7 +191,7 @@ func UpdateVolumeSize(conn *grpc.ClientConn, volumeName string, volSize uint64) 
 	// Retrieves the volume ID.
 	volId, err := GetVolumeID(conn, volumeName)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 
@@ -211,12 +212,12 @@ func UpdateVolumeSize(conn *grpc.ClientConn, volumeName string, volSize uint64) 
 	)
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		return err
 	}
 
-	fmt.Printf("Volume %s updated size to %dGi %s\n", volumeName, volSize, volumeUpdate.String())
+	log.Printf("Volume %s updated size to %dGi %s\n", volumeName, volSize, volumeUpdate.String())
 
 	return nil
 }
@@ -227,7 +228,7 @@ func UpdateVolumeHALevel(conn *grpc.ClientConn, volumeName string, haLevel int64
 	// Retrieves the volume ID.
 	volId, err := GetVolumeID(conn, volumeName)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return err
 	}
 
@@ -248,12 +249,12 @@ func UpdateVolumeHALevel(conn *grpc.ClientConn, volumeName string, haLevel int64
 	)
 	if err != nil {
 		gerr, _ := status.FromError(err)
-		fmt.Printf("Error Code[%d] Message[%s]\n",
+		log.Printf("Error Code[%d] Message[%s]\n",
 			gerr.Code(), gerr.Message())
 		return err
 	}
 
-	fmt.Printf("Volume %s updated HA Level to %d replicas %s\n", volumeName, haLevel, volumeUpdate.String())
+	log.Printf("Volume %s updated HA Level to %d replicas %s\n", volumeName, haLevel, volumeUpdate.String())
 
 	return nil
 }
@@ -264,7 +265,7 @@ func RetrieveVolumeUsage(conn *grpc.ClientConn, volumeName string) (volumeUsage,
 	// Retrieves the volume ID.
 	volId, errorFound := GetVolumeID(conn, volumeName)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return volumeUsage, availableSpace, totalSize, errorFound
 	}
 
@@ -279,7 +280,7 @@ func RetrieveVolumeUsage(conn *grpc.ClientConn, volumeName string) (volumeUsage,
 		},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return volumeUsage, availableSpace, totalSize, errorFound
 	}
 
@@ -305,7 +306,7 @@ func GetAllVolumes(conn *grpc.ClientConn) (volumeList []string, errorFound error
 		&api.SdkVolumeEnumerateRequest{},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return volumeList, errorFound
 	}
 
@@ -332,7 +333,7 @@ func GetAllVolumesComplete(conn *grpc.ClientConn) (volumesMap map[string]*api.Sd
 		&api.SdkVolumeEnumerateRequest{},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return volumesMap, errorFound
 	}
 
@@ -342,7 +343,7 @@ func GetAllVolumesComplete(conn *grpc.ClientConn) (volumesMap map[string]*api.Sd
 	for _, volume := range volumeList {
 		volInspect, errorFound := volumeInspectFromID(conn, volume)
 		if errorFound != nil {
-			fmt.Println(errorFound)
+			log.Println(errorFound)
 			return volumesMap, errorFound
 		}
 
@@ -367,7 +368,7 @@ func volumeInspectFromID(conn *grpc.ClientConn, volumeID string) (volumeInspect 
 		},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return volumeInspect, errorFound
 	}
 
@@ -388,7 +389,7 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 		},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return volumeInfo, errorFound
 	}
 
@@ -462,7 +463,7 @@ func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo []config.VolumeInf
 		context.Background(),
 		&api.SdkVolumeEnumerateRequest{})
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return AllVolumesInfo, errorFound
 	}
 
@@ -471,7 +472,7 @@ func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo []config.VolumeInf
 
 		volumeInfo, errorFound := GetVolumeInfo(conn, volID)
 		if errorFound != nil {
-			fmt.Println(errorFound)
+			log.Println(errorFound)
 			return AllVolumesInfo, errorFound
 		}
 

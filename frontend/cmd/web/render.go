@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 	"time"
@@ -52,7 +53,7 @@ func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateD
 
 	_, err := buf.WriteTo(w)
 	if err != nil {
-		fmt.Println("error writing template to browser", err)
+		log.Println("error writing template to browser", err)
 		return err
 	}
 

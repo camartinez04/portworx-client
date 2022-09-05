@@ -87,7 +87,7 @@ const (
 	KB      = Bytes * uint64(1024)
 	MB      = KB * uint64(1024)
 	GB      = MB * uint64(1024)
-	webPort = "8080"
+	webPort = ":8080"
 )
 
 var (

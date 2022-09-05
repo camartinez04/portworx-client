@@ -3,6 +3,7 @@ package nodes
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	"github.com/camartinez04/portworx-client/broker/pkg/helpers"
@@ -17,7 +18,7 @@ func FindVolumeNodes(conn *grpc.ClientConn, volumeName string) (volumeNodes []st
 	// Retrieves the volume ID.
 	volId, errorFound := volumes.GetVolumeID(conn, volumeName)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return nil, errorFound
 	}
 
@@ -32,7 +33,7 @@ func FindVolumeNodes(conn *grpc.ClientConn, volumeName string) (volumeNodes []st
 		},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return nil, errorFound
 	}
 
@@ -61,7 +62,7 @@ func FindVolumeNodes(conn *grpc.ClientConn, volumeName string) (volumeNodes []st
 					},
 				)
 				if errorFound != nil {
-					fmt.Println(errorFound)
+					log.Println(errorFound)
 					return nil, errorFound
 				}
 
@@ -90,7 +91,7 @@ func GetListOfNodes(conn *grpc.ClientConn) (nodeListReturn map[string][]string, 
 		context.Background(),
 		&api.SdkNodeEnumerateRequest{})
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return nil, errorFound
 	}
 
@@ -103,13 +104,13 @@ func GetListOfNodes(conn *grpc.ClientConn) (nodeListReturn map[string][]string, 
 			},
 		)
 		if errorFound != nil {
-			fmt.Println(errorFound)
+			log.Println(errorFound)
 			return nil, errorFound
 		}
 
 		nodeUsage, errorFound := GetNodeUsage(conn, nodeID)
 		if errorFound != nil {
-			fmt.Println(errorFound)
+			log.Println(errorFound)
 			return nil, errorFound
 		}
 
@@ -136,7 +137,7 @@ func GetNodeUsage(conn *grpc.ClientConn, nodeID string) (nodeUsage int, errorFou
 	)
 
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return 0, errorFound
 	}
 
@@ -155,8 +156,8 @@ func GetReplicasPerNode(conn *grpc.ClientConn, nodeID string) (volumeList map[st
 		context.Background(),
 		&api.SdkVolumeEnumerateRequest{})
 	if errorFound != nil {
-		fmt.Println("error enumerating volumes")
-		fmt.Println(errorFound)
+		log.Println("error enumerating volumes")
+		log.Println(errorFound)
 		return nil, errorFound
 	}
 
@@ -170,8 +171,8 @@ func GetReplicasPerNode(conn *grpc.ClientConn, nodeID string) (volumeList map[st
 			},
 		)
 		if errorFound != nil {
-			fmt.Println("error inspecting volume")
-			fmt.Println(errorFound)
+			log.Println("error inspecting volume")
+			log.Println(errorFound)
 			return nil, errorFound
 		}
 
@@ -186,8 +187,8 @@ func GetReplicasPerNode(conn *grpc.ClientConn, nodeID string) (volumeList map[st
 
 					volumeInfo, errorFound := volumes.GetVolumeInfo(conn, volumeReplica)
 					if errorFound != nil {
-						fmt.Println("error getting volume info")
-						fmt.Println(errorFound)
+						log.Println("error getting volume info")
+						log.Println(errorFound)
 						return nil, errorFound
 					}
 
@@ -209,12 +210,12 @@ func FormVolumeNodes(conn *grpc.ClientConn) {
 
 	nodeList, err := GetListOfNodes(conn)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	volumeIDList, err := volumes.GetAllVolumes(conn)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	replicasMap := make(map[string][]string)
@@ -230,7 +231,7 @@ func FormVolumeNodes(conn *grpc.ClientConn) {
 			},
 		)
 		if errorFound != nil {
-			fmt.Println(errorFound)
+			log.Println(errorFound)
 			return
 		}
 
@@ -240,9 +241,9 @@ func FormVolumeNodes(conn *grpc.ClientConn) {
 
 				replicasMap[volumeReplicaNode] = append(replicasMap[volumeReplicaNode], volumeID)
 
-				fmt.Println(replicasMap)
+				log.Println(replicasMap)
 
-				fmt.Println(nodeList)
+				log.Println(nodeList)
 			}
 
 		}
@@ -270,7 +271,7 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 		},
 	)
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return nodeInfo, errorFound
 	}
 
@@ -343,7 +344,7 @@ func GetAllNodesInfo(conn *grpc.ClientConn) (AllNodesInfo []config.NodeInfo, err
 		context.Background(),
 		&api.SdkNodeEnumerateRequest{})
 	if errorFound != nil {
-		fmt.Println(errorFound)
+		log.Println(errorFound)
 		return nil, errorFound
 	}
 
@@ -352,7 +353,7 @@ func GetAllNodesInfo(conn *grpc.ClientConn) (AllNodesInfo []config.NodeInfo, err
 
 		nodeInfo, errorFound := GetNodeInfo(conn, nodeID)
 		if errorFound != nil {
-			fmt.Println(errorFound)
+			log.Println(errorFound)
 			return nil, errorFound
 		}
 
