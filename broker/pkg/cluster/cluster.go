@@ -20,25 +20,26 @@ const (
 )
 
 // clusterInfo prints the Portworx cluster information
-func ClusterInfo(conn *grpc.ClientConn) (string, error) {
+func ClusterInfo(conn *grpc.ClientConn) (clusterUUID string, clusterStatus string, clusterName string, erroFound error) {
 
 	// Create a cluster client
 	cluster := api.NewOpenStorageClusterClient(conn)
 
 	// Print the cluster information
-	clusterInfo, err := cluster.InspectCurrent(
+	clusterInfo, erroFound := cluster.InspectCurrent(
 		context.Background(),
 		&api.SdkClusterInspectCurrentRequest{})
-	if err != nil {
-		gerr, _ := status.FromError(err)
-		log.Printf("Error Code[%d] Message[%s]\n",
-			gerr.Code(), gerr.Message())
-		os.Exit(1)
+	if erroFound != nil {
+		return "", "", "", erroFound
 	}
 
-	clusteruuid := clusterInfo.GetCluster().GetId()
+	clusterUUID = clusterInfo.GetCluster().GetId()
 
-	return clusteruuid, nil
+	clusterStatus = clusterInfo.GetCluster().GetStatus().String()
+
+	clusterName = clusterInfo.GetCluster().GetName()
+
+	return clusterUUID, clusterStatus, clusterName, nil
 }
 
 // clusterCapacity prints the Portworx cluster total capacity

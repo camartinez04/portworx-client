@@ -3,6 +3,7 @@ package snapshots
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -14,8 +15,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// createSnapshot creates a local snapshot of a volume
-func createSnapshot(conn *grpc.ClientConn, volumeName string) {
+// CreateSnapshot creates a local snapshot of a volume
+func CreateSnapshot(conn *grpc.ClientConn, volumeName string) {
 
 	volumenes := api.NewOpenStorageVolumeClient(conn)
 
@@ -29,7 +30,7 @@ func createSnapshot(conn *grpc.ClientConn, volumeName string) {
 		context.Background(),
 		&api.SdkVolumeSnapshotCreateRequest{
 			VolumeId: volumeID,
-			Name:     log.Sprintf("snap-%v", time.Now().Unix()),
+			Name:     fmt.Sprintf("snap-%v", time.Now().Unix()),
 		},
 	)
 	if err != nil {
@@ -45,8 +46,8 @@ func createSnapshot(conn *grpc.ClientConn, volumeName string) {
 
 }
 
-// createCloudSnap creates a cloud snapshot
-func createCloudSnap(conn *grpc.ClientConn, volumeName string) {
+// CreateCloudSnap creates a cloud snapshot
+func CreateCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 	volumeID, err := volumes.GetVolumeID(conn, volumeName)
 	if err != nil {
@@ -73,8 +74,8 @@ func createCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 }
 
-// statusCloudSnap gets the status of a cloud snapshot
-func statusCloudSnap(conn *grpc.ClientConn, volumeName string) {
+// StatusCloudSnap gets the status of a cloud snapshot
+func StatusCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 	volumeID, err := volumes.GetVolumeID(conn, volumeName)
 	if err != nil {
@@ -113,8 +114,8 @@ func statusCloudSnap(conn *grpc.ClientConn, volumeName string) {
 
 }
 
-// cloudSnapHistory gets the history of a cloud snapshot
-func cloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
+// CloudSnapHistory gets the history of a cloud snapshot
+func CloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 
 	volumeID, err := volumes.GetVolumeID(conn, volumeName)
 	if err != nil {
@@ -144,11 +145,10 @@ func cloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 			timestamp,
 			history.GetStatus())
 	}
-	log.Println()
 }
 
-// createCloudCredentials creates a new cloud credential for the given provider
-func createS3CloudCredentials(conn *grpc.ClientConn, credName string, bucketName string, accessKey string, secretKey string, endPoint string, region string, sslDisabled bool, iamPolicyEnabled bool) {
+// AWSCreateCloudCredentials creates a new cloud credential for the given provider
+func AWSCreateS3CloudCredential(conn *grpc.ClientConn, credName string, bucketName string, accessKey string, secretKey string, endPoint string, region string, sslDisabled bool, iamPolicyEnabled bool) {
 
 	creds := api.NewOpenStorageCredentialsClient(conn)
 	credResponse, err := creds.Create(
@@ -175,5 +175,72 @@ func createS3CloudCredentials(conn *grpc.ClientConn, credName string, bucketName
 	}
 	credID := credResponse.GetCredentialId()
 	log.Printf("Credential named %s created with id %s\n", credName, credID)
+}
+
+// AWSValidateS3CloudCredential validates the given cloud credential
+func AWSValidateS3CloudCredential(conn *grpc.ClientConn, credentialId string) error {
+
+	creds := api.NewOpenStorageCredentialsClient(conn)
+	credResponse, err := creds.Validate(
+		context.Background(),
+		&api.SdkCredentialValidateRequest{
+			CredentialId: credentialId,
+		})
+	if err != nil {
+		gerr, _ := status.FromError(err)
+		log.Printf("Error Code[%d] Message[%s]\n",
+			gerr.Code(), gerr.Message())
+		os.Exit(1)
+	}
+
+	response := credResponse.String()
+
+	log.Printf("Credential ID %s validated with response %s", credentialId, response)
+
+	return nil
+
+}
+
+// AWSInspectS3CloudCredential inspects the given cloud credential
+func AWSInspectS3CloudCredential(conn *grpc.ClientConn, credentialId string) error {
+
+	creds := api.NewOpenStorageCredentialsClient(conn)
+	credResponse, err := creds.Inspect(
+		context.Background(),
+		&api.SdkCredentialInspectRequest{
+			CredentialId: credentialId,
+		})
+	if err != nil {
+		gerr, _ := status.FromError(err)
+		log.Printf("Error Code[%d] Message[%s]\n",
+			gerr.Code(), gerr.Message())
+		os.Exit(1)
+	}
+
+	response := credResponse.GetAwsCredential()
+
+	log.Printf("Credential ID %s inspected with response %s", credentialId, response)
+
+	return nil
+
+}
+
+// AWSDeleteS3CloudCredentials deletes a cloud credential
+func AWSDeleteS3CloudCredential(conn *grpc.ClientConn, credentialId string) error {
+
+	creds := api.NewOpenStorageCredentialsClient(conn)
+	_, err := creds.Delete(
+		context.Background(),
+		&api.SdkCredentialDeleteRequest{
+			CredentialId: credentialId,
+		})
+	if err != nil {
+		gerr, _ := status.FromError(err)
+		log.Printf("Error Code[%d] Message[%s]\n",
+			gerr.Code(), gerr.Message())
+		os.Exit(1)
+	}
+	log.Printf("Credential with ID %s has been deleted", credentialId)
 	log.Println()
+	return nil
 }

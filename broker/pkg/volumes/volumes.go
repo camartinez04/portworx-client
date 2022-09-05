@@ -49,7 +49,7 @@ func GetVolumeID(conn *grpc.ClientConn, volumeName string) (volumeID string, err
 
 }
 
-// createVolume Creates a new Portworx volume, if Sharedv4 enabled, sets to service ClusterIP by default.
+// CreateVolume Creates a new Portworx volume, if Sharedv4 enabled, sets to service ClusterIP by default.
 func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64, volumeIOProfile string, volumeHALevel int64, encryptionEnabled bool, sharedv4Enabled bool, noDiscard bool) (string, error) {
 
 	// Opens the volume client connection.
@@ -115,10 +115,100 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 
 	newVolumeID := volume.GetVolumeId()
 
-	log.Printf("Volume %s of %dGi created with id %s\n", volumeName, volumeGBSize, volume.GetVolumeId())
-	log.Println()
+	log.Printf("Volume %s of %dGi created with id %s", volumeName, volumeGBSize, volume.GetVolumeId())
 
 	return newVolumeID, nil
+}
+
+// UpdateVolume updates a Portworx volume.
+func UpdateVolume(conn *grpc.ClientConn, volumeID string, volumeGBSize uint64, volumeIOProfile string, volumeHALevel int64, sharedv4Enabled bool, noDiscard bool) (string, error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// default volume IO profile to auto
+	intIOProfile := api.IoProfile_IO_PROFILE_AUTO
+
+	if volumeIOProfile == "db_remote" {
+		intIOProfile = api.IoProfile_IO_PROFILE_DB_REMOTE
+	}
+
+	if volumeIOProfile == "db" {
+		intIOProfile = api.IoProfile_IO_PROFILE_DB
+	}
+
+	if volumeIOProfile == "sequential" {
+		intIOProfile = api.IoProfile_IO_PROFILE_SEQUENTIAL
+	}
+
+	if volumeIOProfile == "sync_shared" {
+		intIOProfile = api.IoProfile_IO_PROFILE_SYNC_SHARED
+	}
+
+	// Updates the volume.
+	volume, err := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				SizeOpt: &api.VolumeSpecUpdate_Size{
+					Size: volumeGBSize * 1024 * 1024 * 1024,
+				},
+				HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
+					HaLevel: volumeHALevel,
+				},
+				IoProfileOpt: &api.VolumeSpecUpdate_IoProfile{
+					IoProfile: intIOProfile,
+				},
+				Sharedv4Opt: &api.VolumeSpecUpdate_Sharedv4{
+					Sharedv4: sharedv4Enabled,
+				},
+				NodiscardOpt: &api.VolumeSpecUpdate_Nodiscard{
+					Nodiscard: noDiscard,
+				},
+				Sharedv4ServiceSpecOpt: &api.VolumeSpecUpdate_Sharedv4ServiceSpec{
+					Sharedv4ServiceSpec: &api.Sharedv4ServiceSpec{
+						Type: api.Sharedv4ServiceType_SHAREDV4_SERVICE_TYPE_CLUSTERIP,
+					},
+				},
+			},
+		})
+	if err != nil {
+		gerr, _ := status.FromError(err)
+		newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
+		log.Println(newError)
+		return "", errors.New(newError)
+	}
+
+	volumeUpdateResponse := volume.String()
+
+	log.Printf("Volume %s updated", volumeUpdateResponse)
+
+	return volumeID, nil
+}
+
+// DeleteVolume deletes a Portworx volume.
+func DeleteVolume(conn *grpc.ClientConn, volumeID string) (string, error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Deletes the volume.
+	_, err := volumes.Delete(
+		context.Background(),
+		&api.SdkVolumeDeleteRequest{
+			VolumeId: volumeID,
+		})
+	if err != nil {
+		gerr, _ := status.FromError(err)
+		newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
+		log.Println(newError)
+		return "", errors.New(newError)
+	}
+
+	log.Printf("Volume %s deleted", volumeID)
+
+	return volumeID, nil
 }
 
 // inspectVolume generates a json string with Volume information equivalent of pxctl volume inspect <volume> --json
