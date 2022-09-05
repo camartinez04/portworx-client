@@ -6,6 +6,7 @@ import (
 
 	"log"
 
+	"github.com/camartinez04/portworx-client/broker/pkg/helpers"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -33,16 +34,14 @@ func ClusterInfo(conn *grpc.ClientConn) (clusterUUID string, clusterStatus strin
 	}
 
 	clusterUUID = clusterInfo.GetCluster().GetId()
-
 	clusterStatus = clusterInfo.GetCluster().GetStatus().String()
-
 	clusterName = clusterInfo.GetCluster().GetName()
 
 	return clusterUUID, clusterStatus, clusterName, nil
 }
 
 // clusterCapacity prints the Portworx cluster total capacity
-func ClusterCapacity(conn *grpc.ClientConn) (uint64, uint64, error) {
+func ClusterCapacity(conn *grpc.ClientConn) (mbCapacity uint64, mbUsed uint64, mbAvailable uint64, percentUsed float64, percentAvailable float64, errorFound error) {
 
 	// --- Get Cluster capacity ---
 	// First, get all node node IDs in this cluster
@@ -85,9 +84,12 @@ func ClusterCapacity(conn *grpc.ClientConn) (uint64, uint64, error) {
 		}
 	}
 
-	gbCapacity := totalCapacity / 1024 / 1024 / 1024
-	gbUsed := totalUsed / 1024 / 1024 / 1024
+	mbCapacity = totalCapacity / 1024 / 1024
+	mbUsed = totalUsed / 1024 / 1024
+	mbAvailable = mbCapacity - mbUsed
+	percentUsed = helpers.RoundFloat(((float64(mbUsed) / float64(mbCapacity)) * 100), 2)
+	percentAvailable = 100 - percentUsed
 
-	return gbCapacity, gbUsed, nil
+	return mbCapacity, mbUsed, mbAvailable, percentUsed, percentAvailable, nil
 
 }

@@ -40,11 +40,6 @@ type JsonResponse struct {
 	Message            string                       `json:"message,omitempty"`
 	Data               any                          `json:"data,omitempty"`
 	VolumeID           string                       `json:"volume_id,omitempty"`
-	ClusterCapacity    uint64                       `json:"cluster_capacity,omitempty"`
-	ClusterUsed        uint64                       `json:"cluster_used,omitempty"`
-	ClusterUUID        string                       `json:"cluster_uuid,omitempty"`
-	ClusterStatus      string                       `json:"cluster_status,omitempty"`
-	ClusterName        string                       `json:"cluster_name,omitempty"`
 	VolumeInspect      any                          `json:"volume_inspect,omitempty"`
 	NodesOfVolume      []string                     `json:"nodes_of_volume,omitempty"`
 	NodeList           map[string][]string          `json:"node_list,omitempty"`
@@ -54,6 +49,22 @@ type JsonResponse struct {
 	VolumeNodes        []string                     `json:"volume_nodes,omitempty"`
 	VolumeStatusString string                       `json:"volume_status_string,omitempty"`
 	IoProfileString    string                       `json:"io_profile_string,omitempty"`
+}
+
+type JsonClusterInfo struct {
+	Error         bool   `json:"error,omitempty"`
+	ClusterUUID   string `json:"cluster_uuid,omitempty"`
+	ClusterStatus string `json:"cluster_status,omitempty"`
+	ClusterName   string `json:"cluster_name,omitempty"`
+}
+
+type JsonClusterCapacity struct {
+	Error                   bool    `json:"error,omitempty"`
+	ClusterCapacity         uint64  `json:"cluster_capacity,omitempty"`
+	ClusterUsed             uint64  `json:"cluster_used,omitempty"`
+	ClusterAvailable        uint64  `json:"cluster_available,omitempty"`
+	ClusterPercentUsed      float64 `json:"cluster_percent_used,omitempty"`
+	ClusterPercentAvailable float64 `json:"cluster_percent_available,omitempty"`
 }
 
 type JsonGetAllVolumesInfo struct {

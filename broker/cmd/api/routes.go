@@ -23,7 +23,7 @@ func (app *AppConfig) routes() http.Handler {
 
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	mux.Get("/getclustercapacity", app.getClusterCapacityHTTP)
+	mux.Get("/getpxclustercapacity", app.getPXClusterCapacityHTTP)
 	mux.Get("/getpxcluster", app.getPXClusterHTTP)
 	mux.Get("/getvolumeid/{volume_name}", app.getVolumeIDsHTTP)
 	mux.Get("/getnodesofvolume/{volume_name}", app.getNodesOfVolumeHTTP)
