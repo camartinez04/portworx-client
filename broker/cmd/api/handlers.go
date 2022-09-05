@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -368,6 +369,81 @@ func (app *AppConfig) getVolumeInfoHTTP(w http.ResponseWriter, r *http.Request) 
 	resp := JsonGetVolumeInfo{
 		Error:      false,
 		VolumeInfo: volumeInformation,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// patchUpdateVolumeHTTP http function to update a Portworx Volume.
+func (app *AppConfig) patchUpdateVolumeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
+
+	volumeGBSize, err := strconv.ParseUint((r.Header.Get("Volume-Size")), 10, 64)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	volumeIOProfile := r.Header.Get("Volume-IO-Profile")
+
+	volumeHALevel, err := strconv.ParseInt((r.Header.Get("Volume-Ha-Level")), 10, 64)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	sharedv4Enabled, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Enabled"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	noDiscard, err := strconv.ParseBool(r.Header.Get("Volume-No-Discard"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	volumeUpdate, err := volumes.UpdateVolume(app.Conn, volumeID, volumeGBSize, volumeIOProfile, volumeHALevel, sharedv4Enabled, noDiscard)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:         false,
+		Message:       "Volume updated successfully",
+		VolumeID:      volumeID,
+		VolumeChanges: volumeUpdate,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// deleteVolumeHTTP http function to delete a Portworx Volume.
+func (app *AppConfig) deleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
+
+	volume, err := volumes.DeleteVolume(app.Conn, volumeID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	log.Printf("Volume %s deleted successfully, %s", volumeID, volume)
+
+	resp := JsonResponse{
+		Error:    false,
+		Message:  "Volume deleted successfully",
+		VolumeID: volumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)

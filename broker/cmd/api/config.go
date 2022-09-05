@@ -49,6 +49,7 @@ type JsonResponse struct {
 	VolumeNodes        []string                     `json:"volume_nodes,omitempty"`
 	VolumeStatusString string                       `json:"volume_status_string,omitempty"`
 	IoProfileString    string                       `json:"io_profile_string,omitempty"`
+	VolumeChanges      any                          `json:"volume_changes,omitempty"`
 }
 
 type JsonClusterInfo struct {

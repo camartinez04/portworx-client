@@ -14,7 +14,7 @@ func (app *AppConfig) routes() http.Handler {
 
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: true,
@@ -26,6 +26,9 @@ func (app *AppConfig) routes() http.Handler {
 	mux.Get("/getpxclustercapacity", app.getPXClusterCapacityHTTP)
 	mux.Get("/getpxcluster", app.getPXClusterHTTP)
 	mux.Get("/getvolumeid/{volume_name}", app.getVolumeIDsHTTP)
+	mux.Post("/postcreatevolume", app.postCreateNewVolumeHTTP)
+	mux.Patch("/updatevolume/{volume_id}", app.patchUpdateVolumeHTTP)
+	mux.Delete("/deletevolume/{volume_id}", app.deleteVolumeHTTP)
 	mux.Get("/getnodesofvolume/{volume_name}", app.getNodesOfVolumeHTTP)
 	mux.Get("/getinspectvolume/{volume_name}", app.getInspectVolumeHTTP)
 	mux.Get("/getvolumeusage/{volume_name}", app.getVolumeUsageHTTP)
@@ -37,7 +40,6 @@ func (app *AppConfig) routes() http.Handler {
 	mux.Get("/getnodeinfo/{node_id}", app.getNodeInfoHTTP)
 	mux.Get("/getallvolumesinfo", app.getAllVolumesInfoHTTP)
 	mux.Get("/getvolumeinfo/{node_id}", app.getVolumeInfoHTTP)
-	mux.Post("/postcreatevolume", app.postCreateNewVolumeHTTP)
 
 	return mux
 
