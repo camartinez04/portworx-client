@@ -42,6 +42,8 @@ type JsonResponse struct {
 	VolumeID           string                       `json:"volume_id,omitempty"`
 	ClusterCapacity    string                       `json:"cluster_capacity,omitempty"`
 	ClusterUUID        string                       `json:"cluster_uuid,omitempty"`
+	ClusterStatus      string                       `json:"cluster_status,omitempty"`
+	ClusterName        string                       `json:"cluster_name,omitempty"`
 	VolumeInspect      any                          `json:"volume_inspect,omitempty"`
 	NodesOfVolume      []string                     `json:"nodes_of_volume,omitempty"`
 	NodeList           map[string][]string          `json:"node_list,omitempty"`

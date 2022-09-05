@@ -79,11 +79,17 @@ func (app *AppConfig) getClusterCapacityHTTP(w http.ResponseWriter, r *http.Requ
 // getClusterCapacityHTTP http function to get the cluster capacity.
 func (app *AppConfig) getClusterUUIDHTTP(w http.ResponseWriter, r *http.Request) {
 
-	uuid, _ := cluster.ClusterInfo(app.Conn)
+	uuid, status, name, err := cluster.ClusterInfo(app.Conn)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 
 	resp := JsonResponse{
-		Error:       false,
-		ClusterUUID: uuid,
+		Error:         false,
+		ClusterUUID:   uuid,
+		ClusterStatus: status,
+		ClusterName:   name,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
