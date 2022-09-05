@@ -65,11 +65,16 @@ func (app *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Reques
 // getClusterCapacityHTTP http function to get the cluster capacity.
 func (app *AppConfig) getClusterCapacityHTTP(w http.ResponseWriter, r *http.Request) {
 
-	cluster, _ := cluster.ClusterCapacity(app.Conn)
+	cluster, used, err := cluster.ClusterCapacity(app.Conn)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
 
 	resp := JsonResponse{
 		Error:           false,
 		ClusterCapacity: cluster,
+		ClusterUsed:     used,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
@@ -77,7 +82,7 @@ func (app *AppConfig) getClusterCapacityHTTP(w http.ResponseWriter, r *http.Requ
 }
 
 // getClusterCapacityHTTP http function to get the cluster capacity.
-func (app *AppConfig) getClusterUUIDHTTP(w http.ResponseWriter, r *http.Request) {
+func (app *AppConfig) getPXClusterHTTP(w http.ResponseWriter, r *http.Request) {
 
 	uuid, status, name, err := cluster.ClusterInfo(app.Conn)
 	if err != nil {

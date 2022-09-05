@@ -40,7 +40,8 @@ type JsonResponse struct {
 	Message            string                       `json:"message,omitempty"`
 	Data               any                          `json:"data,omitempty"`
 	VolumeID           string                       `json:"volume_id,omitempty"`
-	ClusterCapacity    string                       `json:"cluster_capacity,omitempty"`
+	ClusterCapacity    uint64                       `json:"cluster_capacity,omitempty"`
+	ClusterUsed        uint64                       `json:"cluster_used,omitempty"`
 	ClusterUUID        string                       `json:"cluster_uuid,omitempty"`
 	ClusterStatus      string                       `json:"cluster_status,omitempty"`
 	ClusterName        string                       `json:"cluster_name,omitempty"`

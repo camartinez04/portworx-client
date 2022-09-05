@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"context"
-	"fmt"
 	"os"
 
 	"log"
@@ -43,7 +42,7 @@ func ClusterInfo(conn *grpc.ClientConn) (clusterUUID string, clusterStatus strin
 }
 
 // clusterCapacity prints the Portworx cluster total capacity
-func ClusterCapacity(conn *grpc.ClientConn) (string, error) {
+func ClusterCapacity(conn *grpc.ClientConn) (uint64, uint64, error) {
 
 	// --- Get Cluster capacity ---
 	// First, get all node node IDs in this cluster
@@ -58,8 +57,9 @@ func ClusterCapacity(conn *grpc.ClientConn) (string, error) {
 		os.Exit(1)
 	}
 
-	// Initialize the variable
+	// Initialize the variables
 	totalCapacity := uint64(0)
+	totalUsed := uint64(0)
 
 	// For each node ID, get its information
 	for _, nodeID := range nodeEnumResp.GetNodeIds() {
@@ -81,11 +81,13 @@ func ClusterCapacity(conn *grpc.ClientConn) (string, error) {
 		// configuration. The Pool returns the usable size.
 		for _, pool := range node.GetNode().GetPools() {
 			totalCapacity += pool.GetTotalSize()
+			totalUsed += pool.GetUsed()
 		}
 	}
 
-	capacity := fmt.Sprintf("%d Gi", totalCapacity/GB)
+	gbCapacity := totalCapacity / 1024 / 1024 / 1024
+	gbUsed := totalUsed / 1024 / 1024 / 1024
 
-	return capacity, nil
+	return gbCapacity, gbUsed, nil
 
 }
