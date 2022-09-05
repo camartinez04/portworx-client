@@ -83,41 +83,79 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 		intIOProfile = api.IoProfile_IO_PROFILE_SYNC_SHARED
 	}
 
-	// Creates the volume.
-	volume, err := volumes.Create(
-		context.Background(),
-		&api.SdkVolumeCreateRequest{
-			Name: volumeName,
-			Spec: &api.VolumeSpec{
-				Size:      volumeGBSize * 1024 * 1024 * 1024,
-				HaLevel:   volumeHALevel,
-				IoProfile: intIOProfile,
-				Cos:       api.CosType_HIGH,
-				Format:    api.FSType_FS_TYPE_EXT4,
-				Encrypted: encryptionEnabled,
-				Sharedv4:  sharedv4Enabled,
-				Nodiscard: noDiscard,
-				Sharedv4ServiceSpec: &api.Sharedv4ServiceSpec{
-					Type: api.Sharedv4ServiceType_SHAREDV4_SERVICE_TYPE_CLUSTERIP,
+	if sharedv4Enabled {
+		// Creates the volume  witho sharedv4 service enabled.
+		volume, err := volumes.Create(
+			context.Background(),
+			&api.SdkVolumeCreateRequest{
+				Name: volumeName,
+				Spec: &api.VolumeSpec{
+					Size:      volumeGBSize * 1024 * 1024 * 1024,
+					HaLevel:   volumeHALevel,
+					IoProfile: intIOProfile,
+					Cos:       api.CosType_HIGH,
+					Format:    api.FSType_FS_TYPE_EXT4,
+					Encrypted: encryptionEnabled,
+					Sharedv4:  sharedv4Enabled,
+					Nodiscard: noDiscard,
+					Sharedv4ServiceSpec: &api.Sharedv4ServiceSpec{
+						Type: api.Sharedv4ServiceType_SHAREDV4_SERVICE_TYPE_CLUSTERIP,
+					},
+					IoStrategy: &api.IoStrategy{
+						AsyncIo:  true,
+						EarlyAck: true,
+					},
 				},
-				IoStrategy: &api.IoStrategy{
-					AsyncIo:  true,
-					EarlyAck: true,
+			})
+		if err != nil {
+			gerr, _ := status.FromError(err)
+			newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
+			log.Println(newError)
+			return "", errors.New(newError)
+		}
+
+		log.Printf("Volume %s of %dGi created with id %s", volumeName, volumeGBSize, volume.GetVolumeId())
+
+		newVolumeID := volume.GetVolumeId()
+
+		return newVolumeID, nil
+
+	} else {
+
+		// Creates the volume without sharedv4 service.
+		volume, err := volumes.Create(
+			context.Background(),
+			&api.SdkVolumeCreateRequest{
+				Name: volumeName,
+				Spec: &api.VolumeSpec{
+					Size:      volumeGBSize * 1024 * 1024 * 1024,
+					HaLevel:   volumeHALevel,
+					IoProfile: intIOProfile,
+					Cos:       api.CosType_HIGH,
+					Format:    api.FSType_FS_TYPE_EXT4,
+					Encrypted: encryptionEnabled,
+					Sharedv4:  sharedv4Enabled,
+					Nodiscard: noDiscard,
+					IoStrategy: &api.IoStrategy{
+						AsyncIo:  true,
+						EarlyAck: true,
+					},
 				},
-			},
-		})
-	if err != nil {
-		gerr, _ := status.FromError(err)
-		newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
-		log.Println(newError)
-		return "", errors.New(newError)
+			})
+		if err != nil {
+			gerr, _ := status.FromError(err)
+			newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
+			log.Println(newError)
+			return "", errors.New(newError)
+		}
+
+		log.Printf("Volume %s of %dGi created with id %s", volumeName, volumeGBSize, volume.GetVolumeId())
+
+		newVolumeID := volume.GetVolumeId()
+
+		return newVolumeID, nil
 	}
 
-	newVolumeID := volume.GetVolumeId()
-
-	log.Printf("Volume %s of %dGi created with id %s", volumeName, volumeGBSize, volume.GetVolumeId())
-
-	return newVolumeID, nil
 }
 
 // UpdateVolume updates a Portworx volume.
@@ -146,43 +184,81 @@ func UpdateVolume(conn *grpc.ClientConn, volumeID string, volumeGBSize uint64, v
 	}
 
 	// Updates the volume.
-	volume, err := volumes.Update(
-		context.Background(),
-		&api.SdkVolumeUpdateRequest{
-			VolumeId: volumeID,
-			Spec: &api.VolumeSpecUpdate{
-				SizeOpt: &api.VolumeSpecUpdate_Size{
-					Size: volumeGBSize * 1024 * 1024 * 1024,
-				},
-				HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
-					HaLevel: volumeHALevel,
-				},
-				IoProfileOpt: &api.VolumeSpecUpdate_IoProfile{
-					IoProfile: intIOProfile,
-				},
-				Sharedv4Opt: &api.VolumeSpecUpdate_Sharedv4{
-					Sharedv4: sharedv4Enabled,
-				},
-				NodiscardOpt: &api.VolumeSpecUpdate_Nodiscard{
-					Nodiscard: noDiscard,
-				},
-				Sharedv4ServiceSpecOpt: &api.VolumeSpecUpdate_Sharedv4ServiceSpec{
-					Sharedv4ServiceSpec: &api.Sharedv4ServiceSpec{
-						Type: api.Sharedv4ServiceType_SHAREDV4_SERVICE_TYPE_CLUSTERIP,
+
+	if sharedv4Enabled {
+		volume, err := volumes.Update(
+			context.Background(),
+			&api.SdkVolumeUpdateRequest{
+				VolumeId: volumeID,
+				Spec: &api.VolumeSpecUpdate{
+					SizeOpt: &api.VolumeSpecUpdate_Size{
+						Size: volumeGBSize * 1024 * 1024 * 1024,
+					},
+					HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
+						HaLevel: volumeHALevel,
+					},
+					IoProfileOpt: &api.VolumeSpecUpdate_IoProfile{
+						IoProfile: intIOProfile,
+					},
+					Sharedv4Opt: &api.VolumeSpecUpdate_Sharedv4{
+						Sharedv4: sharedv4Enabled,
+					},
+					NodiscardOpt: &api.VolumeSpecUpdate_Nodiscard{
+						Nodiscard: noDiscard,
+					},
+					Sharedv4ServiceSpecOpt: &api.VolumeSpecUpdate_Sharedv4ServiceSpec{
+						Sharedv4ServiceSpec: &api.Sharedv4ServiceSpec{
+							Type: api.Sharedv4ServiceType_SHAREDV4_SERVICE_TYPE_CLUSTERIP,
+						},
 					},
 				},
-			},
-		})
-	if err != nil {
-		gerr, _ := status.FromError(err)
-		newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
-		log.Println(newError)
-		return "", errors.New(newError)
+			})
+		if err != nil {
+			gerr, _ := status.FromError(err)
+			newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
+			log.Println(newError)
+			return "", errors.New(newError)
+		}
+
+		volumeUpdateResponse := volume.String()
+
+		log.Printf("Volume %s updated", volumeUpdateResponse)
+
+	} else {
+		volume, err := volumes.Update(
+			context.Background(),
+			&api.SdkVolumeUpdateRequest{
+				VolumeId: volumeID,
+				Spec: &api.VolumeSpecUpdate{
+					SizeOpt: &api.VolumeSpecUpdate_Size{
+						Size: volumeGBSize * 1024 * 1024 * 1024,
+					},
+					HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
+						HaLevel: volumeHALevel,
+					},
+					IoProfileOpt: &api.VolumeSpecUpdate_IoProfile{
+						IoProfile: intIOProfile,
+					},
+					Sharedv4Opt: &api.VolumeSpecUpdate_Sharedv4{
+						Sharedv4: sharedv4Enabled,
+					},
+					NodiscardOpt: &api.VolumeSpecUpdate_Nodiscard{
+						Nodiscard: noDiscard,
+					},
+				},
+			})
+		if err != nil {
+			gerr, _ := status.FromError(err)
+			newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
+			log.Println(newError)
+			return "", errors.New(newError)
+		}
+
+		volumeUpdateResponse := volume.String()
+
+		log.Printf("Volume %s updated", volumeUpdateResponse)
+
 	}
-
-	volumeUpdateResponse := volume.String()
-
-	log.Printf("Volume %s updated", volumeUpdateResponse)
 
 	return volumeID, nil
 }
