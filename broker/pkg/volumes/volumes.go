@@ -182,7 +182,7 @@ func UpdateVolumeSize(conn *grpc.ClientConn, volumeID string, volumeGBSize uint6
 
 	volumeUpdate = volume.String()
 
-	log.Printf("Volume %s updated", volumeUpdate)
+	log.Printf("Volume %s updated to size %d", volumeUpdate, volumeGBSize)
 
 	return volumeUpdate, nil
 
@@ -232,7 +232,7 @@ func UpdateVolumeIOProfile(conn *grpc.ClientConn, volumeID string, volumeIOProfi
 
 	volumeUpdate = volume.String()
 
-	log.Printf("Volume %s updated", volumeUpdate)
+	log.Printf("Volume %s updated to io-profile %s", volumeUpdate, volumeIOProfile)
 
 	return volumeUpdate, nil
 
@@ -262,7 +262,7 @@ func UpdateVolumeHALevel(conn *grpc.ClientConn, volumeID string, volumeHALevel i
 
 	volumeUpdate = volume.String()
 
-	log.Printf("Volume %s updated", volumeUpdate)
+	log.Printf("Volume %s updated to %d replicas", volumeUpdate, volumeHALevel)
 
 	return volumeUpdate, nil
 
@@ -292,7 +292,7 @@ func UpdateVolumeSharedv4(conn *grpc.ClientConn, volumeID string, sharedv4Enable
 
 	volumeUpdate = volume.String()
 
-	log.Printf("Volume %s updated", volumeUpdate)
+	log.Printf("Volume %s updated to sharedv4 %t", volumeUpdate, sharedv4Enabled)
 
 	return volumeUpdate, nil
 
@@ -337,7 +337,7 @@ func UpdateVolumeSharedv4Service(conn *grpc.ClientConn, volumeID string, sharedv
 
 		volumeUpdate = volume.String()
 
-		log.Printf("Volume %s updated", volumeUpdate)
+		log.Printf("Volume %s updated its sharedv4 service to %t", volumeUpdate, sharedv4Service)
 
 		return volumeUpdate, nil
 
@@ -374,7 +374,7 @@ func UpdateVolumeSharedv4Service(conn *grpc.ClientConn, volumeID string, sharedv
 
 	volumeUpdate = volume.String()
 
-	log.Printf("Volume %s updated", volumeUpdate)
+	log.Printf("Volume %s updated its sharedv4 service to %t", volumeUpdate, sharedv4Service)
 
 	return volumeUpdate, nil
 
@@ -404,7 +404,7 @@ func UpdateVolumeNoDiscard(conn *grpc.ClientConn, volumeID string, noDiscard boo
 
 	volumeUpdate = volume.String()
 
-	log.Printf("Volume %s updated", volumeUpdate)
+	log.Printf("Volume %s updated no discard to %t", volumeUpdate, noDiscard)
 
 	return volumeUpdate, nil
 
