@@ -50,7 +50,7 @@ func (app *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp := JsonResponse{
+	resp := JsonVolumeInspect{
 		Error:              false,
 		VolumeInspect:      volume,
 		ReplicasInfo:       replicas,
@@ -171,7 +171,7 @@ func (app *AppConfig) getNodesOfVolumeHTTP(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	resp := JsonResponse{
+	resp := JsonNodesOfVolume{
 		Error:         false,
 		NodesOfVolume: nodes,
 	}
@@ -189,7 +189,7 @@ func (app *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	resp := JsonResponse{
+	resp := JsonNodeList{
 		Error:    false,
 		NodeList: nodeList,
 	}
@@ -210,7 +210,7 @@ func (app *AppConfig) getReplicasPerNodeHTTP(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	resp := JsonResponse{
+	resp := JsonVolumeList{
 		Error:      false,
 		VolumeList: volumes,
 	}
@@ -268,7 +268,7 @@ func (app *AppConfig) getAllVolumesHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	resp := JsonResponse{
+	resp := JsonAllVolumesList{
 		Error:          false,
 		AllVolumesList: volumes,
 	}
@@ -286,9 +286,9 @@ func (app *AppConfig) getAllVolumesCompleteHTTP(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	resp := JsonResponse{
+	resp := JsonApiVolumesList{
 		Error:          false,
-		AllVolumesList: volumes,
+		ApiVolumesList: volumes,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)

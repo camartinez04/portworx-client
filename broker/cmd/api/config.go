@@ -8,6 +8,7 @@ import (
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
+	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 )
 
@@ -36,20 +37,11 @@ type VolumeInspect []string
 
 // jsonResponse is the response format for JSON
 type JsonResponse struct {
-	Error              bool                         `json:"error,omitempty"`
-	Message            string                       `json:"message,omitempty"`
-	Data               any                          `json:"data,omitempty"`
-	VolumeID           string                       `json:"volume_id,omitempty"`
-	VolumeInspect      any                          `json:"volume_inspect,omitempty"`
-	NodesOfVolume      []string                     `json:"nodes_of_volume,omitempty"`
-	NodeList           map[string][]string          `json:"node_list,omitempty"`
-	VolumeList         map[string]config.VolumeInfo `json:"volume_list,omitempty"`
-	AllVolumesList     any                          `json:"all_volumes_list,omitempty"`
-	ReplicasInfo       []string                     `json:"replicas_info,omitempty"`
-	VolumeNodes        []string                     `json:"volume_nodes,omitempty"`
-	VolumeStatusString string                       `json:"volume_status_string,omitempty"`
-	IoProfileString    string                       `json:"io_profile_string,omitempty"`
-	VolumeChanges      any                          `json:"volume_changes,omitempty"`
+	Error    bool   `json:"error,omitempty"`
+	Message  string `json:"message,omitempty"`
+	VolumeID string `json:"volume_id,omitempty"`
+	NodeID   string `json:"node_id,omitempty"`
+	SnapID   string `json:"snap_id,omitempty"`
 }
 
 type JsonClusterInfo struct {
@@ -95,6 +87,40 @@ type JsonVolumeUsage struct {
 	TotalSize              float64 `json:"total_size,omitempty"`
 	VolumeUsagePercent     float32 `json:"volume_usage_percent,omitempty"`
 	VolumeAvailablePercent float32 `json:"volume_available_percent,omitempty"`
+}
+
+type JsonVolumeInspect struct {
+	Error              bool     `json:"error,omitempty"`
+	VolumeInspect      any      `json:"volume_inspect,omitempty"`
+	ReplicasInfo       []string `json:"replicas_info,omitempty"`
+	VolumeNodes        []string `json:"volume_nodes,omitempty"`
+	VolumeStatusString string   `json:"volume_status_string,omitempty"`
+	IoProfileString    string   `json:"io_profile_string,omitempty"`
+}
+
+type JsonVolumeList struct {
+	Error      bool                         `json:"error,omitempty"`
+	VolumeList map[string]config.VolumeInfo `json:"volume_list,omitempty"`
+}
+
+type JsonNodeList struct {
+	Error    bool                `json:"error,omitempty"`
+	NodeList map[string][]string `json:"node_list,omitempty"`
+}
+
+type JsonNodesOfVolume struct {
+	Error         bool     `json:"error,omitempty"`
+	NodesOfVolume []string `json:"nodes_of_volume,omitempty"`
+}
+
+type JsonAllVolumesList struct {
+	Error          bool     `json:"error,omitempty"`
+	AllVolumesList []string `json:"all_volumes_list,omitempty"`
+}
+
+type JsonApiVolumesList struct {
+	Error          bool                                     `json:"error,omitempty"`
+	ApiVolumesList map[string]*api.SdkVolumeInspectResponse `json:"all_volumes_list,omitempty"`
 }
 
 const (
