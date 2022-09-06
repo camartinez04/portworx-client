@@ -33,7 +33,9 @@
                         </tr>
                       </thead>
                       <tbody>
+
                         {{ range $index, $node := $AllNodesInfo }}
+
                         <tr>
                           <td>
                             <a href="node/{{ $node.NodeID }}">{{ $node.NodeID }} </a>
@@ -50,8 +52,8 @@
 
                             {{ if ne $node.SizeNodePool 0 }}
 
-                              {{  $node.SizeNodePool  }} MB
-                              
+                             {{divide $node.SizeNodePool 1024}} GB
+                                                              
                             {{ else }}
 
                               Storageless Node
