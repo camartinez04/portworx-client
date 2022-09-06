@@ -158,11 +158,38 @@ func CreateVolume(conn *grpc.ClientConn, volumeName string, volumeGBSize uint64,
 
 }
 
-// UpdateVolume updates a Portworx volume.
-func UpdateVolume(conn *grpc.ClientConn, volumeID string, volumeGBSize uint64, volumeIOProfile string, volumeHALevel int64, sharedv4Enabled bool, noDiscard bool) (string, error) {
+// UpdateVolume updates a Portworx volume size.
+func UpdateVolumeSize(conn *grpc.ClientConn, volumeID string, volumeGBSize uint64) (volumeUpdate string, errorFound error) {
 
 	// Opens the volume client connection.
 	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Updates the volume.
+	volume, errorFound := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				SizeOpt: &api.VolumeSpecUpdate_Size{
+					Size: volumeGBSize * 1024 * 1024 * 1024,
+				},
+			},
+		})
+	if errorFound != nil {
+		log.Printf("error updating volume %s", volumeID)
+		return "", errorFound
+	}
+
+	volumeUpdate = volume.String()
+
+	log.Printf("Volume %s updated", volumeUpdate)
+
+	return volumeUpdate, nil
+
+}
+
+// UpdateVolume updates a Portworx IO profile.
+func UpdateVolumeIOProfile(conn *grpc.ClientConn, volumeID string, volumeIOProfile string) (volumeUpdate string, errorFound error) {
 
 	// default volume IO profile to auto
 	intIOProfile := api.IoProfile_IO_PROFILE_AUTO
@@ -183,29 +210,119 @@ func UpdateVolume(conn *grpc.ClientConn, volumeID string, volumeGBSize uint64, v
 		intIOProfile = api.IoProfile_IO_PROFILE_SYNC_SHARED
 	}
 
-	// Updates the volume.
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
 
-	if sharedv4Enabled {
-		volume, err := volumes.Update(
+	// Updates the volume.
+	volume, errorFound := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				IoProfileOpt: &api.VolumeSpecUpdate_IoProfile{
+					IoProfile: intIOProfile,
+				},
+			},
+		},
+	)
+	if errorFound != nil {
+		log.Printf("error updating volume %s", volumeID)
+		return "", errorFound
+	}
+
+	volumeUpdate = volume.String()
+
+	log.Printf("Volume %s updated", volumeUpdate)
+
+	return volumeUpdate, nil
+
+}
+
+// UpdateVolume updates a Portworx volume HA level.
+func UpdateVolumeHALevel(conn *grpc.ClientConn, volumeID string, volumeHALevel int64) (volumeUpdate string, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Updates the volume.
+	volume, errorFound := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
+					HaLevel: volumeHALevel,
+				},
+			},
+		})
+	if errorFound != nil {
+		log.Printf("error updating volume %s", volumeID)
+		return "", errorFound
+	}
+
+	volumeUpdate = volume.String()
+
+	log.Printf("Volume %s updated", volumeUpdate)
+
+	return volumeUpdate, nil
+
+}
+
+// UpdateVolume updates if a Portworx volume would be Sharedv4 or not.
+func UpdateVolumeSharedv4(conn *grpc.ClientConn, volumeID string, sharedv4Enabled bool) (volumeUpdate string, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Updates the volume.
+	volume, errorFound := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				Sharedv4Opt: &api.VolumeSpecUpdate_Sharedv4{
+					Sharedv4: sharedv4Enabled,
+				},
+			},
+		})
+	if errorFound != nil {
+		log.Printf("error updating volume %s", volumeID)
+		return "", errorFound
+	}
+
+	volumeUpdate = volume.String()
+
+	log.Printf("Volume %s updated", volumeUpdate)
+
+	return volumeUpdate, nil
+
+}
+
+// UpdateVolume updates Sharedv4 volume Service.
+func UpdateVolumeSharedv4Service(conn *grpc.ClientConn, volumeID string, sharedv4Service bool) (volumeUpdate string, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	if sharedv4Service {
+
+		isVolumeSharedv4, errorFound := volumeSharedv4(conn, volumeID)
+		if errorFound != nil {
+			log.Printf("error checking if volume is sharedv4 %s", volumeID)
+			return "", errorFound
+		}
+
+		if !isVolumeSharedv4 {
+			log.Printf("Volume %s is not Sharedv4", volumeID)
+			return "", errors.New("volume is not sharedv4")
+		}
+
+		// Updates the volume.
+		volume, errorFound := volumes.Update(
 			context.Background(),
 			&api.SdkVolumeUpdateRequest{
 				VolumeId: volumeID,
 				Spec: &api.VolumeSpecUpdate{
-					SizeOpt: &api.VolumeSpecUpdate_Size{
-						Size: volumeGBSize * 1024 * 1024 * 1024,
-					},
-					HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
-						HaLevel: volumeHALevel,
-					},
-					IoProfileOpt: &api.VolumeSpecUpdate_IoProfile{
-						IoProfile: intIOProfile,
-					},
-					Sharedv4Opt: &api.VolumeSpecUpdate_Sharedv4{
-						Sharedv4: sharedv4Enabled,
-					},
-					NodiscardOpt: &api.VolumeSpecUpdate_Nodiscard{
-						Nodiscard: noDiscard,
-					},
 					Sharedv4ServiceSpecOpt: &api.VolumeSpecUpdate_Sharedv4ServiceSpec{
 						Sharedv4ServiceSpec: &api.Sharedv4ServiceSpec{
 							Type: api.Sharedv4ServiceType_SHAREDV4_SERVICE_TYPE_CLUSTERIP,
@@ -213,54 +330,84 @@ func UpdateVolume(conn *grpc.ClientConn, volumeID string, volumeGBSize uint64, v
 					},
 				},
 			})
-		if err != nil {
-			gerr, _ := status.FromError(err)
-			newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
-			log.Println(newError)
-			return "", errors.New(newError)
+		if errorFound != nil {
+			log.Printf("error updating volume %s", volumeID)
+			return "", errorFound
 		}
 
-		volumeUpdateResponse := volume.String()
+		volumeUpdate = volume.String()
 
-		log.Printf("Volume %s updated", volumeUpdateResponse)
+		log.Printf("Volume %s updated", volumeUpdate)
 
-	} else {
-		volume, err := volumes.Update(
-			context.Background(),
-			&api.SdkVolumeUpdateRequest{
-				VolumeId: volumeID,
-				Spec: &api.VolumeSpecUpdate{
-					SizeOpt: &api.VolumeSpecUpdate_Size{
-						Size: volumeGBSize * 1024 * 1024 * 1024,
-					},
-					HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
-						HaLevel: volumeHALevel,
-					},
-					IoProfileOpt: &api.VolumeSpecUpdate_IoProfile{
-						IoProfile: intIOProfile,
-					},
-					Sharedv4Opt: &api.VolumeSpecUpdate_Sharedv4{
-						Sharedv4: sharedv4Enabled,
-					},
-					NodiscardOpt: &api.VolumeSpecUpdate_Nodiscard{
-						Nodiscard: noDiscard,
-					},
-				},
-			})
-		if err != nil {
-			gerr, _ := status.FromError(err)
-			newError := fmt.Sprintf("error code[%d] message[%s]", gerr.Code(), gerr.Message())
-			log.Println(newError)
-			return "", errors.New(newError)
-		}
-
-		volumeUpdateResponse := volume.String()
-
-		log.Printf("Volume %s updated", volumeUpdateResponse)
+		return volumeUpdate, nil
 
 	}
 
-	return volumeID, nil
+	// Updates the volume.
+	isVolumeSharedv4, errorFound := volumeSharedv4(conn, volumeID)
+	if errorFound != nil {
+		log.Printf("error checking if volume is sharedv4 %s", volumeID)
+		return "", errorFound
+	}
+
+	if !isVolumeSharedv4 {
+		log.Printf("Volume %s is not Sharedv4", volumeID)
+		return "", errors.New("volume is not sharedv4")
+	}
+	// Updates the volume.
+	volume, errorFound := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				Sharedv4ServiceSpecOpt: &api.VolumeSpecUpdate_Sharedv4ServiceSpec{
+					Sharedv4ServiceSpec: &api.Sharedv4ServiceSpec{
+						Type: api.Sharedv4ServiceType_SHAREDV4_SERVICE_TYPE_INVALID,
+					},
+				},
+			},
+		})
+	if errorFound != nil {
+		log.Printf("error updating volume %s", volumeID)
+		return "", errorFound
+	}
+
+	volumeUpdate = volume.String()
+
+	log.Printf("Volume %s updated", volumeUpdate)
+
+	return volumeUpdate, nil
+
+}
+
+// UpdateVolume updates if a Portworx volume No discard attribute.
+func UpdateVolumeNoDiscard(conn *grpc.ClientConn, volumeID string, noDiscard bool) (volumeUpdate string, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Updates the volume.
+	volume, errorFound := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				NodiscardOpt: &api.VolumeSpecUpdate_Nodiscard{
+					Nodiscard: noDiscard,
+				},
+			},
+		})
+	if errorFound != nil {
+		log.Printf("error updating volume %s", volumeID)
+		return "", errorFound
+	}
+
+	volumeUpdate = volume.String()
+
+	log.Printf("Volume %s updated", volumeUpdate)
+
+	return volumeUpdate, nil
+
 }
 
 // DeleteVolume deletes a Portworx volume.
@@ -349,80 +496,6 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 
 	return apiVolumeInspect, apiVolumeReplicas, volumeNodes, apiVolumeStatus, apiIoProfile, nil
 
-}
-
-// updateVolumeSize updates the size of a Portworx volume.
-func UpdateVolumeSize(conn *grpc.ClientConn, volumeName string, volSize uint64) error {
-
-	// Retrieves the volume ID.
-	volId, err := GetVolumeID(conn, volumeName)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	// Opens the volume client connection.
-	volumes := api.NewOpenStorageVolumeClient(conn)
-
-	// Updates the volume size.
-	volumeUpdate, err := volumes.Update(
-		context.Background(),
-		&api.SdkVolumeUpdateRequest{
-			VolumeId: volId,
-			Spec: &api.VolumeSpecUpdate{
-				SizeOpt: &api.VolumeSpecUpdate_Size{
-					Size: volSize * 1024 * 1024 * 1024,
-				},
-			},
-		},
-	)
-	if err != nil {
-		gerr, _ := status.FromError(err)
-		log.Printf("Error Code[%d] Message[%s]\n",
-			gerr.Code(), gerr.Message())
-		return err
-	}
-
-	log.Printf("Volume %s updated size to %dGi %s\n", volumeName, volSize, volumeUpdate.String())
-
-	return nil
-}
-
-// updateVolumeHALevel updates the HA level of a Portworx volume.
-func UpdateVolumeHALevel(conn *grpc.ClientConn, volumeName string, haLevel int64) error {
-
-	// Retrieves the volume ID.
-	volId, err := GetVolumeID(conn, volumeName)
-	if err != nil {
-		log.Println(err)
-		return err
-	}
-
-	// Opens the volume client connection.
-	volumes := api.NewOpenStorageVolumeClient(conn)
-
-	// Updates the volume HA level.
-	volumeUpdate, err := volumes.Update(
-		context.Background(),
-		&api.SdkVolumeUpdateRequest{
-			VolumeId: volId,
-			Spec: &api.VolumeSpecUpdate{
-				HaLevelOpt: &api.VolumeSpecUpdate_HaLevel{
-					HaLevel: haLevel,
-				},
-			},
-		},
-	)
-	if err != nil {
-		gerr, _ := status.FromError(err)
-		log.Printf("Error Code[%d] Message[%s]\n",
-			gerr.Code(), gerr.Message())
-		return err
-	}
-
-	log.Printf("Volume %s updated HA Level to %d replicas %s\n", volumeName, haLevel, volumeUpdate.String())
-
-	return nil
 }
 
 // RetrieveVolumeUsage retrieves the usage of a Portworx volume.
@@ -539,6 +612,30 @@ func volumeInspectFromID(conn *grpc.ClientConn, volumeID string) (volumeInspect 
 	}
 
 	return volumeInspect, nil
+}
+
+// volumeSharedv4 checks if a volume is sharedv4.
+func volumeSharedv4(conn *grpc.ClientConn, volID string) (isSharedv4 bool, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Retrieves the volume information.
+	volumeInspect, errorFound := volumes.Inspect(
+		context.Background(),
+		&api.SdkVolumeInspectRequest{
+			VolumeId: volID,
+		},
+	)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return isSharedv4, errorFound
+	}
+
+	isSharedv4 = volumeInspect.Volume.GetSpec().GetSharedv4()
+
+	return isSharedv4, nil
+
 }
 
 // GetVolumeInfo returns the volume information from the volume ID.

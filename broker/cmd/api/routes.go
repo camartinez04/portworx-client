@@ -25,21 +25,30 @@ func (app *AppConfig) routes() http.Handler {
 
 	mux.Get("/getpxclustercapacity", app.getPXClusterCapacityHTTP)
 	mux.Get("/getpxcluster", app.getPXClusterHTTP)
-	mux.Get("/getvolumeid/{volume_name}", app.getVolumeIDsHTTP)
+
 	mux.Post("/postcreatevolume", app.postCreateNewVolumeHTTP)
-	mux.Patch("/updatevolume/{volume_id}", app.patchUpdateVolumeHTTP)
+	mux.Get("/getvolumeinfo/{volume_id}", app.getVolumeInfoHTTP)
+	mux.Patch("/patchvolumesize/{volume_id}", app.patchUpdateVolumeSizeHTTP)
+	mux.Patch("/patchvolumeioprofile/{volume_id}", app.patchUpdateVolumeIOProfileHTTP)
+	mux.Patch("/patchvolumehalevel/{volume_id}", app.patchUpdateVolumeHALevelHTTP)
+	mux.Patch("/patchvolumesharedv4/{volume_id}", app.patchUpdateVolumeSharedv4HTTP)
+	mux.Patch("/patchvolumesharedv4service/{volume_id}", app.patchUpdateVolumeSharedvService4HTTP)
+	mux.Patch("/patchvolumenodiscard/{volume_id}", app.patchUpdateVolumeNoDiscardHTTP)
 	mux.Delete("/deletevolume/{volume_id}", app.deleteVolumeHTTP)
+
+	mux.Get("/getvolumeid/{volume_name}", app.getVolumeIDsHTTP)
 	mux.Get("/getnodesofvolume/{volume_name}", app.getNodesOfVolumeHTTP)
 	mux.Get("/getinspectvolume/{volume_name}", app.getInspectVolumeHTTP)
 	mux.Get("/getvolumeusage/{volume_name}", app.getVolumeUsageHTTP)
-	mux.Get("/getlistofnodes", app.getListOfNodesHTTP)
-	mux.Get("/getreplicaspernode/{node_id}", app.getReplicasPerNodeHTTP)
+
+	mux.Get("/getallvolumesinfo", app.getAllVolumesInfoHTTP)
 	mux.Get("/getallvolumes", app.getAllVolumesHTTP)
 	mux.Get("/getallvolumescomplete", app.getAllVolumesCompleteHTTP)
+	mux.Get("/getreplicaspernode/{node_id}", app.getReplicasPerNodeHTTP)
+
+	mux.Get("/getlistofnodes", app.getListOfNodesHTTP)
 	mux.Get("/getallnodesinfo", app.getAllNodesInfoHTTP)
 	mux.Get("/getnodeinfo/{node_id}", app.getNodeInfoHTTP)
-	mux.Get("/getallvolumesinfo", app.getAllVolumesInfoHTTP)
-	mux.Get("/getvolumeinfo/{node_id}", app.getVolumeInfoHTTP)
 
 	return mux
 

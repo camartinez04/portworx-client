@@ -375,8 +375,8 @@ func (app *AppConfig) getVolumeInfoHTTP(w http.ResponseWriter, r *http.Request) 
 
 }
 
-// patchUpdateVolumeHTTP http function to update a Portworx Volume.
-func (app *AppConfig) patchUpdateVolumeHTTP(w http.ResponseWriter, r *http.Request) {
+// patchUpdateVolumeSizeHTTP http function to update a Portworx Volume Size.
+func (app *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -388,7 +388,53 @@ func (app *AppConfig) patchUpdateVolumeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	volumeUpdate, err := volumes.UpdateVolumeSize(app.Conn, volumeID, volumeGBSize)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:    false,
+		Message:  "Volume size updated to " + strconv.FormatUint(volumeGBSize, 10) + "GB",
+		VolumeID: volumeUpdate,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// patchUpdateVolumeSizeHTTP http function to update a Portworx Volume Size.
+func (app *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
+
 	volumeIOProfile := r.Header.Get("Volume-IO-Profile")
+
+	volumeUpdate, err := volumes.UpdateVolumeIOProfile(app.Conn, volumeID, volumeIOProfile)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:    false,
+		Message:  "Volume IO Profile updated to " + volumeIOProfile,
+		VolumeID: volumeUpdate,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// patchUpdateVolumeHALevelHTTP http function to update a Portworx Volume HA Level.
+func (app *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
 
 	volumeHALevel, err := strconv.ParseInt((r.Header.Get("Volume-Ha-Level")), 10, 64)
 	if err != nil {
@@ -396,11 +442,86 @@ func (app *AppConfig) patchUpdateVolumeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	volumeUpdate, err := volumes.UpdateVolumeHALevel(app.Conn, volumeID, volumeHALevel)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:    false,
+		Message:  "Volume HA Level updated to " + strconv.FormatInt(volumeHALevel, 10),
+		VolumeID: volumeUpdate,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// patchUpdateVolumeSharedv4HTTP http function to define a Portworx Volume as Sharedv4 or not.
+func (app *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
+
 	sharedv4Enabled, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Enabled"))
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
+
+	volumeUpdate, err := volumes.UpdateVolumeSharedv4(app.Conn, volumeID, sharedv4Enabled)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:    false,
+		Message:  "Volume Sharedv4 updated to " + strconv.FormatBool(sharedv4Enabled),
+		VolumeID: volumeUpdate,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// patchUpdateVolumeSharedvService4HTTP http function to enable or disable a Portworx Volume Sharedv4 Service.
+func (app *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
+
+	sharedv4Service, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Service"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	volumeUpdate, err := volumes.UpdateVolumeSharedv4Service(app.Conn, volumeID, sharedv4Service)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:    false,
+		Message:  "Volume Sharedv4 Service updated to " + strconv.FormatBool(sharedv4Service),
+		VolumeID: volumeUpdate,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// patchUpdateVolumeNoDiscardHTTP http function to enable or disable a Portworx Volume No Discard.
+func (app *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
 
 	noDiscard, err := strconv.ParseBool(r.Header.Get("Volume-No-Discard"))
 	if err != nil {
@@ -408,17 +529,16 @@ func (app *AppConfig) patchUpdateVolumeHTTP(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	volumeUpdate, err := volumes.UpdateVolume(app.Conn, volumeID, volumeGBSize, volumeIOProfile, volumeHALevel, sharedv4Enabled, noDiscard)
+	volumeUpdate, err := volumes.UpdateVolumeNoDiscard(app.Conn, volumeID, noDiscard)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
 	}
 
 	resp := JsonResponse{
-		Error:         false,
-		Message:       "Volume updated successfully",
-		VolumeID:      volumeID,
-		VolumeChanges: volumeUpdate,
+		Error:    false,
+		Message:  "Volume No Discard updated to " + strconv.FormatBool(noDiscard),
+		VolumeID: volumeUpdate,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
