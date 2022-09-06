@@ -47,7 +47,7 @@ func CreateSnapshot(conn *grpc.ClientConn, volumeName string) {
 }
 
 // CreateCloudSnap creates a cloud snapshot
-func CreateCloudSnap(conn *grpc.ClientConn, volumeName string) {
+func CreateCloudSnap(conn *grpc.ClientConn, volumeName string, credentialID string) {
 
 	volumeID, err := volumes.GetVolumeID(conn, volumeName)
 	if err != nil {
@@ -60,7 +60,7 @@ func CreateCloudSnap(conn *grpc.ClientConn, volumeName string) {
 	backupCreateResp, err := cloudbackups.Create(context.Background(),
 		&api.SdkCloudBackupCreateRequest{
 			VolumeId:     volumeID,
-			CredentialId: "f28b6b49-470a-4489-b30c-613ec5d5f801",
+			CredentialId: credentialID,
 		})
 	if err != nil {
 		gerr, _ := status.FromError(err)
