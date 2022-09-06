@@ -67,6 +67,7 @@ var functions = template.FuncMap{
 	"formatDate": FormatDate,
 	"iterate":    Iterate,
 	"add":        Add,
+	"divide":     Divide,
 }
 
 // HumanDate returns time in yyyy-mm-dd format
@@ -85,6 +86,25 @@ func FormatDate(t time.Time, f string) string {
 func Add(a, b int) int {
 
 	return a + b
+}
+
+// Divide divides two numbers and returns the result as a string
+func Divide(a, b uint64) string {
+
+	if b == 0 {
+		return "0"
+	}
+
+	floatA := float64(a)
+
+	floatB := float64(b)
+
+	result := floatA / floatB
+
+	stringresult := fmt.Sprintf("%.0f", result)
+
+	return stringresult
+
 }
 
 // Iterate performs a for loop
