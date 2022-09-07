@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: px-client-ingress
+  namespace: portworx-client
+  annotations:
+    nginx.ingress.kubernetes.io/add-base-url: 'true'
+    nginx.ingress.kubernetes.io/app-root: /frontend
+    nginx.ingress.kubernetes.io/rewrite-target: /frontend/$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: kubernetes.lehi-k8s-vanilla.calvarado04.com
+      http:
+        paths:
+          - path: /frontend(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: pxfrontend-service
+                port:
+                  number: 8081
+          - path: /frontend
+            pathType: Prefix
+            backend:
+              service:
+                name: pxfrontend-service
+                port:
+                  number: 8081
