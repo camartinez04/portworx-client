@@ -27,6 +27,8 @@ type TemplateData struct {
 	JsonAllVolumesInfo    AllVolumesInfoResponse
 	JsonAllNodesInfo      AllNodesInfoResponse
 	JsonReplicaPerNode    ReplicasPerNodeResponse
+	JsonClusterInfo       ClusterInfo
+	JsonClusterCapacity   ClusterCapacity
 }
 
 // JsonUsageVolume holds the json data for the usage volume
@@ -168,6 +170,22 @@ type NodeInfo struct {
 	PercentUsedMemory    float64            `json:"percent_used_memory,omitempty"`
 	StoragelessNode      bool               `json:"storageless,omitempty"`
 	StoragePools         []*api.StoragePool `json:"storage_pools,omitempty"`
+}
+
+// ClusterInfo struct to store the cluster information.
+type ClusterInfo struct {
+	ClusterUUID   string `json:"cluster_uuid,omitempty"`
+	ClusterStatus string `json:"cluster_status,omitempty"`
+	ClusterName   string `json:"cluster_name,omitempty"`
+}
+
+// ClusterCapacity struct to store the cluster capacity.
+type ClusterCapacity struct {
+	ClusterCapacity         uint64  `json:"cluster_capacity,omitempty"`
+	ClusterUsed             uint64  `json:"cluster_used,omitempty"`
+	ClusterAvailable        uint64  `json:"cluster_available,omitempty"`
+	ClusterPercentUsed      float64 `json:"cluster_percent_used,omitempty"`
+	ClusterPercentAvailable float64 `json:"cluster_percent_available,omitempty"`
 }
 
 // Slice of VolumeInfoAllVolumesInfoResponse

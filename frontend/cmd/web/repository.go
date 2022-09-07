@@ -28,10 +28,21 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
+// Cluster serves the cluster page
 func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "index.page.html", &TemplateData{})
+
+	clusterInfo, clusterCapacity, err := GetClusterInfo()
+	if err != nil {
+		log.Println(err)
+	}
+
+	Template(w, r, "index.page.html", &TemplateData{
+		JsonClusterInfo:     clusterInfo,
+		JsonClusterCapacity: clusterCapacity,
+	})
 }
 
+// Documentation serves the documentation page
 func (m *Repository) Documentation(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "documentation.page.html", &TemplateData{})
 }
@@ -110,6 +121,7 @@ func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// CreateVolume serves the create volume page
 func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	res, _ := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)

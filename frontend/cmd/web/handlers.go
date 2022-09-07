@@ -218,6 +218,9 @@ func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPe
 	}
 
 	json.Unmarshal(body, &jsonNodeInfo)
+	if errorFound != nil {
+		log.Println(errorFound)
+	}
 
 	url = brokerURL + "/getreplicaspernode/" + nodeID
 
@@ -239,6 +242,9 @@ func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPe
 	}
 
 	json.Unmarshal(body, &jsonReplicaPerNode)
+	if errorFound != nil {
+		log.Println(errorFound)
+	}
 
 	return jsonNodeInfo, jsonReplicaPerNode, nil
 
@@ -376,5 +382,65 @@ func createNewVolume(createVolume CreateVolume) (volumeID string, errorFound err
 	method = "GET"
 
 	return volumeID, nil
+
+}
+
+// GetClusterInfo handles the GET request to /getpxcluster and /getpxclustercapacity to get the cluster info
+func GetClusterInfo() (jsonClusterInfo ClusterInfo, jsonClusterCapacity ClusterCapacity, errorFound error) {
+
+	//get cluster info
+	url := brokerURL + "/getpxcluster"
+	method := "GET"
+
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	log.Println(string(body))
+
+	json.Unmarshal(body, &jsonClusterInfo)
+
+	// get the cluster capacity
+	url = brokerURL + "/getpxclustercapacity"
+	method = "GET"
+
+	req, err := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	res, errorFound = client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	body, errorFound = ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(errorFound)
+		return
+	}
+	log.Println(string(body))
+
+	json.Unmarshal(body, &jsonClusterCapacity)
+
+	return jsonClusterInfo, jsonClusterCapacity, nil
 
 }
