@@ -133,7 +133,7 @@ const (
 
 var (
 	useTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")
-	token   = flag.String("token", "", "Authorization token if any")
+	token   = flag.String("token", os.Getenv("PORTWORX_TOKEN"), "Authorization token if any")
 	address = flag.String("address", os.Getenv("PORTWORX_GRPC_URL"), "Address to server as <address>:<port>")
 )
 
