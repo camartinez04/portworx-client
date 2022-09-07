@@ -411,7 +411,6 @@ func GetClusterInfo() (jsonClusterInfo ClusterInfo, jsonClusterCapacity ClusterC
 		log.Println(errorFound)
 		return
 	}
-	log.Println(string(body))
 
 	json.Unmarshal(body, &jsonClusterInfo)
 
@@ -437,7 +436,6 @@ func GetClusterInfo() (jsonClusterInfo ClusterInfo, jsonClusterCapacity ClusterC
 		log.Println(errorFound)
 		return
 	}
-	log.Println(string(body))
 
 	json.Unmarshal(body, &jsonClusterCapacity)
 

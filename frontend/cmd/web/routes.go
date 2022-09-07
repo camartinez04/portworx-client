@@ -20,6 +20,8 @@ func routes(app *AppConfig) http.Handler {
 
 	mux.Route("/frontend", func(mux chi.Router) {
 
+		mux.Get("/", Repo.Cluster)
+
 		mux.Get("/cluster", Repo.Cluster)
 
 		mux.Get("/volumes", Repo.Volumes)
