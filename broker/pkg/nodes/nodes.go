@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	"github.com/camartinez04/portworx-client/broker/pkg/helpers"
@@ -348,8 +349,14 @@ func GetAllNodesInfo(conn *grpc.ClientConn) (AllNodesInfo []config.NodeInfo, err
 		return nil, errorFound
 	}
 
+	// Create a slice of node IDs
+	nodeIDsSlice := nodeEnumResp.GetNodeIds()
+
+	// Then, sort the slice of node IDs
+	sort.Strings(nodeIDsSlice)
+
 	// For each node ID, get its information
-	for _, nodeID := range nodeEnumResp.GetNodeIds() {
+	for _, nodeID := range nodeIDsSlice {
 
 		nodeInfo, errorFound := GetNodeInfo(conn, nodeID)
 		if errorFound != nil {

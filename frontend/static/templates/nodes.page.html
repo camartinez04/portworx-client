@@ -1,5 +1,11 @@
 {{ template "base" . }}
 
+  {{ define "css"}}
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+
+  {{ end }}
+
   {{ define "content" }}
 
     {{ $AllNodesInfo := .JsonAllNodesInfo.AllNodesInfo }}
@@ -12,7 +18,7 @@
                 <div class="card-body">
                   <h4 class="card-title">Nodes</h4>
                   <div class="table-responsive">
-                    <table class="table table-striped" id="nodes-table">
+                    <table class="table table-striped" id="nodes">
                       <thead>
                         <tr>
                           <th>
@@ -130,6 +136,20 @@
       } 
     }
 
+  </script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+  <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+
+  <script>
+  
+      $(document).ready(function() {
+        $('#nodes').DataTable( {
+            responsive: true,
+            "pageLength": 10,
+        } );
+    } );
   </script>
 
   {{ end }}

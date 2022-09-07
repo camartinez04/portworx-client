@@ -1,5 +1,11 @@
 {{template "secondary" .}}
 
+  {{ define "css"}}
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+
+  {{ end }}
+
   {{ define "content" }}
 
     {{ $node := .JsonNodeInfo.NodeInfo }}
@@ -85,7 +91,7 @@
                 <div class="card-body">
                   <h4 class="card-title">Volumes on this Node</h4>
                   <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped" id="volumes">
                       <thead>
                         <tr>
                           <th>
@@ -257,4 +263,17 @@
     <!-- Custom js for this page-->
     <script src="/frontend/static/js/dashboard.js"> </script>
     <!-- End custom js for this page-->
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+
+    <script>
+  
+      $(document).ready(function() {
+        $('#volumes').DataTable( {
+            responsive: true,
+            "pageLength": 10,
+        } );
+    } );
+    </script>
   {{end}}

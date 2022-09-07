@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	"github.com/camartinez04/portworx-client/broker/pkg/helpers"
@@ -730,8 +731,14 @@ func GetAllVolumesInfo(conn *grpc.ClientConn) (AllVolumesInfo []config.VolumeInf
 		return AllVolumesInfo, errorFound
 	}
 
+	// Create a slice of volume IDs
+	volIDsSlice := volsEnumResp.GetVolumeIds()
+
+	// Then, sort the slice of volume IDs
+	sort.Strings(volIDsSlice)
+
 	// For each volume ID, get its information
-	for _, volID := range volsEnumResp.GetVolumeIds() {
+	for _, volID := range volIDsSlice {
 
 		volumeInfo, errorFound := GetVolumeInfo(conn, volID)
 		if errorFound != nil {
