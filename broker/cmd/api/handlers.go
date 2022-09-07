@@ -388,7 +388,7 @@ func (app *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	volumeUpdate, err := volumes.UpdateVolumeSize(app.Conn, volumeID, volumeGBSize)
+	_, err = volumes.UpdateVolumeSize(app.Conn, volumeID, volumeGBSize)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -397,7 +397,7 @@ func (app *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.R
 	resp := JsonResponse{
 		Error:    false,
 		Message:  "Volume size updated to " + strconv.FormatUint(volumeGBSize, 10) + "GB",
-		VolumeID: volumeUpdate,
+		VolumeID: volumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
@@ -413,7 +413,7 @@ func (app *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *h
 
 	volumeIOProfile := r.Header.Get("Volume-IO-Profile")
 
-	volumeUpdate, err := volumes.UpdateVolumeIOProfile(app.Conn, volumeID, volumeIOProfile)
+	_, err := volumes.UpdateVolumeIOProfile(app.Conn, volumeID, volumeIOProfile)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -422,7 +422,7 @@ func (app *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *h
 	resp := JsonResponse{
 		Error:    false,
 		Message:  "Volume IO Profile updated to " + volumeIOProfile,
-		VolumeID: volumeUpdate,
+		VolumeID: volumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
@@ -442,7 +442,7 @@ func (app *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *htt
 		return
 	}
 
-	volumeUpdate, err := volumes.UpdateVolumeHALevel(app.Conn, volumeID, volumeHALevel)
+	_, err = volumes.UpdateVolumeHALevel(app.Conn, volumeID, volumeHALevel)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -451,7 +451,7 @@ func (app *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *htt
 	resp := JsonResponse{
 		Error:    false,
 		Message:  "Volume HA Level updated to " + strconv.FormatInt(volumeHALevel, 10),
-		VolumeID: volumeUpdate,
+		VolumeID: volumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
@@ -471,7 +471,7 @@ func (app *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *ht
 		return
 	}
 
-	volumeUpdate, err := volumes.UpdateVolumeSharedv4(app.Conn, volumeID, sharedv4Enabled)
+	_, err = volumes.UpdateVolumeSharedv4(app.Conn, volumeID, sharedv4Enabled)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -480,7 +480,7 @@ func (app *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *ht
 	resp := JsonResponse{
 		Error:    false,
 		Message:  "Volume Sharedv4 updated to " + strconv.FormatBool(sharedv4Enabled),
-		VolumeID: volumeUpdate,
+		VolumeID: volumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
@@ -500,7 +500,7 @@ func (app *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter
 		return
 	}
 
-	volumeUpdate, err := volumes.UpdateVolumeSharedv4Service(app.Conn, volumeID, sharedv4Service)
+	_, err = volumes.UpdateVolumeSharedv4Service(app.Conn, volumeID, sharedv4Service)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -509,7 +509,7 @@ func (app *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter
 	resp := JsonResponse{
 		Error:    false,
 		Message:  "Volume Sharedv4 Service updated to " + strconv.FormatBool(sharedv4Service),
-		VolumeID: volumeUpdate,
+		VolumeID: volumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
@@ -529,7 +529,7 @@ func (app *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *h
 		return
 	}
 
-	volumeUpdate, err := volumes.UpdateVolumeNoDiscard(app.Conn, volumeID, noDiscard)
+	_, err = volumes.UpdateVolumeNoDiscard(app.Conn, volumeID, noDiscard)
 	if err != nil {
 		app.errorJSON(w, err)
 		return
@@ -538,7 +538,7 @@ func (app *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *h
 	resp := JsonResponse{
 		Error:    false,
 		Message:  "Volume No Discard updated to " + strconv.FormatBool(noDiscard),
-		VolumeID: volumeUpdate,
+		VolumeID: volumeID,
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
