@@ -5,7 +5,6 @@ go 1.19
 require github.com/mitchellh/mapstructure v1.5.0
 
 require (
-
 	github.com/google/uuid v1.1.2 // indirect
 	github.com/huandu/xstrings v1.3.1 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
@@ -20,6 +19,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.5.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/go-chi/chi/v5 v5.0.7 // indirect
+	github.com/go-chi/cors v1.2.1 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/justinas/nosurf v1.1.1 // indirect

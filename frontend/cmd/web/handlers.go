@@ -329,10 +329,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	result := "/frontend/volume/" + volumeIDResp
 
-	//remove the context when the volume is created
-	m.App.Session.Remove(r.Context(), "create-volume")
-
-	http.Redirect(w, r, result, http.StatusTemporaryRedirect)
+	http.Redirect(w, r, result, http.StatusSeeOther)
 
 }
 
@@ -441,4 +438,36 @@ func GetClusterInfo() (jsonClusterInfo ClusterInfo, jsonClusterCapacity ClusterC
 
 	return jsonClusterInfo, jsonClusterCapacity, nil
 
+}
+
+func DeleteVolume(volumeID string) (string, error) {
+
+	url := brokerURL + "/deletevolume/" + volumeID
+	method := "DELETE"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	json.Unmarshal(body, &volumeID)
+
+	message := "Volume " + volumeID + " deleted!"
+
+	return message, nil
 }

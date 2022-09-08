@@ -10,11 +10,21 @@
   <!-- plugins:css -->
   <link rel="stylesheet" href="/frontend/static/vendors/ti-icons/css/themify-icons.css">
   <link rel="stylesheet" href="/frontend/static/vendors/base/vendor.bundle.base.css">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/notie/dist/notie.min.css">
   <!-- endinject -->
   <!-- plugin css for this page -->
   <!-- End plugin css for this page -->
   <!-- inject:css -->
   <link rel="stylesheet" href="/frontend/static/css/style.css">
+  <style>
+        p {
+            color: red,
+        }
+
+        p {
+            color: green,
+        }
+  </style>
   <!-- endinject -->
   <link rel="shortcut icon" href="/frontend/static/images/favicon.png" />
     {{block "css" .}} 
@@ -23,6 +33,10 @@
 </head>
 
 <body>
+
+  <script src="https://unpkg.com/notie"></script>
+  <script src="/frontend/static/js/custom-scripts.js"></script>
+
 
   <div class="container-scroller">
     <div class="row p-0 m-0 proBanner" id="proBanner">
@@ -250,6 +264,11 @@
   </div>
   <!-- container-scroller -->
   <!-- plugins:js -->
+
+
+
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script src="/frontend/static/vendors/base/vendor.bundle.base.js"></script>
   <!-- endinject -->
   <!-- Plugin js for this page-->
@@ -261,6 +280,7 @@
   <script src="/frontend/static/js/hoverable-collapse.js"></script>
   <script src="/frontend/static/js/template.js"></script>
   <script src="/frontend/static/js/todolist.js"></script>
+
   <!-- endinject -->
   {{block "js" .}}
 

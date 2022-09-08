@@ -5,12 +5,22 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 // routes sets up the routing for the application.
 func routes(app *AppConfig) http.Handler {
 
 	mux := chi.NewRouter()
+
+	mux.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}))
 
 	mux.Use(middleware.Recoverer)
 	mux.Use(NoSurf)
@@ -30,6 +40,8 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Post("/volume/{volume_id}", Repo.VolumeInformation)
 
+		mux.Delete("/volume/{volume_id}", Repo.VolumeInformation)
+
 		mux.Get("/nodes", Repo.Nodes)
 
 		mux.Get("/node/{node_id}", Repo.NodeInformation)
@@ -47,6 +59,10 @@ func routes(app *AppConfig) http.Handler {
 		mux.Post("/create-volume", Repo.PostCreateVolume)
 
 		mux.Get("/documentation", Repo.Documentation)
+
+		mux.Delete("/delete-volume/{volume_id}", Repo.DeleteVolume)
+
+		mux.Get("/delete-volume/{volume_id}", Repo.DeleteVolume)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 

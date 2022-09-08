@@ -73,12 +73,32 @@ func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 	volumeInfoResponse, err := VolumeInfofromID(volumeID)
 	if err != nil {
 		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "Error trying to create the volume")
 	}
 
-	//fmt.Printf("volumeInfo: %v", volumeInfoResponse.VolumeInfo.VolumeSizeMB)
+	// Retrieve from the context if a new volume was created
+	res, _ := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)
 
+	// Get the volume name from the retrieved query above
+	volName := res.VolumeName
+
+	// If the volume name is not empty, then we have a new volume
+	if volName != "" {
+
+		//This means that the volume was created, therefore we will show the success message
+		m.App.Session.Put(r.Context(), "flash", "volume created successfully")
+
+		//remove the context after the volume was created
+		m.App.Session.Remove(r.Context(), "create-volume")
+
+	}
+
+	//Server the page with the volume information and the messages that could come from the creation of a new volume
 	Template(w, r, "volume-specific.page.html", &TemplateData{
 		JsonVolumeInfo: volumeInfoResponse,
+		Flash:          m.App.Session.PopString(r.Context(), "flash"),
+		Error:          m.App.Session.PopString(r.Context(), "error"),
+		Warning:        m.App.Session.PopString(r.Context(), "warning"),
 	})
 
 }
@@ -153,4 +173,32 @@ func (m *Repository) StoragePools(w http.ResponseWriter, r *http.Request) {
 
 func (m *Repository) StoragePoolsInformation(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "storage-pool-specific.page.html", &TemplateData{})
+}
+
+// DeleteVolume serves the delete volume page
+func (m *Repository) DeleteVolume(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[3]
+
+	message, err := DeleteVolume(volumeID)
+	if err != nil {
+		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "Error trying to delete the volume")
+	}
+
+	volumesInfo, err := GetAllVolumesInfo()
+	if err != nil {
+		log.Println(err)
+	}
+
+	Template(w, r, "volumes-after-delete.page.html", &TemplateData{
+		Flash:              message,
+		Error:              m.App.Session.PopString(r.Context(), "error"),
+		JsonAllVolumesInfo: volumesInfo,
+	})
+
+	//http.Redirect(w, r, "/frontend/volumes", http.StatusSeeOther)
+
 }

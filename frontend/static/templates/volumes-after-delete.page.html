@@ -1,4 +1,4 @@
-{{template "base" .}}
+{{template "secondary" .}}
 
   {{ define "css"}}
 
@@ -87,6 +87,13 @@
   {{end}}
   
   {{define "js"}}
+
+  <script>
+    setTimeout(function(){
+        window.location.href = '../../frontend/volumes';
+    }, 2000);
+  </script>
+
   <script >
 
     var elements = document.getElementsByClassName("check-volume");

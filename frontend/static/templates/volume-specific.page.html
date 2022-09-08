@@ -80,7 +80,13 @@
                                 </td>
                               </tr>
                               {{end}}
+
                             </table>
+                            <div class="float-end">
+                              <input type="hidden" name="_method" value="delete"/>
+                              <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                              <a href="#!" method="delete" class="btn btn-inverse-danger btn-fw" onclick="deleteVolume({{$volume.VolumeID}})" >Delete Volume</a>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -97,13 +103,34 @@
   {{ define "js" }}
 
   <script>
+  
+    let attention = Prompt();
+
+    var volMessage = "{{.Flash}}";
+
+    var volError = "{{.Error}}";
+
+    if (volError != "") {
+      notify("error trying to create the volume", "error");
+
+    }
+
+    if (volMessage != "") {
+        notify("volume created successfully","success")
+    }
+
+
+  </script>
+
+  <script>
 
     var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
     var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
     var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
     var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
     var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
-    
+    var volumeid = "{{.JsonVolumeInfo.VolumeInfo.VolumeID}}"
+  
   </script>
 
   <script >
@@ -147,6 +174,21 @@
 
   </script>
 
+  <script> 
+    function deleteVolume(volumeid) {
+      attention.custom({
+              icon: 'warning',
+              msg: 'Are you sure to delete this volume?',
+              callback: function(result) {
+                  if (result !== false) {
+                      window.location.csrf_token = "{{.CSRFToken}}";
+                      window.location.method = "delete";
+                      window.location.href = "/frontend/delete-volume/" + volumeid;
+                  }
+              },
+          })
+      }
+  </script>
   <!-- Custom js for this page-->
   <script src="/frontend/static/js/dashboard.js"> </script>
   <!-- End custom js for this page-->
