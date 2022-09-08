@@ -48,19 +48,19 @@
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Number of Replicas</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeReplicas }}</h5>
+                                  <h5 class="font-weight-normal mb-0" id="volume-replicas" title="{{ $volume.VolumeReplicas }}"></h5>
                                 </td>
                               </tr>
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">IO Profile:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeIOProfile }}</h5>
+                                  <h5 class="font-weight-normal mb-0" id="volume-ioprofile" title="{{ $volume.VolumeIOProfile }}"></h5>
                                 </td>
                               </tr>
                               <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Volume attached on:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0">{{ $volume.VolumeAttachedOn }}</h5>
+                                  <h5 class="font-weight-normal mb-0" id="volume-attached" title="{{ $volume.VolumeAttachedOn }}"></h5>
                                 </td>
                               </tr>
                               <tr>
@@ -80,13 +80,17 @@
                                 </td>
                               </tr>
                               {{end}}
-
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0"></td>
+                                <td class="w-50 px-0">
+                                  <div class="float-end">
+                                    <input type="hidden" name="_method" value="delete"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="delete" class="btn btn-md btn-inverse-danger btn-fw" onclick="deleteVolume({{$volume.VolumeID}})" >Delete Volume</a>
+                                  </div>
+                                </td>
+                              </tr>
                             </table>
-                            <div class="float-end">
-                              <input type="hidden" name="_method" value="delete"/>
-                              <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                              <a href="#!" method="delete" class="btn btn-inverse-danger btn-fw" onclick="deleteVolume({{$volume.VolumeID}})" >Delete Volume</a>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -171,6 +175,32 @@
         console.log("Volume Down");
   
       } 
+
+    var replicas = document.getElementById("volume-replicas");
+
+    let btn2 = document.createElement("button");
+    btn2.innerHTML = replicas.title;
+    btn2.type = "button";
+    btn2.name = "formBtn";
+    btn2.classList = "btn btn-info";
+    replicas.appendChild(btn2);
+
+    var ioprofile = document.getElementById("volume-ioprofile");
+
+    let btn3 = document.createElement("button");
+    btn3.innerHTML = ioprofile.title;
+    btn3.type = "button";
+    btn3.name = "formBtn";
+    btn3.classList = "btn btn-info";
+    ioprofile.appendChild(btn3);
+
+    var attached = document.getElementById("volume-attached");
+    btn4 = document.createElement("button");
+    btn4.innerHTML = attached.title;
+    btn4.type = "button";
+    btn4.name = "formBtn";
+    btn4.classList = "btn btn-info";
+    attached.appendChild(btn4);
 
   </script>
 

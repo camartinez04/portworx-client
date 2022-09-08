@@ -471,3 +471,37 @@ func DeleteVolume(volumeID string) (string, error) {
 
 	return message, nil
 }
+
+func ResizeVolume(volumeID string, volSize uint64) (string, error) {
+
+	url := brokerURL + "/patchvolumesize/" + volumeID
+	method := "PATCH"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	req.Header.Add("Volume-Size", strconv.FormatUint(volSize, 10))
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	log.Println(string(body))
+
+	message := "Volume " + volumeID + " resized to " + strconv.FormatUint(volSize, 10) + " GB!"
+
+	return message, nil
+}

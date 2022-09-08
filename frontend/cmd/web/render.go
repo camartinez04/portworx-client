@@ -63,11 +63,12 @@ func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateD
 
 // Map of functions available to the templates
 var functions = template.FuncMap{
-	"humanDate":  HumanDate,
-	"formatDate": FormatDate,
-	"iterate":    Iterate,
-	"add":        Add,
-	"divide":     Divide,
+	"humanDate":    HumanDate,
+	"formatDate":   FormatDate,
+	"iterate":      Iterate,
+	"add":          Add,
+	"divide":       Divide,
+	"resizeVolume": ResizeVolume,
 }
 
 // HumanDate returns time in yyyy-mm-dd format
