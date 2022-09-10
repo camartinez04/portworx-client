@@ -202,3 +202,43 @@ func (m *Repository) DeleteVolume(w http.ResponseWriter, r *http.Request) {
 	//http.Redirect(w, r, "/frontend/volumes", http.StatusSeeOther)
 
 }
+
+func (m *Repository) UpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[3]
+
+	replica := exploded[4]
+
+	message, err := UpdateVolumeHALevel(volumeID, replica)
+	if err != nil {
+		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "Error trying to update the volume")
+	}
+
+	log.Println(message)
+
+	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
+
+}
+
+func (m *Repository) UpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[3]
+
+	newSize := exploded[4]
+
+	message, err := ResizeVolume(volumeID, newSize)
+	if err != nil {
+		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "Error trying to update the volume")
+	}
+
+	log.Println(message)
+
+	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
+
+}

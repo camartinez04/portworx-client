@@ -60,9 +60,11 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/documentation", Repo.Documentation)
 
-		mux.Delete("/delete-volume/{volume_id}", Repo.DeleteVolume)
-
 		mux.Get("/delete-volume/{volume_id}", Repo.DeleteVolume)
+
+		mux.Get("/update-volume-halevel/{volume_id}/{ha-level}", Repo.UpdateVolumeHALevelHTTP)
+
+		mux.Get("/update-volume-size/{volume_id}/{size}", Repo.UpdateVolumeSizeHTTP)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 

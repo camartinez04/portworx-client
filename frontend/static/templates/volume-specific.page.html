@@ -3,6 +3,8 @@
   {{ define "content" }}
     {{ $volume := .JsonVolumeInfo.VolumeInfo }}
 
+    {{ $volumeReplicas := $volume.VolumeReplicas }}
+
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
@@ -46,9 +48,23 @@
                                 </td>
                               </tr>
                               <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Volume Size (GiB)</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-size" title="{{$volume.VolumeSizeMB}}">
+                                    <input type="hidden" name="_method" value="patch"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateSize({{$volume.VolumeID}})" >{{ divide $volume.VolumeSizeMB 1024 }}</a>
+                                  </h5>
+                                </td>
+                              </tr>
+                              <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Number of Replicas</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0" id="volume-replicas" title="{{ $volume.VolumeReplicas }}"></h5>
+                                  <h5 class="font-weight-normal mb-0" id="volume-replicas" title="{{ $volume.VolumeReplicas }}">
+                                    <input type="hidden" name="_method" value="patch"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateHALevel({{$volume.VolumeID}})" >{{ $volume.VolumeReplicas }}</a>
+                                  </h5>
                                 </td>
                               </tr>
                               <tr>
@@ -133,8 +149,8 @@
     var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
     var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
     var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
-    var volumeid = "{{.JsonVolumeInfo.VolumeInfo.VolumeID}}"
-  
+    var volumeid = "{{.JsonVolumeInfo.VolumeInfo.VolumeID}}";
+    var volumeReplicas = "{{.JsonVolumeInfo.VolumeInfo.VolumeReplicas}}";
   </script>
 
   <script >
@@ -176,14 +192,6 @@
   
       } 
 
-    var replicas = document.getElementById("volume-replicas");
-
-    let btn2 = document.createElement("button");
-    btn2.innerHTML = replicas.title;
-    btn2.type = "button";
-    btn2.name = "formBtn";
-    btn2.classList = "btn btn-info";
-    replicas.appendChild(btn2);
 
     var ioprofile = document.getElementById("volume-ioprofile");
 
@@ -219,6 +227,55 @@
           })
       }
   </script>
+
+<script>
+  function updateHALevel(volumeid) {
+    let html = `
+        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
+          <div class="form-row g-3 align-items-center">
+            <select name="ha-value" id="ha-value" placeholder="can be +/- 1 of current">
+              <option value="none" selected disabled hidden>HA level can be +/- 1 current</option>
+              <option value=3>3</option>
+              <option value=2>2</option>
+              <option value=1>1</option>
+            </select>
+          </div>
+        </form>
+        `
+    attention.custom({
+      msg: html,
+      title: "Select the new HA Level",
+      callback: function (result) {
+        console.log("called update ha level");
+        window.location.csrf_token = "{{.CSRFToken}}";
+        window.location.method = "patch";
+        window.location.href = "/frontend/update-volume-halevel/" + volumeid + "/" + document.getElementById("ha-value").value;
+      },
+    })  
+  }
+</script>
+
+<script>
+  function updateSize(volumeid) {
+    let html = `
+        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
+          <div class="form-row g-3 align-items-center">
+            <input required class="form-control" type="number" name="new-size" id="new-size" placeholder="In GiB and bigger than current size">
+          </div>
+        </form>
+        `
+    attention.custom({
+      msg: html,
+      title: "Update the volume size",
+      callback: function (result) {
+        console.log("called update volume size");
+        window.location.csrf_token = "{{.CSRFToken}}";
+        window.location.method = "patch";
+        window.location.href = "/frontend/update-volume-size/" + volumeid + "/" + document.getElementById("new-size").value;
+      },
+    })  
+  }
+</script>
   <!-- Custom js for this page-->
   <script src="/frontend/static/js/dashboard.js"> </script>
   <!-- End custom js for this page-->
