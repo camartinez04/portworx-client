@@ -244,7 +244,7 @@
         `
     attention.custom({
       msg: html,
-      title: "Select the new HA Level",
+      title: "Select new HA Level",
       callback: function (result) {
         console.log("called update ha level");
         window.location.csrf_token = "{{.CSRFToken}}";
@@ -266,7 +266,7 @@
         `
     attention.custom({
       msg: html,
-      title: "Update the volume size",
+      title: "Update volume's size",
       callback: function (result) {
         console.log("called update volume size");
         window.location.csrf_token = "{{.CSRFToken}}";
