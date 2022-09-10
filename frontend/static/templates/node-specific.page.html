@@ -101,6 +101,9 @@
                             Volume Name
                           </th>
                           <th>
+                            K8s Namespace
+                          </th>
+                          <th>
                             K8s PVC Name
                           </th>
                           <th>
@@ -129,6 +132,9 @@
                           </td>
                           <td>
                             {{ $volume.VolumeName }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeK8sNamespace }}
                           </td>
                           <td>
                             {{ $volume.VolumeK8sPVCName }}

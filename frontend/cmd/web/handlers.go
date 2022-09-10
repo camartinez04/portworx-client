@@ -539,3 +539,37 @@ func UpdateVolumeHALevel(volumeID string, volHALevel string) (string, error) {
 
 	return message, nil
 }
+
+func IOProfileVolume(volumeID string, volIOProfile string) (string, error) {
+
+	url := brokerURL + "/patchvolumeioprofile/" + volumeID
+	method := "PATCH"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+
+	req.Header.Add("Volume-IO-Profile", volIOProfile)
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	log.Println(string(body))
+
+	message := "Volume " + volumeID + " IO profile updated to " + volIOProfile + "!"
+
+	return message, nil
+}

@@ -657,12 +657,32 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 		return volumeInfo, errorFound
 	}
 
+	var IoProfile_name = map[int32]string{
+		0: "sequential",
+		1: "random",
+		2: "db",
+		3: "db_remote",
+		4: "cms",
+		5: "sync_shared",
+		6: "auto",
+	}
+
+	var CosType_name = map[int32]string{
+		0: "none",
+		1: "low",
+		2: "medium",
+		3: "high",
+	}
+
+	volumeIOProfilePrev := volumeInspect.Volume.Spec.GetIoProfile()
+	volumeIOPriorityPrev := volumeInspect.Volume.Spec.GetCos()
+
 	volumeName := volumeInspect.Volume.Locator.GetName()
 	volumeReplicas := len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
 	volumeReplicaNodes := volumeInspect.Volume.ReplicaSets[0].GetNodes()
-	volumeIOProfile := volumeInspect.Volume.GetLocator().GetVolumeLabels()["io_profile"]
+	volumeIOProfile := IoProfile_name[int32(volumeIOProfilePrev)]
 	volumeIOProfileAPI := volumeInspect.Volume.Spec.GetIoProfile().String()
-	volumeIOPriority := volumeInspect.Volume.GetLocator().GetVolumeLabels()["io_priority"]
+	volumeIOPriority := CosType_name[int32(volumeIOPriorityPrev)]
 	volumeStatus := volumeInspect.Volume.GetStatus().String()
 	volumeAttachedOn := volumeInspect.Volume.GetAttachedOn()
 	volumeAttachedPath := volumeInspect.Volume.GetAttachPath()
@@ -676,7 +696,7 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 	volumeAttachStatus := volumeInspect.Volume.AttachedState.String()
 	volumeAggregationLevel := volumeInspect.Volume.Spec.GetAggregationLevel()
 	volumeConsumers := volumeInspect.Volume.GetVolumeConsumers()
-	volumeEncrypted := volumeInspect.Volume.GetLocator().GetVolumeLabels()["secure"]
+	volumeEncrypted := volumeInspect.Volume.Spec.GetEncrypted()
 	volumeEncryptionKey := volumeInspect.Volume.GetLocator().GetVolumeLabels()["secret_key"]
 	volumeK8sNamespace := volumeInspect.Volume.GetLocator().GetVolumeLabels()["namespace"]
 	volumeK8sPVCName := volumeInspect.Volume.GetLocator().GetVolumeLabels()["pvc"]

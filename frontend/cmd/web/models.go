@@ -220,11 +220,11 @@ type VolumeInfo struct {
 	VolumeDevicePath          string                   `json:"volume_device_path,omitempty"`
 	VolumeAggregationLevel    uint32                   `json:"volume_aggregation_level,omitempty"`
 	VolumeConsumers           []*api.VolumeConsumer    `json:"volume_consumers,omitempty"`
-	VolumeEncrypted           string                   `json:"volume_encrypted,omitempty"`
+	VolumeEncrypted           bool                     `json:"volume_encrypted"`
 	VolumeEncryptionKey       string                   `json:"volume_encryption_key,omitempty"`
 	VolumeK8sNamespace        string                   `json:"volume_k8s_namespace,omitempty"`
 	VolumeK8sPVCName          string                   `json:"volume_k8s_pvc_name,omitempty"`
-	VolumeSharedv4            bool                     `json:"volume_sharedv4,omitempty"`
+	VolumeSharedv4            bool                     `json:"volume_sharedv4"`
 	VolumeSharedv4ServiceSpec *api.Sharedv4ServiceSpec `json:"volume_sharedv4_service_spec,omitempty"`
 	VolumeIOStrategy          *api.IoStrategy          `json:"volume_io_strategy,omitempty"`
 }

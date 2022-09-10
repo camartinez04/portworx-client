@@ -242,3 +242,23 @@ func (m *Repository) UpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request
 	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
 
 }
+
+func (m *Repository) UpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[3]
+
+	ioProfile := exploded[4]
+
+	message, err := IOProfileVolume(volumeID, ioProfile)
+	if err != nil {
+		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "Error trying to update the volume")
+	}
+
+	log.Println(message)
+
+	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
+
+}

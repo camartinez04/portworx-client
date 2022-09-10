@@ -66,6 +66,8 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/update-volume-size/{volume_id}/{size}", Repo.UpdateVolumeSizeHTTP)
 
+		mux.Get("/update-volume-ioprofile/{volume_id}/{ioprofile}", Repo.UpdateVolumeIOProfileHTTP)
+
 		fileServer := http.FileServer(http.Dir("./static/"))
 
 		mux.Handle("/static/*", http.StripPrefix("/frontend/static", fileServer))

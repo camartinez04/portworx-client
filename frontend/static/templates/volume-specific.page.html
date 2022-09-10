@@ -68,9 +68,25 @@
                                 </td>
                               </tr>
                               <tr>
-                                <td class="font-weight-bold mb-0 w-50 px-0">IO Profile:</td>
+                                <td class="font-weight-bold mb-0 w-50 px-0">IO Profile</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0" id="volume-ioprofile" title="{{ $volume.VolumeIOProfile }}"></h5>
+                                  <h5 class="font-weight-normal mb-0" id="volume-ioprofile" title="{{ $volume.VolumeIOProfile }}">
+                                    <input type="hidden" name="_method" value="patch"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateIOProfile({{$volume.VolumeID}})" >{{ $volume.VolumeIOProfile }}</a>
+                                  </h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Is it encrypted:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-encrypted" title="{{ $volume.VolumeEncrypted }}"></h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Is it sharedv4:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-sharedv4" title="{{ $volume.VolumeSharedv4 }}"></h5>
                                 </td>
                               </tr>
                               <tr>
@@ -192,22 +208,28 @@
   
       } 
 
+    var sharedv4 = document.getElementById("volume-sharedv4");
+    btn2 = document.createElement("button");
+    btn2.innerHTML = sharedv4.title;
+    btn2.type = "button";
+    btn2.name = "formBtn";
+    btn2.classList = "btn btn-light";
+    sharedv4.appendChild(btn2);
 
-    var ioprofile = document.getElementById("volume-ioprofile");
-
-    let btn3 = document.createElement("button");
-    btn3.innerHTML = ioprofile.title;
+    var encrypted = document.getElementById("volume-encrypted");
+    btn3 = document.createElement("button");
+    btn3.innerHTML = encrypted.title;
     btn3.type = "button";
     btn3.name = "formBtn";
-    btn3.classList = "btn btn-info";
-    ioprofile.appendChild(btn3);
+    btn3.classList = "btn btn-light";
+    encrypted.appendChild(btn3);
 
     var attached = document.getElementById("volume-attached");
     btn4 = document.createElement("button");
     btn4.innerHTML = attached.title;
     btn4.type = "button";
     btn4.name = "formBtn";
-    btn4.classList = "btn btn-info";
+    btn4.classList = "btn btn-light";
     attached.appendChild(btn4);
 
   </script>
@@ -234,7 +256,7 @@
         <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
           <div class="form-row g-3 align-items-center">
             <select name="ha-value" id="ha-value" placeholder="can be +/- 1 of current">
-              <option value="none" selected disabled hidden>HA level can be +/- 1 current</option>
+              <option value="" selected disabled hidden>HA level can be +/- 1 current</option>
               <option value=3>3</option>
               <option value=2>2</option>
               <option value=1>1</option>
@@ -266,7 +288,7 @@
         `
     attention.custom({
       msg: html,
-      title: "Update volume's size",
+      title: "Increase volume size",
       callback: function (result) {
         console.log("called update volume size");
         window.location.csrf_token = "{{.CSRFToken}}";
@@ -276,6 +298,36 @@
     })  
   }
 </script>
+
+<script>
+  function updateIOProfile(volumeid) {
+    let html = `
+        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
+          <div class="form-row g-3 align-items-center">
+            <select name="io-profile" id="new-ioprofile" type="text" placeholder="select io-profile">
+              <option value="" selected disabled hidden>select io-profile</option>
+              <option value="auto">auto</option>
+              <option value="db_remote">db_remote</option>
+              <option value="db">db</option>
+              <option value="sequential">sequential</option>
+              <option value="sync_shared">sync_shared</option>
+            </select>
+          </div>
+        </form>
+        `
+    attention.custom({
+      msg: html,
+      title: "Update IO Profile",
+      callback: function (result) {
+        console.log("called update volume size");
+        window.location.csrf_token = "{{.CSRFToken}}";
+        window.location.method = "patch";
+        window.location.href = "/frontend/update-volume-ioprofile/" + volumeid + "/" + document.getElementById("new-ioprofile").value;
+      },
+    })  
+  }
+</script>
+
   <!-- Custom js for this page-->
   <script src="/frontend/static/js/dashboard.js"> </script>
   <!-- End custom js for this page-->
