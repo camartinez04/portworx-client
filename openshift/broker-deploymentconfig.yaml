@@ -1,0 +1,65 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: broker-deploymentconfig
+  namespace: portworx-client
+spec:
+  selector:
+    app: pxbroker
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pxbroker
+    spec:
+      containers:
+        - name: pxbroker
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/portworx-client/portworx-client-broker:latest
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+          env:
+          - name: "PORTWORX_GRPC_URL"
+            value: "portworx-api.kube-system:9020"
+          ports:
+          - containerPort: 8080
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/ping || exit 1'
+            initialDelaySeconds: 7
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8080/ping || exit 1'
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxbroker-service
+  labels:
+    app: pxbroker
+spec:
+  selector:
+    app: pxbroker
+  ports:
+  - port: 80
+    targetPort: 8080

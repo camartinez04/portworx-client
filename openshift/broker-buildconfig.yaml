@@ -1,0 +1,23 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: portworx-client-broker-bc
+  namespace: portworx-client
+  labels:
+    app: portworx-client-broker-bc
+spec:
+  source:
+    type: Git
+    git:
+      uri: https://github.com/camartinez04/portworx-client
+    contextDir: broker
+  strategy:
+    type: Docker                      
+    dockerStrategy:
+      dockerfilePath: broker.dockerfile
+  output:
+    to:
+      kind: ImageStreamTag
+      name: portworx-client-broker:latest
+
+#oc create is portworx-client-broker -n portworx-client

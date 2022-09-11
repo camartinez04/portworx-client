@@ -8,9 +8,15 @@
 		},
 		{
 			"path": "kubernetes"
-		}
+		},
 		{
 			"path": "images"
 
+		},
+		{
+			"path": "openshift"
+
 		}
+
 	]
+}

@@ -1,0 +1,65 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: frontend-deploymentconfig
+  namespace: portworx-client
+spec:
+  selector:
+    app: pxfrontend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pxfrontend
+    spec:
+      containers:
+        - name: pxfrontend
+          image: >-
+            image-registry.openshift-image-registry.svc:5000/portworx-client/portworx-client-frontend:latest
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+          env:
+          - name: "BROKER_URL"
+            value: "http://pxbroker-service"
+          ports:
+          - containerPort: 8081
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8081/ping || exit 1'
+            initialDelaySeconds: 7
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8081/ping || exit 1'
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxfrontend-service
+  labels:
+    app: pxfrontend
+spec:
+  selector:
+    app: pxfrontend
+  ports:
+  - port: 80
+    targetPort: 8081
