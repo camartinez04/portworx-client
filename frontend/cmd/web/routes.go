@@ -38,9 +38,9 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/volume/{volume_id}", Repo.VolumeInformation)
 
-		mux.Post("/volume/{volume_id}", Repo.VolumeInformation)
+		//mux.Post("/volume/{volume_id}", Repo.VolumeInformation)
 
-		mux.Delete("/volume/{volume_id}", Repo.VolumeInformation)
+		//mux.Delete("/volume/{volume_id}", Repo.VolumeInformation)
 
 		mux.Get("/nodes", Repo.Nodes)
 
@@ -56,7 +56,7 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/create-volume", Repo.CreateVolume)
 
-		mux.Post("/create-volume", Repo.PostCreateVolume)
+		//mux.Post("/create-volume", Repo.PostCreateVolume)
 
 		mux.Get("/documentation", Repo.Documentation)
 
