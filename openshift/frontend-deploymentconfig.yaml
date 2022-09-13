@@ -25,7 +25,7 @@ spec:
               memory: 100Mi
           env:
           - name: "BROKER_URL"
-            value: "http://pxbroker-service"
+            value: "http://pxbroker-service:8080"
           ports:
           - containerPort: 8081
           livenessProbe:
@@ -61,5 +61,5 @@ spec:
   selector:
     app: pxfrontend
   ports:
-  - port: 80
+  - port: 8081
     targetPort: 8081
