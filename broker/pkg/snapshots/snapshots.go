@@ -105,6 +105,32 @@ func StatusCloudSnap(conn *grpc.ClientConn, volumeID string) (jsonStatus string,
 
 }
 
+// GetCloudSnaps gets the cloud snapshots of a volume
+func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnaps []string, errorFound error) {
+
+	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
+
+	// Now check the status of the backup
+	backupStatus, errorFound := cloudbackups.EnumerateWithFilters(
+		context.Background(),
+		&api.SdkCloudBackupEnumerateWithFiltersRequest{
+			SrcVolumeId: volumeID,
+		})
+	if errorFound != nil {
+		log.Printf("Error getting backup status: %v", errorFound)
+		return nil, errorFound
+	}
+
+	for _, status := range backupStatus.GetBackups() {
+
+		cloudSnaps = append(cloudSnaps, status.GetId())
+
+	}
+
+	return cloudSnaps, nil
+
+}
+
 // CloudSnapHistory gets the history of a cloud snapshot
 func CloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 

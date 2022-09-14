@@ -9,6 +9,7 @@ import (
 
 	"github.com/camartinez04/portworx-client/broker/pkg/cluster"
 	"github.com/camartinez04/portworx-client/broker/pkg/nodes"
+	"github.com/camartinez04/portworx-client/broker/pkg/snapshots"
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 )
 
@@ -567,5 +568,27 @@ func (app *AppConfig) deleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+// getCloudSnapsHTTP http function to get a list of Portworx CloudSnaps.
+func (app *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[2]
+
+	cloudSnaps, err := snapshots.GetCloudSnaps(app.Conn, volumeID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonCloudSnapList{
+		Error:         false,
+		CloudSnapList: cloudSnaps,
+	}
+
+	writeJSON(w, http.StatusOK, resp)
 
 }

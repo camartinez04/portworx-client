@@ -123,6 +123,11 @@ type JsonApiVolumesList struct {
 	ApiVolumesList map[string]*api.SdkVolumeInspectResponse `json:"all_volumes_list,omitempty"`
 }
 
+type JsonCloudSnapList struct {
+	Error         bool     `json:"error,omitempty"`
+	CloudSnapList []string `json:"cloud_snap_list,omitempty"`
+}
+
 const (
 	Bytes   = uint64(1)
 	KB      = Bytes * uint64(1024)
