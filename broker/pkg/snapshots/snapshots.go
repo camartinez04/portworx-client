@@ -221,7 +221,7 @@ func AWSValidateS3CloudCredential(conn *grpc.ClientConn, credentialId string) er
 }
 
 // AWSInspectS3CloudCredential inspects the given an AWS S3 Cloud credential
-func AWSInspectS3CloudCredential(conn *grpc.ClientConn, credentialId string) error {
+func AWSInspectS3CloudCredential(conn *grpc.ClientConn, credentialId string) (credResponse *api.SdkCredentialInspectResponse, errorFound error) {
 
 	creds := api.NewOpenStorageCredentialsClient(conn)
 	credResponse, err := creds.Inspect(
@@ -236,11 +236,9 @@ func AWSInspectS3CloudCredential(conn *grpc.ClientConn, credentialId string) err
 		os.Exit(1)
 	}
 
-	response := credResponse.GetAwsCredential()
+	log.Printf("Credential ID %s inspected with name %s", credentialId, credResponse.GetName())
 
-	log.Printf("Credential ID %s inspected with response %s", credentialId, response)
-
-	return nil
+	return credResponse, nil
 
 }
 

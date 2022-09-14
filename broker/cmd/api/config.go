@@ -128,6 +128,11 @@ type JsonCloudSnapList struct {
 	CloudSnapList []string `json:"cloud_snap_list,omitempty"`
 }
 
+type JsonCredentialInspect struct {
+	Error             bool                             `json:"error,omitempty"`
+	CredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
+}
+
 const (
 	Bytes   = uint64(1)
 	KB      = Bytes * uint64(1024)

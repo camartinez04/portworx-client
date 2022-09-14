@@ -50,6 +50,7 @@ func (app *AppConfig) routes() http.Handler {
 	mux.Get("/getallnodesinfo", app.getAllNodesInfoHTTP)
 	mux.Get("/getnodeinfo/{node_id}", app.getNodeInfoHTTP)
 	mux.Get("/getcloudsnaps/{volume_id}", app.getCloudSnapsHTTP)
+	mux.Get("/getinspectawscloudcreds", app.getInspectAWSCloudCredentialHTTP)
 
 	return mux
 

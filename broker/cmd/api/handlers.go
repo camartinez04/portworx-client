@@ -592,3 +592,22 @@ func (app *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) 
 	writeJSON(w, http.StatusOK, resp)
 
 }
+
+func (app *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
+
+	cloudCredentialID := r.Header.Get("Cloud-Credential-ID")
+
+	cloudCred, err := snapshots.AWSInspectS3CloudCredential(app.Conn, cloudCredentialID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonCredentialInspect{
+		Error:             false,
+		CredentialInspect: *cloudCred,
+	}
+
+	writeJSON(w, http.StatusOK, resp)
+
+}
