@@ -611,3 +611,51 @@ func (app *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 	writeJSON(w, http.StatusOK, resp)
 
 }
+
+func (app *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
+
+	credName := r.Header.Get("Cloud-Credential-Name")
+	credAccessKey := r.Header.Get("Cloud-Credential-Access-Key")
+	credBucketName := r.Header.Get("Cloud-Credential-Bucket-Name")
+	credSecretKey := r.Header.Get("Cloud-Credential-Secret-Key")
+	credRegion := r.Header.Get("Cloud-Credential-Region")
+	credEndpoint := r.Header.Get("Cloud-Credential-Endpoint")
+	credSSL, err := strconv.ParseBool(r.Header.Get("Cloud-Credential-Disable-SSL"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+	credIAM, err := strconv.ParseBool(r.Header.Get("Cloud-Credential-IAM-Policy-Enabled"))
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	cloudCredentialID, err := snapshots.AWSCreateS3CloudCredential(app.Conn, credName, credBucketName, credAccessKey, credSecretKey, credEndpoint, credRegion, credSSL, credIAM)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	//Validate the Cloud Credential
+	err = snapshots.AWSValidateS3CloudCredential(app.Conn, cloudCredentialID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	//Inspect the Cloud Credential
+	credDetails, err := snapshots.AWSInspectS3CloudCredential(app.Conn, cloudCredentialID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonCredentialInspect{
+		Error:             false,
+		CredentialInspect: *credDetails,
+	}
+
+	writeJSON(w, http.StatusCreated, resp)
+
+}
