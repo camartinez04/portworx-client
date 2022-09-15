@@ -106,7 +106,7 @@ func StatusCloudSnap(conn *grpc.ClientConn, volumeID string) (jsonStatus string,
 }
 
 // GetCloudSnaps gets the cloud snapshots of a volume
-func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnaps []string, errorFound error) {
+func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnaps []*api.SdkCloudBackupInfo, errorFound error) {
 
 	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
 
@@ -121,13 +121,9 @@ func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnaps []string,
 		return nil, errorFound
 	}
 
-	for _, status := range backupStatus.GetBackups() {
+	cloudBackupInfo := backupStatus.GetBackups()
 
-		cloudSnaps = append(cloudSnaps, status.GetId())
-
-	}
-
-	return cloudSnaps, nil
+	return cloudBackupInfo, nil
 
 }
 

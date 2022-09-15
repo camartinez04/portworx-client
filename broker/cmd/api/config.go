@@ -124,8 +124,8 @@ type JsonApiVolumesList struct {
 }
 
 type JsonCloudSnapList struct {
-	Error         bool     `json:"error,omitempty"`
-	CloudSnapList []string `json:"cloud_snap_list,omitempty"`
+	Error         bool                      `json:"error,omitempty"`
+	CloudSnapList []*api.SdkCloudBackupInfo `json:"cloud_snap_list,omitempty"`
 }
 
 type JsonCredentialInspect struct {
