@@ -612,6 +612,7 @@ func (app *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 
 }
 
+// postCreateAWSCloudCredentialHTTP http function to create a Portworx AWS Cloud Credential.
 func (app *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
 
 	credName := r.Header.Get("Cloud-Credential-Name")
@@ -657,5 +658,26 @@ func (app *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 	}
 
 	writeJSON(w, http.StatusCreated, resp)
+
+}
+
+// deleteAWSCloudCredentialHTTP http function to delete a Portworx AWS Cloud Credential.
+func (app *AppConfig) deleteAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
+
+	cloudCredentialID := r.Header.Get("Cloud-Credential-ID")
+
+	err := snapshots.AWSDeleteS3CloudCredential(app.Conn, cloudCredentialID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:   false,
+		Message: "Cloud Credential deleted successfully",
+		CredID:  cloudCredentialID,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
 
 }

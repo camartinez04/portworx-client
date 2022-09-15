@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+// AppConfig holds the application configuration
 type AppConfig struct {
 	Session      *scs.SessionManager
 	Conn         *grpc.ClientConn
@@ -21,10 +22,12 @@ type AppConfig struct {
 	Models       Models
 }
 
+// Models holds the models
 type Models struct {
 	LogEntry LogEntry
 }
 
+// LogEntry holds the log entry model
 type LogEntry struct {
 	ID        string    `bson:"_id,omitempty" json:"id,omitempty"`
 	Name      string    `bson:"name" json:"name"`
@@ -42,8 +45,10 @@ type JsonResponse struct {
 	VolumeID string `json:"volume_id,omitempty"`
 	NodeID   string `json:"node_id,omitempty"`
 	SnapID   string `json:"snap_id,omitempty"`
+	CredID   string `json:"cred_id,omitempty"`
 }
 
+// JsonClusterInfo is the response format for JSON for ClusterInfo
 type JsonClusterInfo struct {
 	Error         bool   `json:"error,omitempty"`
 	ClusterUUID   string `json:"cluster_uuid,omitempty"`
@@ -51,6 +56,7 @@ type JsonClusterInfo struct {
 	ClusterName   string `json:"cluster_name,omitempty"`
 }
 
+// JsonClusterCapacity is the response format for JSON for ClusterCapacity
 type JsonClusterCapacity struct {
 	Error                   bool    `json:"error,omitempty"`
 	ClusterCapacity         uint64  `json:"cluster_capacity,omitempty"`
@@ -60,26 +66,31 @@ type JsonClusterCapacity struct {
 	ClusterPercentAvailable float64 `json:"cluster_percent_available,omitempty"`
 }
 
+// JsonGetAllVolumesInfo is the response format for JSON for GetAllVolumesInfo
 type JsonGetAllVolumesInfo struct {
 	Error          bool                `json:"error,omitempty"`
 	AllVolumesInfo []config.VolumeInfo `json:"all_volumes_info,omitempty"`
 }
 
+// JsonGetAllNodesInfo is the response format for JSON for GetAllNodesInfo
 type JsonGetAllNodesInfo struct {
 	Error        bool              `json:"error,omitempty"`
 	AllNodesInfo []config.NodeInfo `json:"all_nodes_info,omitempty"`
 }
 
+// JsonGetVolumeInfo is the response format for JSON for GetVolumeInfo
 type JsonGetVolumeInfo struct {
 	Error      bool              `json:"error,omitempty"`
 	VolumeInfo config.VolumeInfo `json:"volume_info,omitempty"`
 }
 
+// JsonGetNodeInfo is the response format for JSON for GetNodeInfo
 type JsonGetNodeInfo struct {
 	Error    bool            `json:"error,omitempty"`
 	NodeInfo config.NodeInfo `json:"node_info,omitempty"`
 }
 
+// JsonVolumeUsage is the response format for JSON for VolumeUsage
 type JsonVolumeUsage struct {
 	Error                  bool    `json:"error,omitempty"`
 	VolumeUsage            float64 `json:"volume_usage,omitempty"`
@@ -89,6 +100,7 @@ type JsonVolumeUsage struct {
 	VolumeAvailablePercent float32 `json:"volume_available_percent,omitempty"`
 }
 
+// JsonVolumeInspect is the response format for JSON for VolumeInspect
 type JsonVolumeInspect struct {
 	Error              bool     `json:"error,omitempty"`
 	VolumeInspect      any      `json:"volume_inspect,omitempty"`
@@ -98,36 +110,43 @@ type JsonVolumeInspect struct {
 	IoProfileString    string   `json:"io_profile_string,omitempty"`
 }
 
+// JsonVolumeList is the response format for JSON for VolumeList
 type JsonVolumeList struct {
 	Error      bool                         `json:"error,omitempty"`
 	VolumeList map[string]config.VolumeInfo `json:"volume_list,omitempty"`
 }
 
+// JsonNodeList is the response format for JSON for NodeList
 type JsonNodeList struct {
 	Error    bool                `json:"error,omitempty"`
 	NodeList map[string][]string `json:"node_list,omitempty"`
 }
 
+// JsonNodesOfVolume is the response format for JSON for NodesOfVolume
 type JsonNodesOfVolume struct {
 	Error         bool     `json:"error,omitempty"`
 	NodesOfVolume []string `json:"nodes_of_volume,omitempty"`
 }
 
+// JsonAllVolumesList is the response format for JSON for AllVolumesList
 type JsonAllVolumesList struct {
 	Error          bool     `json:"error,omitempty"`
 	AllVolumesList []string `json:"all_volumes_list,omitempty"`
 }
 
+// JsonApiVolumesList is the response format for JSON for ApiVolumesList
 type JsonApiVolumesList struct {
 	Error          bool                                     `json:"error,omitempty"`
 	ApiVolumesList map[string]*api.SdkVolumeInspectResponse `json:"all_volumes_list,omitempty"`
 }
 
+// JsonCloudSnapList is the response format for JSON for CloudSnapList
 type JsonCloudSnapList struct {
 	Error         bool                      `json:"error,omitempty"`
 	CloudSnapList []*api.SdkCloudBackupInfo `json:"cloud_snap_list,omitempty"`
 }
 
+// JsonCredentialInspect is the response format for JSON for CredentialInspect
 type JsonCredentialInspect struct {
 	Error             bool                             `json:"error,omitempty"`
 	CredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
