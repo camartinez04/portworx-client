@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/cors"
 )
 
+// routes sets up the routes for the API
 func (app *AppConfig) routes() http.Handler {
 
 	mux := chi.NewRouter()
@@ -25,6 +26,7 @@ func (app *AppConfig) routes() http.Handler {
 
 	mux.Get("/getpxclustercapacity", app.getPXClusterCapacityHTTP)
 	mux.Get("/getpxcluster", app.getPXClusterHTTP)
+	mux.Post("/getpxclusteralarms", app.getPXClusterAlarmsHTTP)
 
 	mux.Post("/postcreatevolume", app.postCreateNewVolumeHTTP)
 	mux.Get("/getvolumeinfo/{volume_id}", app.getVolumeInfoHTTP)

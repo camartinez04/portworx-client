@@ -152,6 +152,11 @@ type JsonCredentialInspect struct {
 	CredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
 }
 
+type JsonAlarmList struct {
+	Error     bool         `json:"error,omitempty"`
+	AlarmList []*api.Alert `json:"alarm_list,omitempty"`
+}
+
 const (
 	Bytes   = uint64(1)
 	KB      = Bytes * uint64(1024)

@@ -199,6 +199,7 @@ func (app *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request)
 
 }
 
+// getReplicasPerNodeHTTP http function to get the replicas per node.
 func (app *AppConfig) getReplicasPerNodeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
@@ -593,6 +594,7 @@ func (app *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) 
 
 }
 
+// getInspectAWSCloudCredentialHTTP http function to get a Portworx AWS Cloud Credential.
 func (app *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudCredentialID := r.Header.Get("Cloud-Credential-ID")
@@ -679,5 +681,23 @@ func (app *AppConfig) deleteAWSCloudCredentialHTTP(w http.ResponseWriter, r *htt
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+func (app *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Request) {
+
+	alarms, err := cluster.ClusterAlarms(app.Conn)
+	if err != nil {
+		log.Printf("Error getting cluster alarms: %v", err)
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonAlarmList{
+		Error:     false,
+		AlarmList: alarms,
+	}
+
+	writeJSON(w, http.StatusOK, resp)
 
 }

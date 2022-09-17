@@ -48,6 +48,7 @@ func (app *AppConfig) errorJSON(w http.ResponseWriter, err error, status ...int)
 
 }
 
+// ServerError writes a 500 error to the response
 func ServerError(w http.ResponseWriter, err error) {
 
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
