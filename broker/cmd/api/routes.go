@@ -26,7 +26,7 @@ func (app *AppConfig) routes() http.Handler {
 
 	mux.Get("/getpxclustercapacity", app.getPXClusterCapacityHTTP)
 	mux.Get("/getpxcluster", app.getPXClusterHTTP)
-	mux.Post("/getpxclusteralarms", app.getPXClusterAlarmsHTTP)
+	mux.Get("/getpxclusteralarms", app.getPXClusterAlarmsHTTP)
 
 	mux.Post("/postcreatevolume", app.postCreateNewVolumeHTTP)
 	mux.Get("/getvolumeinfo/{volume_id}", app.getVolumeInfoHTTP)
