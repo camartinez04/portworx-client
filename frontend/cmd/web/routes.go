@@ -56,7 +56,7 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/create-volume", Repo.CreateVolume)
 
-		//mux.Post("/create-volume", Repo.PostCreateVolume)
+		mux.Post("/create-volume", Repo.PostCreateVolume)
 
 		mux.Get("/documentation", Repo.Documentation)
 
