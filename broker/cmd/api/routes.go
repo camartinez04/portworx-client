@@ -55,6 +55,8 @@ func (app *AppConfig) routes() http.Handler {
 	mux.Get("/getinspectawscloudcreds", app.getInspectAWSCloudCredentialHTTP)
 	mux.Post("/postcreateawscloudcreds", app.postCreateAWSCloudCredentialHTTP)
 	mux.Delete("/deleteawscloudcreds", app.deleteAWSCloudCredentialHTTP)
+	mux.Post("/postcreatecloudsnap", app.postCreateCloudSnapHTTP)
+	mux.Post("/postcreatelocalsnap", app.postCreateLocalSnapHTTP)
 
 	return mux
 

@@ -15,8 +15,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// CreateSnapshot creates a local snapshot of a volume
-func CreateSnapshot(conn *grpc.ClientConn, volumeID string) (snapID string, errorFound error) {
+// CreateLocalSnap creates a local snapshot of a volume
+func CreateLocalSnap(conn *grpc.ClientConn, volumeID string) (snapID string, errorFound error) {
 
 	volumenes := api.NewOpenStorageVolumeClient(conn)
 

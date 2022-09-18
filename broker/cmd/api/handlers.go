@@ -684,6 +684,7 @@ func (app *AppConfig) deleteAWSCloudCredentialHTTP(w http.ResponseWriter, r *htt
 
 }
 
+// getPXClusterAlarmsHTTP http function to get a list of Portworx Cluster Alarms.
 func (app *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	alarms, err := cluster.ClusterAlarms(app.Conn)
@@ -698,5 +699,48 @@ func (app *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Requ
 	}
 
 	writeJSON(w, http.StatusOK, resp)
+
+}
+
+// postCreateLocalSnapHTTP http function to create a Portworx Local Snapshot.
+func (app *AppConfig) postCreateLocalSnapHTTP(w http.ResponseWriter, r *http.Request) {
+
+	volumeID := r.Header.Get("Volume-ID")
+
+	createSnap, err := snapshots.CreateLocalSnap(app.Conn, volumeID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:   false,
+		Message: "Local Snapshot created successfully",
+		SnapID:  createSnap,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+}
+
+// postCreateCloudSnapHTTP http function to create a Portworx CloudSnap.
+func (app *AppConfig) postCreateCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
+
+	cloudCredentialID := r.Header.Get("Cloud-Credential-ID")
+
+	volumeID := r.Header.Get("Volume-ID")
+
+	createCloudSnap, err := snapshots.CreateCloudSnap(app.Conn, volumeID, cloudCredentialID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonCloudSnap{
+		Error:   false,
+		Message: "Cloud Snap of volume %s created successfully" + volumeID,
+		TaskID:  createCloudSnap,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
 
 }

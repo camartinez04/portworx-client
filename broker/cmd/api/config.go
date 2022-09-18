@@ -152,9 +152,17 @@ type JsonCredentialInspect struct {
 	CredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
 }
 
+// JsonAlarmList is the response format for JSON for AlarmList
 type JsonAlarmList struct {
 	Error     bool         `json:"error,omitempty"`
 	AlarmList []*api.Alert `json:"alarm_list,omitempty"`
+}
+
+// JsonCloudSnap is the response format for JSON for CloudSnap
+type JsonCloudSnap struct {
+	Error   bool   `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
+	TaskID  string `json:"task_id,omitempty"`
 }
 
 const (
