@@ -3,7 +3,6 @@ package cluster
 import (
 	"context"
 	"os"
-	"time"
 
 	"log"
 
@@ -11,7 +10,6 @@ import (
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -96,179 +94,49 @@ func ClusterCapacity(conn *grpc.ClientConn) (mbCapacity uint64, mbUsed uint64, m
 
 }
 
-// ClusterAlarms gRPC client to get the Portworx cluster alarms
+// ClusterAlarms prints the Portworx cluster alarms
 func ClusterAlarms(conn *grpc.ClientConn) (alarms []*api.Alert, errorFound error) {
 
 	// Create a cluster client
-	cluster := api.NewOpenStorageAlertsClient(conn)
+	alertsClient := api.NewOpenStorageAlertsClient(conn)
 
-	//var clusterServer api.OpenStorageAlertsServer
-
-	//var clusterFilters api.OpenStorageAlerts_EnumerateWithFiltersServer
-
-	var queries api.SdkAlertsEnumerateWithFiltersRequest
-
-	queries.Queries = []*api.SdkAlertsQuery{
-		{
-			Query: &api.SdkAlertsQuery_AlertTypeQuery{
-
-				AlertTypeQuery: &api.SdkAlertsAlertTypeQuery{
-					ResourceType: api.ResourceType_RESOURCE_TYPE_NODE,
-					AlertType:    2,
-				},
-			},
-			Opts: []*api.SdkAlertsOption{
-				{
-					Opt: &api.SdkAlertsOption_MinSeverityType{
-						MinSeverityType: api.SeverityType_SEVERITY_TYPE_ALARM,
-					},
-				},
-				{
-					Opt: &api.SdkAlertsOption_TimeSpan{
-						TimeSpan: &api.SdkAlertsTimeSpan{
-							StartTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
-							EndTime:   timestamppb.Now(),
-						},
-					},
-				},
-			},
-		},
-	}
-
-	// Get the cluster alarms
-	clusterAlarms, erroFound := cluster.EnumerateWithFilters(
-		context.Background(),
-		&api.SdkAlertsEnumerateWithFiltersRequest{
-			Queries: []*api.SdkAlertsQuery{
-				{
-					Query: &api.SdkAlertsQuery_AlertTypeQuery{
-
-						AlertTypeQuery: &api.SdkAlertsAlertTypeQuery{
-							ResourceType: api.ResourceType_RESOURCE_TYPE_NODE,
-							AlertType:    2,
-						},
-					},
-					Opts: []*api.SdkAlertsOption{
-						{
-							Opt: &api.SdkAlertsOption_MinSeverityType{
-								MinSeverityType: api.SeverityType_SEVERITY_TYPE_ALARM,
-							},
-						},
-						{
-							Opt: &api.SdkAlertsOption_TimeSpan{
-								TimeSpan: &api.SdkAlertsTimeSpan{
-									StartTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
-									EndTime:   timestamppb.Now(),
-								},
-							},
-						},
-					},
-				},
-				{
-					Query: &api.SdkAlertsQuery_AlertTypeQuery{
-
-						AlertTypeQuery: &api.SdkAlertsAlertTypeQuery{
-							ResourceType: api.ResourceType_RESOURCE_TYPE_CLUSTER,
-							AlertType:    2,
-						},
-					},
-					Opts: []*api.SdkAlertsOption{
-						{
-							Opt: &api.SdkAlertsOption_MinSeverityType{
-								MinSeverityType: api.SeverityType_SEVERITY_TYPE_ALARM,
-							},
-						},
-						{
-							Opt: &api.SdkAlertsOption_TimeSpan{
-								TimeSpan: &api.SdkAlertsTimeSpan{
-									StartTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
-									EndTime:   timestamppb.Now(),
-								},
-							},
-						},
-					},
-				},
-				{
-					Query: &api.SdkAlertsQuery_AlertTypeQuery{
-
-						AlertTypeQuery: &api.SdkAlertsAlertTypeQuery{
-							ResourceType: api.ResourceType_RESOURCE_TYPE_DRIVE,
-							AlertType:    2,
-						},
-					},
-					Opts: []*api.SdkAlertsOption{
-						{
-							Opt: &api.SdkAlertsOption_MinSeverityType{
-								MinSeverityType: api.SeverityType_SEVERITY_TYPE_ALARM,
-							},
-						},
-						{
-							Opt: &api.SdkAlertsOption_TimeSpan{
-								TimeSpan: &api.SdkAlertsTimeSpan{
-									StartTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
-									EndTime:   timestamppb.Now(),
-								},
-							},
-						},
-					},
-				},
-				{
-					Query: &api.SdkAlertsQuery_AlertTypeQuery{
-
-						AlertTypeQuery: &api.SdkAlertsAlertTypeQuery{
-							ResourceType: api.ResourceType_RESOURCE_TYPE_VOLUME,
-							AlertType:    2,
-						},
-					},
-					Opts: []*api.SdkAlertsOption{
-						{
-							Opt: &api.SdkAlertsOption_MinSeverityType{
-								MinSeverityType: api.SeverityType_SEVERITY_TYPE_ALARM,
-							},
-						},
-						{
-							Opt: &api.SdkAlertsOption_TimeSpan{
-								TimeSpan: &api.SdkAlertsTimeSpan{
-									StartTime: timestamppb.New(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)),
-									EndTime:   timestamppb.Now(),
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	)
+	alertsToClient, erroFound := alertsClient.EnumerateWithFilters(context.Background(), &api.SdkAlertsEnumerateWithFiltersRequest{
+		Queries: []*api.SdkAlertsQuery{{}},
+	})
 	if erroFound != nil {
-		log.Printf("Error %v", erroFound)
-		return nil, erroFound
-
-	}
-
-	clusterAlarms.Context()
-
-	alarmsGotten, erroFound := clusterAlarms.Recv()
-
-	//clusterFilters.Send(alarmsGotten)
-
-	//errorFound = clusterServer.EnumerateWithFilters(&queries, clusterFilters)
-	//if errorFound != nil {
-	//	log.Printf("Error %v", errorFound)
-	//	return nil, errorFound
-	//}
-
-	log.Printf("Alerts: %v", alarmsGotten)
-	if erroFound != nil {
-		log.Printf("Error trying to get response %v", erroFound)
 		return nil, erroFound
 	}
 
-	alerts := alarmsGotten.GetAlerts()
+	// Get the context of the gRPC connection
+	alertsToClient.Context()
+	if erroFound != nil {
+		log.Printf("Error value: %v", erroFound)
+		return nil, erroFound
+	}
 
-	//log.Printf("Cluster alarms: %v", alerts)
+	// Declare the context as done
+	alertsToClient.Context().Done()
+	if erroFound != nil {
+		log.Printf("Error value: %v", erroFound)
+		return nil, erroFound
+	}
 
-	clusterAlarms.CloseSend()
+	// Close the connection
+	alertsToClient.CloseSend()
+	if erroFound != nil {
+		log.Printf("Error value: %v", erroFound)
+		return nil, erroFound
+	}
 
-	return alerts, nil
+	// Receive the Portworx alerts obtained from the gRPC connection
+	alertList, erroFound := alertsToClient.Recv()
+	if erroFound != nil {
+		log.Printf("Error found at this moment of Recv(): %v with error %v", alertList, erroFound)
+		return nil, erroFound
+	}
+
+	alarms = alertList.GetAlerts()
+	// Get all the alerts
+	return alarms, nil
 
 }

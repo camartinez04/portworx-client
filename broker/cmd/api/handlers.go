@@ -688,7 +688,6 @@ func (app *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Requ
 
 	alarms, err := cluster.ClusterAlarms(app.Conn)
 	if err != nil {
-		log.Printf("Error getting cluster alarms: %v", err)
 		app.errorJSON(w, err)
 		return
 	}
