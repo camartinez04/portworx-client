@@ -185,40 +185,82 @@
 
       var element = document.getElementById("check-node-status");
 
+      if (element.title == "STATUS_OK") {
 
-        if(element.title == "STATUS_OK") {
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node Up";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-success btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
 
-          let btn = document.createElement("button");
-          btn.innerHTML = "Node Up";
-          btn.type = "button";
-          btn.name = "formBtn";
-          btn.classList = "btn btn-inverse-success btn-fw";
-          element.appendChild(btn);
+      } else if (element.title == "STATUS_STORAGE_DOWN") { 
 
-          console.log("Node Up");
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node Down";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
 
-        } else if (element.value == "STATUS_STORAGE_DOWN" || element.value == "STATUS_ERROR" || element.value == "STATUS_DECOMMISSION" || element.value == "STATUS_OFFLINE"  || element.value == "STATUS_NONE") {
-          
-          let btn = document.createElement("button");
-          btn.innerHTML = "Node Down";
-          btn.type = "button";
-          btn.name = "formBtn";
-          btn.classList = "btn btn-inverse-danger btn-fw";
-          element.appendChild(btn);
 
-          console.log("Node Down");
+      } else if (element.title == "STATUS_ERROR") {
 
-        } else {
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node with Error";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
 
-          let btn = document.createElement("button");
-          btn.innerHTML = "Node Warning";
-          btn.type = "button";
-          btn.name = "formBtn";
-          btn.classList = "btn btn-inverse-warning btn-fw";
-          element.appendChild(btn);
 
-          console.log("Node Warning");
+      } else  if (element.title == "STATUS_DECOMMISSION") {
 
+        let btn = document.createElement("button");
+        btn.innerHTML = "Decommissioned Node";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
+
+
+      } else if  (element.title == "STATUS_OFFLINE") {  
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Offline Node";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
+
+
+      } else if (element.title == "STATUS_NONE") {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Status None";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
+
+      }  else if (element.title == "STATUS_MAINTENANCE") {
+      
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node in Maintenance";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-warning btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
+      
+      }  else {
+      
+        let btn = document.createElement("button");
+        btn.innerHTML = "Warning";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-warning btn-fw";
+        document.getElementById("check-node-status").appendChild(btn);
+      
       }
 
     </script>

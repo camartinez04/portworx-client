@@ -172,8 +172,9 @@
   <script >
 
     var element = document.getElementById("check-volume-status");
-  
-      if(element.title == "VOLUME_STATUS_UP") {
+
+
+      if (element.title == "VOLUME_STATUS_UP") {
   
         let btn = document.createElement("button");
         btn.innerHTML = "Volume Up";
@@ -184,7 +185,7 @@
   
         console.log("Volume Up");
   
-      } else if (element.value == "VOLUME_STATUS_DEGRADED"  ) {
+      } else if (element.title == "VOLUME_STATUS_DEGRADED" ) {
         
         let btn = document.createElement("button");
         btn.innerHTML = "Volume Degraded";
@@ -196,17 +197,15 @@
         console.log("Volume Degraded");
   
       } else {
-  
+
         let btn = document.createElement("button");
         btn.innerHTML = "Volume Down";
         btn.type = "button";
         btn.name = "formBtn";
         btn.classList = "btn btn-inverse-danger btn-fw";
         element.appendChild(btn);
-  
-        console.log("Volume Down");
-  
-      } 
+
+      }
 
     var sharedv4 = document.getElementById("volume-sharedv4");
     btn2 = document.createElement("button");

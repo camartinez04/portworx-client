@@ -111,7 +111,7 @@
 
         console.log("Volume Up");
 
-      } else if (elements.item(i).value == "VOLUME_STATUS_DEGRADED"  ) {
+      } else if (elements.item(i).title == "VOLUME_STATUS_DEGRADED"  ) {
         
         let btn = document.createElement("button");
         btn.innerHTML = "Volume Degraded";
@@ -121,19 +121,18 @@
         document.getElementById("check-volume-" + i).appendChild(btn);
 
         console.log("Volume Degraded");
-
+ 
       } else {
-
+      
         let btn = document.createElement("button");
         btn.innerHTML = "Volume Down";
         btn.type = "button";
         btn.name = "formBtn";
         btn.classList = "btn btn-inverse-danger btn-fw";
         document.getElementById("check-volume-" + i).appendChild(btn);
+      
+      }
 
-        console.log("Volume Down");
-
-      } 
     }
   </script>
 

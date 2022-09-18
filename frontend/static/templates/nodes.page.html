@@ -109,10 +109,8 @@
         btn.classList = "btn btn-inverse-success btn-fw";
         document.getElementById("check-node-" + i).appendChild(btn);
 
-        console.log("Node Up");
+      } else if (elements.item(i).title == "STATUS_STORAGE_DOWN") { 
 
-      } else if (elements.item(i).value == "STATUS_STORAGE_DOWN" || elements.item(i).value == "STATUS_ERROR" || elements.item(i).value == "STATUS_DECOMMISSION" || elements.item(i).value == "STATUS_OFFLINE"  || elements.item(i).value == "STATUS_NONE") {
-        
         let btn = document.createElement("button");
         btn.innerHTML = "Node Down";
         btn.type = "button";
@@ -120,20 +118,66 @@
         btn.classList = "btn btn-inverse-danger btn-fw";
         document.getElementById("check-node-" + i).appendChild(btn);
 
-        console.log("Node Down");
 
-      } else {
+      } else if (elements.item(i).title == "STATUS_ERROR") {
 
         let btn = document.createElement("button");
-        btn.innerHTML = "Node Warning";
+        btn.innerHTML = "Node with Error";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+
+
+      } else  if (elements.item(i).title == "STATUS_DECOMMISSION") {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Decommissioned Node";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+
+
+      } else if  (elements.item(i).title == "STATUS_OFFLINE") {  
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Offline Node";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+
+
+      } else if (elements.item(i).title == "STATUS_NONE") {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Status None";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+
+      } else if (elements.item(i).title == "STATUS_MAINTENANCE") {
+      
+        let btn = document.createElement("button");
+        btn.innerHTML = "Node in Maintenance";
         btn.type = "button";
         btn.name = "formBtn";
         btn.classList = "btn btn-inverse-warning btn-fw";
         document.getElementById("check-node-" + i).appendChild(btn);
 
-        console.log("Node Warning");
+      } else {
+      
+        let btn = document.createElement("button");
+        btn.innerHTML = "Warning";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-warning btn-fw";
+        document.getElementById("check-node-" + i).appendChild(btn);
+      
+      }
 
-      } 
     }
 
   </script>
