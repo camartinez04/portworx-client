@@ -32,10 +32,13 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/", Repo.Cluster)
 
+		mux.Get("/oauth/callback", Repo.Cluster)
+
 		mux.Get("/cluster", Repo.Cluster)
 
 		mux.Get("/volumes", Repo.Volumes)
 
+		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/volume/{volume_id}", Repo.VolumeInformation)
 
 		//mux.Post("/volume/{volume_id}", Repo.VolumeInformation)
@@ -44,6 +47,7 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/nodes", Repo.Nodes)
 
+		middleware.SetHeader("Node-ID", "{node_id}")
 		mux.Get("/node/{node_id}", Repo.NodeInformation)
 
 		mux.Get("/snapshots", Repo.Snaps)
@@ -60,12 +64,15 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/documentation", Repo.Documentation)
 
+		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/delete-volume/{volume_id}", Repo.DeleteVolume)
 
 		mux.Get("/update-volume-halevel/{volume_id}/{ha-level}", Repo.UpdateVolumeHALevelHTTP)
 
+		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/update-volume-size/{volume_id}/{size}", Repo.UpdateVolumeSizeHTTP)
 
+		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/update-volume-ioprofile/{volume_id}/{ioprofile}", Repo.UpdateVolumeIOProfileHTTP)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
