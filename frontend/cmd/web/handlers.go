@@ -69,6 +69,12 @@ func VolumeInfofromID(volumeID string) (jsonVolumeInfo VolumeInfoResponse, error
 
 }
 
+func SnapInfofromID(volumeID, snapID string) (jsonSnapInfo SnapInfoResponse, errorFound error) {
+
+	return jsonSnapInfo, nil
+
+}
+
 // InspectVolume retrieves from the broker /inspectvolume/{volumeName} and sends it back as struct JsonVolumeInspect
 func InspectVolume(volumeName string) JsonVolumeInspect {
 

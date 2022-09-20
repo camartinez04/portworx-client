@@ -246,11 +246,25 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) Snaps(w http.ResponseWriter, r *http.Request) {
+
 	Template(w, r, "snapshots.page.html", &TemplateData{})
 }
 
 func (m *Repository) SnapsInformation(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "snap-specific.page.html", &TemplateData{})
+
+	volumeID := r.Header.Get("Volume-ID")
+
+	snapshotID := r.Header.Get("Volume-ID")
+
+	jsonSnapInfoResponse, err := SnapInfofromID(volumeID, snapshotID)
+	if err != nil {
+		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "Error trying to create the volume")
+	}
+
+	Template(w, r, "snap-specific.page.html", &TemplateData{
+		JsonSnapInfo: jsonSnapInfoResponse,
+	})
 }
 
 func (m *Repository) StoragePools(w http.ResponseWriter, r *http.Request) {

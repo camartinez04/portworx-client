@@ -29,6 +29,17 @@ type TemplateData struct {
 	JsonReplicaPerNode    ReplicasPerNodeResponse
 	JsonClusterInfo       ClusterInfo
 	JsonClusterCapacity   ClusterCapacity
+	JsonSnapInfo          SnapInfoResponse
+}
+
+type SnapInfoResponse struct {
+	SnapInfo SnapInfo `json:"snap_info,omitempty"`
+}
+
+type SnapInfo struct {
+	SnapID   string `json:"snap_id,omitempty"`
+	VolumeID string `json:"volume_id,omitempty"`
+	SnapName string `json:"snap_name,omitempty"`
 }
 
 // JsonUsageVolume holds the json data for the usage volume
