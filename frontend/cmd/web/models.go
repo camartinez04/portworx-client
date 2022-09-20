@@ -32,14 +32,32 @@ type TemplateData struct {
 	JsonSnapInfo          SnapInfoResponse
 }
 
+// SnapInfoResponse holds the response from the snap info API
 type SnapInfoResponse struct {
-	SnapInfo SnapInfo `json:"snap_info,omitempty"`
+	CloudSnapList []struct{} `json:"cloud_snap_list,omitempty"`
 }
 
-type SnapInfo struct {
-	SnapID   string `json:"snap_id,omitempty"`
-	VolumeID string `json:"volume_id,omitempty"`
-	SnapName string `json:"snap_name,omitempty"`
+// CloudSnapList is a struct for cloud snap list
+type CloudSnapList []struct {
+	ID            string `json:"id,omitempty"`
+	SrcVolumeID   string `json:"src_volume_id,omitempty"`
+	SrcVolumeName string `json:"src_volume_name,omitempty"`
+	Timestamp     struct {
+		Seconds int `json:"seconds,omitempty"`
+	} `json:"timestamp,omitempty"`
+	Metadata struct {
+		CloudsnapType       string `json:"cloudsnapType,omitempty"`
+		CompressedSizeBytes string `json:"compressedSizeBytes,omitempty"`
+		Compression         string `json:"compression,omitempty"`
+		SizeBytes           string `json:"sizeBytes,omitempty"`
+		Starttime           string `json:"starttime,omitempty"`
+		Status              string `json:"status,omitempty"`
+		Updatetime          string `json:"updatetime,omitempty"`
+		Version             string `json:"version,omitempty"`
+		Volume              string `json:"volume,omitempty"`
+		Volumename          string `json:"volumename,omitempty"`
+	} `json:"metadata,omitempty"`
+	Status int `json:"status,omitempty"`
 }
 
 // JsonUsageVolume holds the json data for the usage volume
