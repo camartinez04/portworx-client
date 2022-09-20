@@ -67,11 +67,14 @@ func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 // VolumeInformation serves the volume information page
 func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 
-	//exploded := strings.Split(r.RequestURI, "/")
-
-	//volumeID := exploded[3]
+	exploded := strings.Split(r.RequestURI, "/")
 
 	volumeID := r.Header.Get("Volume-ID")
+
+	if volumeID == "" {
+
+		volumeID = exploded[3]
+	}
 
 	volumeInfoResponse, err := VolumeInfofromID(volumeID)
 	if err != nil {
