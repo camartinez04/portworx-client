@@ -2,172 +2,82 @@
 
   {{define "content"}}
 
+      {{ $AllVolumesInfo := .JsonAllVolumesInfo.AllVolumesInfo }}
+
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
-                  <h4 class="card-title">Striped Table</h4>
-                  <p class="card-description">
-                    Add class <code>.table-striped</code>
-                  </p>
+                  <h4 class="card-title">Volumes</h4>
                   <div class="table-responsive">
-                    <table class="table table-striped">
+                    <table class="table table-striped" id="volumes" style="width:100%">
                       <thead>
                         <tr>
                           <th>
-                            User
+                            Volume ID
                           </th>
                           <th>
-                            First name
+                            Volume Name
                           </th>
                           <th>
-                            Progress
+                            K8s Namespace
                           </th>
                           <th>
-                            Amount
+                            K8s PVC Name
                           </th>
                           <th>
-                            Deadline
+                            Replicas
+                          </th>
+                          <th>
+                            Status
+                          </th>
+                          <th>
+                            Attached On
+                          </th>
+                          <th>
+                            Encrypted
+                          </th> 
+                          <th>
+                            Volume Usage
                           </th>
                         </tr>
                       </thead>
                       <tbody>
+                        {{ range $index, $volume := $AllVolumesInfo }}
                         <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face1.jpg" alt="image"/>
+                          <td>
+                            <a href="volume/{{ $volume.VolumeID }}">{{ $volume.VolumeID }} </a>
                           </td>
                           <td>
-                            Herman Beck
+                            {{ $volume.VolumeName }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeK8sNamespace }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeK8sPVCName }}
+                          <td>
+                            {{ $volume.VolumeReplicas }}
+                          </td>
+                          <td class="check-volume" title="{{$volume.VolumeStatus}}">
+                              <div id="check-volume-{{$index}}"> </div>
+                          </td>
+                          <td>
+                            {{ $volume.VolumeAttachedOn }}
+                          </td>
+                          <td>
+                            {{ $volume.VolumeEncrypted }}
                           </td>
                           <td>
                             <div class="progress">
-                              <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                              <div class="progress-bar bg-success" role="progressbar" style="width: {{ $volume.VolumeUsedPercent }}%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
                             </div>
                           </td>
-                          <td>
-                            $ 77.99
-                          </td>
-                          <td>
-                            May 15, 2015
-                          </td>
                         </tr>
-                        <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face2.jpg" alt="image"/>
-                          </td>
-                          <td>
-                            Messsy Adam
-                          </td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-danger" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            $245.30
-                          </td>
-                          <td>
-                            July 1, 2015
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face3.jpg" alt="image"/>
-                          </td>
-                          <td>
-                            John Richards
-                          </td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-warning" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            $138.00
-                          </td>
-                          <td>
-                            Apr 12, 2015
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face4.jpg" alt="image"/>
-                          </td>
-                          <td>
-                            Peter Meggik
-                          </td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-primary" role="progressbar" style="width: 50%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            $ 77.99
-                          </td>
-                          <td>
-                            May 15, 2015
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face5.jpg" alt="image"/>
-                          </td>
-                          <td>
-                            Edward
-                          </td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-danger" role="progressbar" style="width: 35%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            $ 160.25
-                          </td>
-                          <td>
-                            May 03, 2015
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face6.jpg" alt="image"/>
-                          </td>
-                          <td>
-                            John Doe
-                          </td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-info" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            $ 123.21
-                          </td>
-                          <td>
-                            April 05, 2015
-                          </td>
-                        </tr>
-                        <tr>
-                          <td class="py-1">
-                            <img src="../../images/faces/face7.jpg" alt="image"/>
-                          </td>
-                          <td>
-                            Henry Tom
-                          </td>
-                          <td>
-                            <div class="progress">
-                              <div class="progress-bar bg-warning" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                          </td>
-                          <td>
-                            $ 150.00
-                          </td>
-                          <td>
-                            June 16, 2015
-                          </td>
-                        </tr>
-                      </tbody>
+                        {{ end }}
+                       </tbody>
                     </table>
                   </div>
                 </div>
@@ -177,6 +87,82 @@
         </div>
   {{end}}
 
-  {{define "js"}}
+   {{define "js"}}
+  <script >
+
+    var elements = document.getElementsByClassName("check-volume");
+
+    for (var i = 0; i < elements.length; i++) {
+
+      if(elements.item(i).title == "VOLUME_STATUS_UP") {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Up";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-success btn-fw";
+        document.getElementById("check-volume-" + i).appendChild(btn);
+
+        console.log("Volume Up");
+
+      } else if (elements.item(i).value == "VOLUME_STATUS_DEGRADED"  ) {
+        
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Degraded";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-warning btn-fw";
+        document.getElementById("check-volume-" + i).appendChild(btn);
+
+        console.log("Volume Degraded");
+
+      } else {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Down";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        document.getElementById("check-volume-" + i).appendChild(btn);
+
+        console.log("Volume Down");
+
+      } 
+    }
+  </script>
+
+  <script>
+  
+    let attention = Prompt();
+
+    var volMessage = "{{.Flash}}";
+
+    var volError = "{{.Error}}";
+
+    if (volError != "") {
+      notify("error trying to delete the volume", "error");
+
+    }
+
+    if (volMessage != "") {
+        notify("volume deleted successfully","success")
+    }
+
+
+  </script>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+  <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+
+  <script>
+  
+      $(document).ready(function() {
+        $('#volumes').DataTable( {
+            responsive: true,
+            "pageLength": 10,
+        } );
+    } );
+  </script>
 
   {{end}}

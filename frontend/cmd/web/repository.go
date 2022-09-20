@@ -249,7 +249,7 @@ func (m *Repository) SnapsFromVolume(w http.ResponseWriter, r *http.Request) {
 
 	volumeID := r.Header.Get("Volume-ID")
 
-	snapshotID := r.Header.Get("Volume-ID")
+	snapshotID := r.Header.Get("Snap-ID")
 
 	jsonSnapInfoResponse, err := SnapInfofromID(volumeID, snapshotID)
 	if err != nil {
@@ -266,7 +266,7 @@ func (m *Repository) SnapsInformation(w http.ResponseWriter, r *http.Request) {
 
 	volumeID := r.Header.Get("Volume-ID")
 
-	snapshotID := r.Header.Get("Volume-ID")
+	snapshotID := r.Header.Get("Snap-ID")
 
 	jsonSnapInfoResponse, err := SnapInfofromID(volumeID, snapshotID)
 	if err != nil {
