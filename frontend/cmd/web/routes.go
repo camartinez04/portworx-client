@@ -53,7 +53,7 @@ func routes(app *AppConfig) http.Handler {
 		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/snapshot/{volume_id}", Repo.SnapsFromVolume)
 
-		mux.Get("/snapshots/", Repo.SnapsFromVolume)
+		mux.Get("/snapshots", Repo.SnapsFromVolume)
 
 		mux.Get("/snapshot/{snap_name}", Repo.SnapsInformation)
 

@@ -251,6 +251,8 @@ func (m *Repository) SnapsFromVolume(w http.ResponseWriter, r *http.Request) {
 
 	snapshotID := r.Header.Get("Snap-ID")
 
+	volumesInfo, err := GetAllVolumesInfo()
+
 	jsonSnapInfoResponse, err := SnapInfofromID(volumeID, snapshotID)
 	if err != nil {
 		log.Println(err)
@@ -258,7 +260,8 @@ func (m *Repository) SnapsFromVolume(w http.ResponseWriter, r *http.Request) {
 	}
 
 	Template(w, r, "snapshots.page.html", &TemplateData{
-		JsonSnapInfo: jsonSnapInfoResponse,
+		JsonAllVolumesInfo: volumesInfo,
+		JsonSnapInfo:       jsonSnapInfoResponse,
 	})
 }
 
