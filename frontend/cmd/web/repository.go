@@ -285,12 +285,12 @@ func (m *Repository) SnapsInformation(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (m *Repository) StoragePools(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "storage-pools.page.html", &TemplateData{})
+func (m *Repository) CloudCredentials(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "cloud-credentials.page.html", &TemplateData{})
 }
 
-func (m *Repository) StoragePoolsInformation(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "storage-pool-specific.page.html", &TemplateData{})
+func (m *Repository) CloudCredentialsInformation(w http.ResponseWriter, r *http.Request) {
+	Template(w, r, "cloud-credential-specific.page.html", &TemplateData{})
 }
 
 // DeleteVolume serves the delete volume page

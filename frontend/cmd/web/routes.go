@@ -57,9 +57,9 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/snapshot/{snap_name}", Repo.SnapsInformation)
 
-		mux.Get("/storage-pools", Repo.StoragePools)
+		mux.Get("/cloud-credentials", Repo.CloudCredentials)
 
-		mux.Get("/stogage-pool/{stg_name}", Repo.StoragePoolsInformation)
+		mux.Get("/cloud-credential/{cloud_cred_id}", Repo.CloudCredentialsInformation)
 
 		mux.Get("/create-volume", Repo.CreateVolume)
 
