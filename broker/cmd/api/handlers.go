@@ -744,3 +744,19 @@ func (app *AppConfig) postCreateCloudSnapHTTP(w http.ResponseWriter, r *http.Req
 	writeJSON(w, http.StatusAccepted, resp)
 
 }
+
+func (app *AppConfig) getAllCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) {
+
+	cloudSnaps, err := snapshots.AllCloudSnapsCluster(app.Conn)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonAllCloudSnapList{
+		Error:          false,
+		CloudSnapsList: cloudSnaps,
+	}
+
+	writeJSON(w, http.StatusInternalServerError, resp)
+}

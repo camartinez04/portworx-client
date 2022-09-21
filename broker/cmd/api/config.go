@@ -165,6 +165,12 @@ type JsonCloudSnap struct {
 	TaskID  string `json:"task_id,omitempty"`
 }
 
+// JsonAllCloudSnapList is the response format for JSON for AllCloudSnapList
+type JsonAllCloudSnapList struct {
+	Error          bool                                 `json:"error,omitempty"`
+	CloudSnapsList map[string][]*api.SdkCloudBackupInfo `json:"cloud_snaps_list,omitempty"`
+}
+
 const (
 	Bytes   = uint64(1)
 	KB      = Bytes * uint64(1024)
