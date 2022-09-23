@@ -10,6 +10,8 @@
 
       {{ $AllVolumesInfo := .JsonAllVolumesInfo.AllVolumesInfo }}
 
+      {{ $AllSnapsInfo :=.JsonAllSnapsInfo.CloudSnapsList }}
+
       <div class="main-panel">
         <div class="content-wrapper">
           <div class="row">
@@ -40,8 +42,11 @@
                       </thead>
                       <tbody>
                         {{ range $index, $volume := $AllVolumesInfo }}
+
+                        {{ $snapvol := (index $AllSnapsInfo $volume.VolumeID)}}
+
                         <tr>
-                          <td>
+                          <td class="volumeid" >
                             <a href="volume/{{ $volume.VolumeID }}">{{ $volume.VolumeID }} </a>
                           </td>
                           <td>
@@ -49,34 +54,23 @@
                           </td>
                           <td>
                             <div class="table-responsive">
-                              <table class="table table-striped" id="snapshots" style="width:100%">
+                              <table class="table table-striped snapshots" id="{{ $volume.VolumeID }}" style="width:100%">
                                 <thead>
                                   <tr> 
                                     <th> Snap ID </th> 
+                                    <th> Update Time </th> 
                                     <th> Snap Status </th> 
                                   </tr>
                                 </thead>
                                 <tbody>
                                   <tr>
-                                    <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $volume.VolumeID }}</a> </td>
-                                    <td> Snapshot 01 </td> 
+                                  {{ range $snap := $snapvol }}
+                                    <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $snap.Id }} </a> </td>
+                                    <td> {{ (index $snap.Metadata "status") }} </td>
+                                    <td> {{ (index $snap.Metadata "updatetime") }} </td>
+
                                   </tr>
-                                  <tr>
-                                    <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $volume.VolumeID }}</a> </td>
-                                    <td> Snapshot 02 </td> 
-                                  </tr>
-                                  <tr>
-                                    <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $volume.VolumeID }}</a> </td>
-                                    <td> Snapshot 03 </td> 
-                                  </tr>
-                                  <tr>
-                                    <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $volume.VolumeID }}</a> </td>
-                                    <td> Snapshot 04 </td> 
-                                  </tr>
-                                  <tr>
-                                    <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $volume.VolumeID }}</a> </td>
-                                    <td> Snapshot 05 </td> 
-                                  </tr>
+                                  {{ end }}
                                 </tbody>
                               </table> 
                             </div>
@@ -88,6 +82,7 @@
                             {{ $volume.VolumeK8sPVCName }}
                           </td>
                         </tr>
+
                         {{ end }}
                        </tbody>
                     </table>
@@ -100,6 +95,7 @@
   {{end}}
 
    {{define "js"}}
+
   <script >
 
     var elements = document.getElementsByClassName("check-volume");
@@ -172,19 +168,25 @@
       $(document).ready(function() {
         $('#volumes').DataTable( {
             responsive: true,
-            "pageLength": 5,
+            "pageLength": 13,
         } );
     } );
   </script>
 
   <script>
   
-      $(document).ready(function() {
-        $('#snapshots').DataTable( {
-            responsive: true,
-            "pageLength": 3,
-        } );
-    } );
+  var elements = document.getElementsByClassName("volumeid");
+
+  for (var i = 0; i < elements.length; i++) {
+    $(document).ready(function() {
+
+      $("#" + "{{ .JsonAllVolumesInfo.AllVolumesInfo.VolumeID }}").DataTable( {
+        responsive: true,
+        "pageLength": 3,
+      });
+
+    });
+  }
   </script>
 
   {{end}}
