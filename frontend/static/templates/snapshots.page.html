@@ -65,10 +65,10 @@
                                 <tbody>
                                   <tr>
                                   {{ range $snap := $snapvol }}
-                                    <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $snap.Id }} </a> </td>
+                                  {{ $snapid := index (split $snap.Id "/") 1 }}
+                                    <td> <a href="volume/{{ $volume.VolumeID }}">  {{ index (split $snapid "-") 1 }} </a> </td>
                                     <td> {{ (index $snap.Metadata "updatetime") }} </td>
                                     <td> {{ (index $snap.Metadata "status") }} </td>
-
                                   </tr>
                                   {{ end }}
                                 </tbody>
@@ -168,7 +168,7 @@
       $(document).ready(function() {
         $('#volumes').DataTable( {
             responsive: true,
-            "pageLength": 13,
+            "pageLength": 5,
         } );
     } );
   </script>

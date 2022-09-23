@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/justinas/nosurf"
@@ -69,6 +70,7 @@ var functions = template.FuncMap{
 	"add":          Add,
 	"divide":       Divide,
 	"resizeVolume": ResizeVolume,
+	"split":        strings.Split,
 }
 
 // HumanDate returns time in yyyy-mm-dd format
