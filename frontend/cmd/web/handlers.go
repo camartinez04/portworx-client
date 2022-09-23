@@ -496,3 +496,34 @@ func IOProfileVolume(volumeID string, volIOProfile string) (string, error) {
 
 	return message, nil
 }
+
+func GetAllSnapshotsInfo() (AllSnaps JsonAllCloudSnapResponse, errorFound error) {
+
+	url := brokerURL + "/getallcloudsnaps"
+	method := "GET"
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	json.Unmarshal(body, &AllSnaps)
+
+	return AllSnaps, nil
+
+}

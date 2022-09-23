@@ -30,11 +30,17 @@ type TemplateData struct {
 	JsonClusterInfo       ClusterInfo
 	JsonClusterCapacity   ClusterCapacity
 	JsonSnapInfo          SnapInfoResponse
+	JsonAllSnapsInfo      JsonAllCloudSnapResponse
 }
 
 // SnapInfoResponse holds the response from the snap info API
 type SnapInfoResponse struct {
 	CloudSnapList []struct{} `json:"cloud_snap_list,omitempty"`
+}
+
+// JsonAllCloudSnapResponse is the response format for JSON for AllCloudSnapList
+type JsonAllCloudSnapResponse struct {
+	CloudSnapsList map[string][]*api.SdkCloudBackupInfo `json:"cloud_snaps_list,omitempty"`
 }
 
 // CloudSnapList is a struct for cloud snap list

@@ -248,23 +248,21 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (m *Repository) SnapsFromVolume(w http.ResponseWriter, r *http.Request) {
-
-	volumeID := r.Header.Get("Volume-ID")
-
-	snapshotID := r.Header.Get("Snap-ID")
+func (m *Repository) GetAllSnaps(w http.ResponseWriter, r *http.Request) {
 
 	volumesInfo, err := GetAllVolumesInfo()
-
-	jsonSnapInfoResponse, err := SnapInfofromID(volumeID, snapshotID)
 	if err != nil {
 		log.Println(err)
-		m.App.Session.Put(r.Context(), "error", "Error trying to create the volume")
+	}
+
+	jsonAllSnapsInfo, err := GetAllSnapshotsInfo()
+	if err != nil {
+		log.Println(err)
 	}
 
 	Template(w, r, "snapshots.page.html", &TemplateData{
 		JsonAllVolumesInfo: volumesInfo,
-		JsonSnapInfo:       jsonSnapInfoResponse,
+		JsonAllSnapsInfo:   jsonAllSnapsInfo,
 	})
 }
 
