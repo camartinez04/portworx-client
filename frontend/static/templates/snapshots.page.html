@@ -66,8 +66,8 @@
                                   <tr>
                                   {{ range $snap := $snapvol }}
                                     <td> <a href="volume/{{ $volume.VolumeID }}"> {{ $snap.Id }} </a> </td>
-                                    <td> {{ (index $snap.Metadata "status") }} </td>
                                     <td> {{ (index $snap.Metadata "updatetime") }} </td>
+                                    <td> {{ (index $snap.Metadata "status") }} </td>
 
                                   </tr>
                                   {{ end }}
