@@ -163,31 +163,31 @@ func CloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 // AllCloudSnapsCluster retrieves all the cloud snapshots of all the volumes in the Portworx cluster
 func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string][]*api.SdkCloudBackupInfo, errorFound error) {
 
-	cloudSnapsList := make(map[string][]*api.SdkCloudBackupInfo)
+	cloudSnaps = make(map[string][]*api.SdkCloudBackupInfo)
 
 	// Get all the volumes in the cluster into a slice of strings
-	volumes, err := volumes.GetAllVolumes(conn)
-	if err != nil {
-		log.Fatal(err)
-		return nil, err
+	volumes, errorFound := volumes.GetAllVolumes(conn)
+	if errorFound != nil {
+		log.Fatal(errorFound)
+		return nil, errorFound
 	}
 
 	// Iterate over the volumes list and get the cloud snapshots of each volume, populating the map as well.
 	for _, volume := range volumes {
 
 		// Get the cloud snapshots of the volume
-		snapsOfVolume, err := GetCloudSnaps(conn, volume)
-		if err != nil {
-			log.Fatal(err)
-			return nil, err
+		snapsOfVolume, errorFound := GetCloudSnaps(conn, volume)
+		if errorFound != nil {
+			log.Fatal(errorFound)
+			return nil, errorFound
 		}
 
 		// populate the map with the volume name as key and the cloud snapshots as value
-		cloudSnapsList[volume] = snapsOfVolume
+		cloudSnaps[volume] = snapsOfVolume
 
 	}
 
-	return cloudSnapsList, nil
+	return cloudSnaps, nil
 }
 
 // AWSCreateS3CloudCredential creates a new AWS S3 Cloud credential
