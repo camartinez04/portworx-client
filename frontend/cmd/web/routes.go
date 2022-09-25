@@ -58,6 +58,10 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/cloud-credential/{cloud_cred_id}", Repo.CloudCredentialsInformation)
 
+		mux.Get("/create-credentials", Repo.CreateCloudCredentials)
+
+		mux.Post("/create-credentials", Repo.PostCreateCloudCredentials)
+
 		mux.Get("/create-volume", Repo.CreateVolume)
 
 		mux.Post("/create-volume", Repo.PostCreateVolume)

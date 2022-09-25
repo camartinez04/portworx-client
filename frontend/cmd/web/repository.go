@@ -378,3 +378,81 @@ func (m *Repository) UpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Re
 	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
 
 }
+
+// CreateCloudCredentials serves the create volume page
+func (m *Repository) CreateCloudCredentials(w http.ResponseWriter, r *http.Request) {
+
+	res, _ := m.App.Session.Get(r.Context(), "create-credentials").(CreateCloudCredentials)
+
+	data := make(map[string]any)
+
+	data["create-credentials"] = res
+
+	m.App.Session.Put(r.Context(), "create-credentials", res)
+
+	Template(w, r, "create-credentials.page.html", &TemplateData{
+		Form: New(nil),
+		Data: data,
+	})
+
+}
+
+// PostCreateCloudCredentials handles the POST request to /create-volume
+func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't parse form!")
+		log.Println("can't parse form!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	cloudCredIAMPolicyEnabled, err := strconv.ParseBool(r.Form.Get("cloud_credential_iam_policy_enabled"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "invalid data!")
+		log.Println("invalid disable ssl value!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	cloudCredDisableSSL, err := strconv.ParseBool(r.Form.Get("cloud_credential_disable_ssl"))
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "invalid data!")
+		log.Println("invalid disable ssl value!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	createCloudCredential := CreateCloudCredentials{
+		CloudCredentialName:             r.FormValue("cloud_credential_name"),
+		CloudCredentialAccessKey:        r.FormValue("cloud_credential_access_key"),
+		CloudCredentialSecretKey:        r.FormValue("cloud_credential_secret_key"),
+		CloudCredentialEndpoint:         r.FormValue("cloud_credential_endpoint"),
+		CloudCredentialBucketName:       r.FormValue("cloud_credential_bucket_name"),
+		CloudCredentialRegion:           r.FormValue("cloud_credential_region"),
+		CloudCredentialDisableSSL:       cloudCredDisableSSL,
+		CloudCredentialIAMPolicyEnabled: cloudCredIAMPolicyEnabled,
+	}
+
+	log.Println("successfully created the struct createCloudCredential!")
+
+	log.Printf("Post to send: %v", createCloudCredential)
+
+	m.App.Session.Put(r.Context(), "create-credentials", createCloudCredential)
+
+	credentialIDResp, err := createNewCredential(createCloudCredential)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't create new credential!")
+		log.Println("can't create credential!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	log.Println("successfully created the new cloud credential!")
+
+	result := "/frontend/cloud-credential/" + credentialIDResp
+
+	http.Redirect(w, r, result, http.StatusSeeOther)
+
+}

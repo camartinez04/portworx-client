@@ -527,3 +527,53 @@ func GetAllSnapshotsInfo() (AllSnaps JsonAllCloudSnapResponse, errorFound error)
 	return AllSnaps, nil
 
 }
+
+// createNewCredential sends a POST request to the broker to create a new volume
+func createNewCredential(createCloudCredential CreateCloudCredentials) (credentialID string, errorFound error) {
+
+	url := brokerURL + "/postcreateawscloudcreds"
+
+	method := "POST"
+
+	cloudCredResponse := CreateCloudCredentialsResponse{}
+
+	client := &http.Client{}
+	req, err := http.NewRequest(method, url, nil)
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	req.Header.Add("Cloud-Credential-Name", createCloudCredential.CloudCredentialName)
+	req.Header.Add("Cloud-Credential-Access-Key", createCloudCredential.CloudCredentialAccessKey)
+	req.Header.Add("Cloud-Credential-Secret-Key", createCloudCredential.CloudCredentialSecretKey)
+	req.Header.Add("Cloud-Credential-Region", createCloudCredential.CloudCredentialRegion)
+	req.Header.Add("Cloud-Credential-Endpoint", createCloudCredential.CloudCredentialEndpoint)
+	req.Header.Add("Cloud-Credential-Bucket-Name", createCloudCredential.CloudCredentialBucketName)
+	req.Header.Add("Cloud-Credential-Disable-SSL", strconv.FormatBool(createCloudCredential.CloudCredentialDisableSSL))
+	req.Header.Add("Cloud-Credential-IAM-Policy-Enabled", strconv.FormatBool(createCloudCredential.CloudCredentialIAMPolicyEnabled))
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer res.Body.Close()
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println(string(body))
+
+	json.Unmarshal(body, &cloudCredResponse)
+
+	credentialID = cloudCredResponse.CloudCredentialInspect.CredentialId
+
+	method = "GET"
+
+	return credentialID, nil
+
+}

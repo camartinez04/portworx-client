@@ -281,3 +281,20 @@ type CreateVolumeResponse struct {
 	Message  string `json:"message,omitempty"`
 	VolumeID string `json:"volume_id,omitempty"`
 }
+
+type CreateCloudCredentials struct {
+	CloudCredentialName             string `json:"cloud_credential_name,omitempty"`
+	CloudCredentialAccessKey        string `json:"cloud_credential_access_key,omitempty"`
+	CloudCredentialSecretKey        string `json:"cloud_credential_secret_key,omitempty"`
+	CloudCredentialBucketName       string `json:"cloud_credential_bucket_name,omitempty"`
+	CloudCredentialRegion           string `json:"cloud_credential_region,omitempty"`
+	CloudCredentialEndpoint         string `json:"cloud_credential_endpoint,omitempty"`
+	CloudCredentialDisableSSL       bool   `json:"cloud_credential_disable_ssl,omitempty"`
+	CloudCredentialIAMPolicyEnabled bool   `json:"cloud_credential_iam_policy_enabled,omitempty"`
+}
+
+type CreateCloudCredentialsResponse struct {
+	Error                  bool                             `json:"error,omitempty"`
+	Message                string                           `json:"message,omitempty"`
+	CloudCredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
+}
