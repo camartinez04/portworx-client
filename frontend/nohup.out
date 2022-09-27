@@ -1,0 +1,181 @@
+2022/09/27 10:42:04 Starting Frontend on port :8081
+2022/09/27 10:42:13 Get "http://localhost:8080/getpxclustercapacity": dial tcp [::1]:8080: connect: connection refused
+2022/09/27 10:42:13 Get "http://localhost:8080/getpxclustercapacity": dial tcp [::1]:8080: connect: connection refused
+2022/09/27 10:42:13 Get "http://localhost:8080/getpxcluster": dial tcp [::1]:8080: connect: connection refused
+2022/09/27 10:42:13 Get "http://localhost:8080/getpxcluster": dial tcp [::1]:8080: connect: connection refused
+2022/09/27 10:42:15 Get "http://localhost:8080/getallnodesinfo": dial tcp [::1]:8080: connect: connection refused
+
+ panic: runtime error: invalid memory address or nil pointer dereference
+ 
+ -> main.GetAllNodesInfo
+ ->   /Users/camartinez/portworx-client/frontend/cmd/web/handlers.go:158
+
+    main.(*Repository).Nodes
+      /Users/camartinez/portworx-client/frontend/cmd/web/repository.go:115
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).routeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:442
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:71
+    github.com/go-chi/chi/v5.(*Mux).Mount.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:314
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).routeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:442
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5/middleware.Heartbeat.func1.1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/middleware/heartbeat.go:21
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/alexedwards/scs/v2.(*SessionManager).LoadAndSave.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/alexedwards/scs/v2@v2.5.0/session.go:148
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/justinas/nosurf.(*CSRFHandler).handleSuccess
+      /Users/camartinez/.gopath/pkg/mod/github.com/justinas/nosurf@v1.1.1/handler.go:187
+    github.com/justinas/nosurf.(*CSRFHandler).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/justinas/nosurf@v1.1.1/handler.go:144
+    github.com/go-chi/chi/v5/middleware.Recoverer.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/middleware/recoverer.go:38
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/cors.(*Cors).Handler.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/cors@v1.2.1/cors.go:228
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:88
+    net/http.serverHandler.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2947
+    net/http.(*conn).serve
+      /usr/local/go/src/net/http/server.go:1991
+    created by net/http.(*Server).Serve
+      /usr/local/go/src/net/http/server.go:3102
+    
+2022/09/27 10:42:17 Get "http://localhost:8080/getallnodesinfo": dial tcp [::1]:8080: connect: connection refused
+
+ panic: runtime error: invalid memory address or nil pointer dereference
+ 
+ -> main.GetAllNodesInfo
+ ->   /Users/camartinez/portworx-client/frontend/cmd/web/handlers.go:158
+
+    main.(*Repository).Nodes
+      /Users/camartinez/portworx-client/frontend/cmd/web/repository.go:115
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).routeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:442
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:71
+    github.com/go-chi/chi/v5.(*Mux).Mount.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:314
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).routeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:442
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5/middleware.Heartbeat.func1.1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/middleware/heartbeat.go:21
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/alexedwards/scs/v2.(*SessionManager).LoadAndSave.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/alexedwards/scs/v2@v2.5.0/session.go:148
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/justinas/nosurf.(*CSRFHandler).handleSuccess
+      /Users/camartinez/.gopath/pkg/mod/github.com/justinas/nosurf@v1.1.1/handler.go:187
+    github.com/justinas/nosurf.(*CSRFHandler).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/justinas/nosurf@v1.1.1/handler.go:144
+    github.com/go-chi/chi/v5/middleware.Recoverer.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/middleware/recoverer.go:38
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/cors.(*Cors).Handler.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/cors@v1.2.1/cors.go:228
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:88
+    net/http.serverHandler.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2947
+    net/http.(*conn).serve
+      /usr/local/go/src/net/http/server.go:1991
+    created by net/http.(*Server).Serve
+      /usr/local/go/src/net/http/server.go:3102
+    
+2022/09/27 10:42:39 Starting Frontend on port :8081
+2022/09/27 10:42:39 listen tcp :8081: bind: address already in use
+exit status 1
+2022/09/27 10:42:48 Get "http://localhost:8080/getpxclustercapacity": dial tcp [::1]:8080: connect: connection refused
+2022/09/27 10:42:48 Get "http://localhost:8080/getpxclustercapacity": dial tcp [::1]:8080: connect: connection refused
+2022/09/27 10:42:51 Get "http://localhost:8080/getallvolumesinfo": dial tcp [::1]:8080: connect: connection refused
+
+ panic: runtime error: invalid memory address or nil pointer dereference
+ 
+ -> main.GetAllVolumesInfo
+ ->   /Users/camartinez/portworx-client/frontend/cmd/web/handlers.go:27
+
+    main.(*Repository).Volumes
+      /Users/camartinez/portworx-client/frontend/cmd/web/repository.go:54
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).routeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:442
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:71
+    github.com/go-chi/chi/v5.(*Mux).Mount.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:314
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).routeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:442
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5/middleware.Heartbeat.func1.1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/middleware/heartbeat.go:21
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/alexedwards/scs/v2.(*SessionManager).LoadAndSave.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/alexedwards/scs/v2@v2.5.0/session.go:148
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/justinas/nosurf.(*CSRFHandler).handleSuccess
+      /Users/camartinez/.gopath/pkg/mod/github.com/justinas/nosurf@v1.1.1/handler.go:187
+    github.com/justinas/nosurf.(*CSRFHandler).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/justinas/nosurf@v1.1.1/handler.go:144
+    github.com/go-chi/chi/v5/middleware.Recoverer.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/middleware/recoverer.go:38
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/cors.(*Cors).Handler.func1
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/cors@v1.2.1/cors.go:228
+    net/http.HandlerFunc.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2109
+    github.com/go-chi/chi/v5.(*Mux).ServeHTTP
+      /Users/camartinez/.gopath/pkg/mod/github.com/go-chi/chi/v5@v5.0.7/mux.go:88
+    net/http.serverHandler.ServeHTTP
+      /usr/local/go/src/net/http/server.go:2947
+    net/http.(*conn).serve
+      /usr/local/go/src/net/http/server.go:1991
+    created by net/http.(*Server).Serve
+      /usr/local/go/src/net/http/server.go:3102
+    
+2022/09/27 10:43:56 Starting Frontend on port :8081
+2022/09/27 10:43:56 listen tcp :8081: bind: address already in use
+exit status 1
+2022/09/27 10:46:02 Starting Frontend on port :8081
+2022/09/27 10:46:02 listen tcp :8081: bind: address already in use
+exit status 1
+2022/09/27 10:47:03 Starting Frontend on port :8081
+2022/09/27 10:47:03 listen tcp :8081: bind: address already in use
+exit status 1
