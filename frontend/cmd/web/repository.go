@@ -284,7 +284,15 @@ func (m *Repository) SnapsInformation(w http.ResponseWriter, r *http.Request) {
 }
 
 func (m *Repository) CloudCredentials(w http.ResponseWriter, r *http.Request) {
-	Template(w, r, "cloud-credentials.page.html", &TemplateData{})
+
+	cloudCredsList, err := GetCloudCredentials()
+	if err != nil {
+		log.Println(err)
+	}
+
+	Template(w, r, "cloud-credentials.page.html", &TemplateData{
+		JsonCloudCredsList: cloudCredsList,
+	})
 }
 
 func (m *Repository) CloudCredentialsInformation(w http.ResponseWriter, r *http.Request) {
@@ -449,9 +457,9 @@ func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	log.Println("successfully created the new cloud credential!")
+	log.Println("successfully created the new cloud credential! ID: " + credentialIDResp)
 
-	result := "/frontend/cloud-credential/" + credentialIDResp
+	result := "/frontend/cloud-credentials"
 
 	http.Redirect(w, r, result, http.StatusSeeOther)
 

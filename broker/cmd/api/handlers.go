@@ -745,6 +745,7 @@ func (app *AppConfig) postCreateCloudSnapHTTP(w http.ResponseWriter, r *http.Req
 
 }
 
+// getAllCloudSnapsHTTP http function to get a list of all Portworx CloudSnaps.
 func (app *AppConfig) getAllCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudSnaps, err := snapshots.AllCloudSnapsCluster(app.Conn)
@@ -756,6 +757,23 @@ func (app *AppConfig) getAllCloudSnapsHTTP(w http.ResponseWriter, r *http.Reques
 	resp := JsonAllCloudSnapList{
 		Error:          false,
 		CloudSnapsList: cloudSnaps,
+	}
+
+	writeJSON(w, http.StatusInternalServerError, resp)
+}
+
+// getAllCloudCredentialIDsHTTP http function to get a list of all Portworx Cloud Credential IDs.
+func (app *AppConfig) getAllCloudCredentialIDsHTTP(w http.ResponseWriter, r *http.Request) {
+
+	cloudCreds, err := snapshots.ListCloudCredentialIDs(app.Conn)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonAllCloudCredsList{
+		Error:          false,
+		CloudCredsList: cloudCreds,
 	}
 
 	writeJSON(w, http.StatusInternalServerError, resp)

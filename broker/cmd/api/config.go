@@ -186,3 +186,8 @@ var (
 )
 
 type OpenStorageSdkToken struct{}
+
+type JsonAllCloudCredsList struct {
+	Error          bool     `json:"error,omitempty"`
+	CloudCredsList []string `json:"cloud_creds_list,omitempty"`
+}

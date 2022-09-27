@@ -577,3 +577,80 @@ func createNewCredential(createCloudCredential CreateCloudCredentials) (credenti
 	return credentialID, nil
 
 }
+
+// GetCloudCredentials sends a GET request to the broker to get all cloud credentials
+func GetCloudCredentials() (cloudCredsListMap map[string]any, errorFound error) {
+
+	url := brokerURL + "/getallcloudcredsids"
+	method := "GET"
+
+	allCloudCredsIDsResponse := AllCloudCredsIDsResponse{}
+
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+
+	json.Unmarshal(body, &allCloudCredsIDsResponse)
+
+	cloudCredsListMap = make(map[string]any)
+
+	for _, cloudCredID := range allCloudCredsIDsResponse.CloudCredsList {
+
+		url = brokerURL + "/getinspectawscloudcreds"
+
+		method = "GET"
+
+		client = &http.Client{}
+		req, errorFound = http.NewRequest(method, url, nil)
+
+		req.Header.Add("Cloud-Credential-ID", cloudCredID)
+
+		if errorFound != nil {
+			log.Println(errorFound)
+			return
+		}
+
+		res, errorFound = client.Do(req)
+		if errorFound != nil {
+			log.Println(errorFound)
+			return
+		}
+		defer res.Body.Close()
+
+		body, errorFound = ioutil.ReadAll(res.Body)
+		if errorFound != nil {
+			log.Println(errorFound)
+			return
+		}
+
+		log.Println(string(body))
+
+		var cloudCredInspect CreateCloudCredentialsResponse
+
+		json.Unmarshal(body, &cloudCredInspect)
+
+		cloudCredsListMap[cloudCredID] = cloudCredInspect.CloudCredentialInspect
+
+		log.Printf("cloudCredsListMap: %v", cloudCredsListMap)
+
+	}
+
+	return cloudCredsListMap, nil
+
+}

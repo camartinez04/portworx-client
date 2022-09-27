@@ -287,3 +287,23 @@ func AWSDeleteS3CloudCredential(conn *grpc.ClientConn, credentialId string) erro
 
 	return nil
 }
+
+// ListCloudCredentialIDs lists all the cloud credentials ids in the cluster
+func ListCloudCredentialIDs(conn *grpc.ClientConn) (CredIds []string, errorFound error) {
+
+	creds := api.NewOpenStorageCredentialsClient(conn)
+	credResponse, err := creds.Enumerate(
+		context.Background(),
+		&api.SdkCredentialEnumerateRequest{},
+	)
+	if err != nil {
+		gerr, _ := status.FromError(err)
+		log.Printf("Error Code[%d] Message[%s]\n",
+			gerr.Code(), gerr.Message())
+		os.Exit(1)
+	}
+
+	CredIds = credResponse.GetCredentialIds()
+
+	return CredIds, nil
+}
