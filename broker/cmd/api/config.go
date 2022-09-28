@@ -142,8 +142,8 @@ type JsonApiVolumesList struct {
 
 // JsonCloudSnapList is the response format for JSON for CloudSnapList
 type JsonCloudSnapList struct {
-	Error         bool                      `json:"error,omitempty"`
-	CloudSnapList []*api.SdkCloudBackupInfo `json:"cloud_snap_list,omitempty"`
+	Error         bool                                 `json:"error,omitempty"`
+	CloudSnapList map[string][]*api.SdkCloudBackupInfo `json:"cloud_snap_list,omitempty"`
 }
 
 // JsonCredentialInspect is the response format for JSON for CredentialInspect

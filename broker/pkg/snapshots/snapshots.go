@@ -106,24 +106,45 @@ func StatusCloudSnap(conn *grpc.ClientConn, volumeID string) (jsonStatus string,
 }
 
 // GetCloudSnaps gets the cloud snapshots of a volume
-func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnaps []*api.SdkCloudBackupInfo, errorFound error) {
+func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnapsMap map[string][]*api.SdkCloudBackupInfo, errorFound error) {
 
 	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
 
-	// Now check the status of the backup
-	backupStatus, errorFound := cloudbackups.EnumerateWithFilters(
-		context.Background(),
-		&api.SdkCloudBackupEnumerateWithFiltersRequest{
-			SrcVolumeId: volumeID,
-		})
+	// Get the list of cloud credentials
+	credIDsList, errorFound := ListCloudCredentialIDs(conn)
 	if errorFound != nil {
-		log.Printf("Error getting backup status: %v", errorFound)
+		log.Printf("Error getting cloud credentials: %v", errorFound)
 		return nil, errorFound
 	}
 
-	cloudBackupInfo := backupStatus.GetBackups()
+	if credIDsList == nil {
+		log.Printf("No cloud credentials found")
+		return nil, nil
+	}
 
-	return cloudBackupInfo, nil
+	cloudSnapsMap = make(map[string][]*api.SdkCloudBackupInfo)
+
+	for _, credID := range credIDsList {
+
+		// Now check the status of the backup
+		backupStatus, errorFound := cloudbackups.EnumerateWithFilters(
+			context.Background(),
+			&api.SdkCloudBackupEnumerateWithFiltersRequest{
+				SrcVolumeId:  volumeID,
+				CredentialId: credID,
+			})
+		if errorFound != nil {
+			log.Printf("Error getting backup status: %v", errorFound)
+			return nil, errorFound
+		}
+
+		backupList := backupStatus.GetBackups()
+
+		cloudSnapsMap[credID] = backupList
+
+	}
+
+	return cloudSnapsMap, nil
 
 }
 
@@ -182,8 +203,12 @@ func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string][]*api.S
 			return nil, errorFound
 		}
 
-		// populate the map with the volume name as key and the cloud snapshots as value
-		cloudSnaps[volume] = snapsOfVolume
+		for _, snaps := range snapsOfVolume {
+
+			// populate the map with the volume name as key and the cloud snapshots as value
+			cloudSnaps[volume] = snaps
+
+		}
 
 	}
 
