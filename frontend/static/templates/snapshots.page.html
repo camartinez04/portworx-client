@@ -10,7 +10,7 @@
 
       {{ $AllVolumesInfo := .JsonAllVolumesInfo.AllVolumesInfo }}
 
-      {{ $AllSnapsInfo :=.JsonAllSnapsInfo.CloudSnapsList }}
+      {{ $AllSnapsInfo := .JsonAllSnapsInfo.CloudSnapsList }}
 
       <div class="main-panel">
         <div class="content-wrapper">
@@ -58,18 +58,23 @@
                                 <thead>
                                   <tr> 
                                     <th> Snap ID </th> 
+                                    <th> Credential ID </th> 
                                     <th> Update Time </th> 
                                     <th> Snap Status </th> 
                                   </tr>
                                 </thead>
                                 <tbody>
                                   <tr>
-                                  {{ range $snap := $snapvol.CloudSnaps }}
-                                  {{ $snapid := index (split $snap.Id "/") 1 }}
-                                    <td> <a href="volume/{{ $volume.VolumeID }}">  {{ index (split $snapid "-") 1 }} </a> </td>
-                                    <td> {{ (index $snap.Metadata "updatetime") }} </td>
-                                    <td> {{ (index $snap.Metadata "status") }} </td>
-                                  </tr>
+                                  {{ range $key, $snaps := $snapvol }}
+
+                                    {{ range $snap := $snaps }}
+                                    {{ $snapid := index (split $snap.Id "/") 1 }}
+                                      <td> <a href="volume/{{ $volume.VolumeID }}">  {{ index (split $snapid "-") 1 }} </a> </td>
+                                      <td>  {{ $key }} </td>
+                                      <td> {{ (index $snap.Metadata "updatetime") }} </td>
+                                      <td> {{ (index $snap.Metadata "status") }} </td>
+                                    </tr>
+                                    {{ end }}
                                   {{ end }}
                                 </tbody>
                               </table> 

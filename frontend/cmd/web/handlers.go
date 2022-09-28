@@ -524,6 +524,8 @@ func GetAllSnapshotsInfo() (AllSnaps JsonAllCloudSnapResponse, errorFound error)
 
 	json.Unmarshal(body, &AllSnaps)
 
+	//log.Printf("AllSnaps: %v", AllSnaps)
+
 	return AllSnaps, nil
 
 }

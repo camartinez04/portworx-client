@@ -8,7 +8,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 	"github.com/golang/protobuf/ptypes"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
@@ -184,16 +183,9 @@ func CloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 }
 
 // AllCloudSnapsCluster retrieves all the cloud snapshots of all the volumes in the Portworx cluster
-func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]config.CloudSnapsIDs, errorFound error) {
+func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]map[string][]*api.SdkCloudBackupInfo, errorFound error) {
 
-	cloudSnaps = make(map[string]config.CloudSnapsIDs)
-
-	// Get the list of cloud credentials
-	credIDsList, errorFound := ListCloudCredentialIDs(conn)
-	if errorFound != nil {
-		log.Printf("Error getting cloud credentials: %v", errorFound)
-		return nil, errorFound
-	}
+	cloudSnaps = make(map[string]map[string][]*api.SdkCloudBackupInfo)
 
 	// Get all the volumes in the cluster into a slice of strings
 	volumes, errorFound := volumes.GetAllVolumes(conn)
@@ -212,19 +204,13 @@ func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]config.C
 			return nil, errorFound
 		}
 
-		for _, ids := range credIDsList {
+		cloudSnaps[volume] = make(map[string][]*api.SdkCloudBackupInfo)
 
-			for _, snaps := range snapsOfVolume {
+		for credID, snaps := range snapsOfVolume {
 
-				// populate the map with the volume name as key and the cloud snapshots as value
-				cloudSnaps[volume] = config.CloudSnapsIDs{
-					CredID:     ids,
-					CloudSnaps: snaps,
-				}
-			}
+			cloudSnaps[volume][credID] = snaps
 
 		}
-
 	}
 
 	return cloudSnaps, nil
