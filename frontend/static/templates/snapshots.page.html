@@ -64,7 +64,7 @@
                                 </thead>
                                 <tbody>
                                   <tr>
-                                  {{ range $snap := $snapvol }}
+                                  {{ range $snap := $snapvol.CloudSnaps }}
                                   {{ $snapid := index (split $snap.Id "/") 1 }}
                                     <td> <a href="volume/{{ $volume.VolumeID }}">  {{ index (split $snapid "-") 1 }} </a> </td>
                                     <td> {{ (index $snap.Metadata "updatetime") }} </td>

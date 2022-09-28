@@ -167,8 +167,8 @@ type JsonCloudSnap struct {
 
 // JsonAllCloudSnapList is the response format for JSON for AllCloudSnapList
 type JsonAllCloudSnapList struct {
-	Error          bool                                 `json:"error,omitempty"`
-	CloudSnapsList map[string][]*api.SdkCloudBackupInfo `json:"cloud_snaps_list,omitempty"`
+	Error          bool                            `json:"error,omitempty"`
+	CloudSnapsList map[string]config.CloudSnapsIDs `json:"cloud_snaps_list,omitempty"`
 }
 
 const (

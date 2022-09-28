@@ -41,7 +41,13 @@ type SnapInfoResponse struct {
 
 // JsonAllCloudSnapResponse is the response format for JSON for AllCloudSnapList
 type JsonAllCloudSnapResponse struct {
-	CloudSnapsList map[string][]*api.SdkCloudBackupInfo `json:"cloud_snaps_list,omitempty"`
+	CloudSnapsList map[string]CloudSnapsIDs `json:"cloud_snaps_list,omitempty"`
+}
+
+// CloudSnapsIDs struct to store the cloudsnaps information per CloudID.
+type CloudSnapsIDs struct {
+	CredID     string                    `json:"cred_id,omitempty"`
+	CloudSnaps []*api.SdkCloudBackupInfo `json:"cloud_snaps,omitempty"`
 }
 
 // CloudSnapList is a struct for cloud snap list

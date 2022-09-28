@@ -52,3 +52,9 @@ type VolumeInfo struct {
 	VolumeSharedv4ServiceSpec *api.Sharedv4ServiceSpec `json:"volume_sharedv4_service_spec,omitempty"`
 	VolumeIOStrategy          *api.IoStrategy          `json:"volume_io_strategy,omitempty"`
 }
+
+// CloudSnapsIDs struct to store the cloudsnaps information per CloudID.
+type CloudSnapsIDs struct {
+	CredID     string                    `json:"cred_id,omitempty"`
+	CloudSnaps []*api.SdkCloudBackupInfo `json:"cloud_snaps,omitempty"`
+}
