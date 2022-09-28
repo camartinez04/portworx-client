@@ -117,6 +117,7 @@ func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnapsMap map[st
 		return nil, errorFound
 	}
 
+	// If there are no cloud credentials, return nil but without error too.
 	if credIDsList == nil {
 		log.Printf("No cloud credentials found")
 		return nil, nil
