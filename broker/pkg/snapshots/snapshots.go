@@ -149,6 +149,34 @@ func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnapsMap map[st
 
 }
 
+// GetSpecificCloudSnapshot gets a specific cloud snapshot having the CloudSnap ID
+func GetSpecificCloudSnapshot(conn *grpc.ClientConn, cloudSnapID string) (cloudSnap *api.SdkCloudBackupInfo, errorFound error) {
+
+	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
+
+	cloudSnapInfo, errorFound := cloudbackups.EnumerateWithFilters(
+		context.Background(),
+		&api.SdkCloudBackupEnumerateWithFiltersRequest{
+			CloudBackupId: cloudSnapID,
+		})
+	if errorFound != nil {
+		log.Printf("Error getting backup status: %v", errorFound)
+		return nil, errorFound
+	}
+
+	cloudSnapList := cloudSnapInfo.GetBackups()
+
+	if len(cloudSnapList) == 0 {
+		log.Printf("No cloud snapshot found with ID %s", cloudSnapID)
+		return nil, nil
+	}
+
+	cloudSnap = cloudSnapList[0]
+
+	return cloudSnap, nil
+
+}
+
 // CloudSnapHistory gets the history of a cloud snapshot
 func CloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 

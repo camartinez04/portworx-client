@@ -171,6 +171,13 @@ type JsonAllCloudSnapList struct {
 	CloudSnapsList map[string]map[string][]*api.SdkCloudBackupInfo `json:"cloud_snaps_list,omitempty"`
 }
 
+// JsonSpecificCloudSnap is the response format for JSON for SpecificCloudSnap
+type JsonSpecificCloudSnap struct {
+	Error       bool                    `json:"error,omitempty"`
+	CloudSnap   *api.SdkCloudBackupInfo `json:"cloud_snap,omitempty"`
+	CloudSnapId string                  `json:"cloud_snap_id,omitempty"`
+}
+
 const (
 	Bytes   = uint64(1)
 	KB      = Bytes * uint64(1024)

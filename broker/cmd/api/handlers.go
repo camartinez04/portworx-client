@@ -778,3 +778,23 @@ func (app *AppConfig) getAllCloudCredentialIDsHTTP(w http.ResponseWriter, r *htt
 
 	writeJSON(w, http.StatusInternalServerError, resp)
 }
+
+// getSpecificCloudSnapshotHTTP http function to get a specific Portworx CloudSnap.
+func (app *AppConfig) getSpecificCloudSnapshotHTTP(w http.ResponseWriter, r *http.Request) {
+
+	cloudSnapID := r.Header.Get("Cloud-Snap-ID")
+
+	cloudSnap, err := snapshots.GetSpecificCloudSnapshot(app.Conn, cloudSnapID)
+	if err != nil {
+		app.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonSpecificCloudSnap{
+		Error:       false,
+		CloudSnap:   cloudSnap,
+		CloudSnapId: cloudSnapID,
+	}
+
+	writeJSON(w, http.StatusInternalServerError, resp)
+}
