@@ -31,12 +31,20 @@ type TemplateData struct {
 	JsonClusterCapacity   ClusterCapacity
 	JsonSnapInfo          SnapInfoResponse
 	JsonAllSnapsInfo      JsonAllCloudSnapResponse
+	JsonSnapSpecific      JsonSpecificCloudSnapResponse
 	JsonCloudCredsList    map[string]any
 }
 
 // SnapInfoResponse holds the response from the snap info API
 type SnapInfoResponse struct {
 	CloudSnapList []struct{} `json:"cloud_snap_list,omitempty"`
+}
+
+// JsonSpecificCloudSnapResponse is the response format for JSON for SpecificCloudSnapList
+type JsonSpecificCloudSnapResponse struct {
+	Error       bool                    `json:"error,omitempty"`
+	CloudSnap   *api.SdkCloudBackupInfo `json:"cloud_snap,omitempty"`
+	CloudSnapId string                  `json:"cloud_snap_id,omitempty"`
 }
 
 // JsonAllCloudSnapResponse is the response format for JSON for AllCloudSnapList

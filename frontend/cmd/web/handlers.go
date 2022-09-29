@@ -69,7 +69,37 @@ func VolumeInfofromID(volumeID string) (jsonVolumeInfo VolumeInfoResponse, error
 
 }
 
-func SnapInfofromID(volumeID, snapID string) (jsonSnapInfo SnapInfoResponse, errorFound error) {
+// SnapInfofromID retrieves from the broker /getspecificcloudsnapshot and sends it back as struct JsonSpecificCloudSnapResponse
+func SnapInfofromID(snapID string) (jsonSnapInfo JsonSpecificCloudSnapResponse, errorFound error) {
+
+	url := brokerURL + "/getspecificcloudsnapshot"
+
+	method := "GET"
+
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	req.Header.Add("Cloud-Snap-ID", snapID)
+
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	log.Println(string(body))
+
+	json.Unmarshal(body, &jsonSnapInfo)
 
 	return jsonSnapInfo, nil
 

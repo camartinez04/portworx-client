@@ -1,0 +1,336 @@
+{{template "thirdlevel" .}}
+
+  {{ define "content" }}
+    {{ $volume := .JsonVolumeInfo.VolumeInfo }}
+
+    {{ $volumeReplicas := $volume.VolumeReplicas }}
+
+    {{ $snapSpecific := .JsonSnapSpecific }}
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-md-12 grid-margin stretch-card">
+              <div class="card position-relative">
+                <div class="card-body">
+                  <p class="card-title">Spanshot Information of volume: {{ $snapSpecific.CloudSnap.SrcVolumeName }}</p>
+                  <div class="row">
+                    <h6 class="font-weight-light mb-xl-4">Origin Volume Name: </h6>
+                    <h6 class="font-weight-light mb-xl-4">{{ $snapSpecific.CloudSnap.SrcVolumeName }}</h6>
+                    <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Snapshot ID:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $snapSpecific.CloudSnap.Id }}</h6>                        
+                      </div>
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">CloudSnap Type:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $snapSpecific.CloudSnap.Metadata.cloudsnapType }}</h6>
+                      </div>  
+                      <div class="ml-xl-4">
+                        <h6 class="font-weight-light mb-xl-4">Kubernetes Namespace:</h6>
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeK8sNamespace }}</h6>
+                      </div>
+                      <div> 
+                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx volume.</p>
+                      </div>
+                    </div>
+                    <div class="col-md-12 col-xl-9">
+                      <div class="row">
+                        <div class="col-md-6 mt-3 col-xl-5">
+                          <canvas id="volume-utilization-chart"></canvas>
+                          <div id="volume-utilization-legend"></div>
+                        </div>
+                        <div class="col-md-6 col-xl-7">
+                          <div class="table-responsive mb-3 mb-md-0">
+                            <table class="table table-borderless report-table">
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0" >Snapshot Status:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="check-volume-status" title="{{  $snapSpecific.CloudSnap.Metadata.status  }}"></h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Compressed Snapshot Size (Bytes)</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-size" title="{{ $snapSpecific.CloudSnap.Metadata.compressedSizeBytes }}">
+                                    <input type="hidden" name="_method" value="patch"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateSize({{$volume.VolumeID}})" >{{ $snapSpecific.CloudSnap.Metadata.compressedSizeBytes }}</a>
+                                  </h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Number of Replicas</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-replicas" title="{{ $volume.VolumeReplicas }}">
+                                    <input type="hidden" name="_method" value="patch"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateHALevel({{$volume.VolumeID}})" >{{ $volume.VolumeReplicas }}</a>
+                                  </h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">IO Profile</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-ioprofile" title="{{ $volume.VolumeIOProfile }}">
+                                    <input type="hidden" name="_method" value="patch"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateIOProfile({{$volume.VolumeID}})" >{{ $volume.VolumeIOProfile }}</a>
+                                  </h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Is it encrypted:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-encrypted" title="{{ $volume.VolumeEncrypted }}"></h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Is it sharedv4:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-sharedv4" title="{{ $volume.VolumeSharedv4 }}"></h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Volume attached on:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-attached" title="{{ $volume.VolumeAttachedOn }}"></h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Device Path:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0">{{$volume.VolumeDevicePath}}</h5>
+                                </td>
+                              </tr>
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Nodes where the volume have a replica:</td>
+                              </tr>
+                              {{ range $index, $replica := $volume.VolumeReplicaNodes}}
+                              <tr>
+                                <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} located on node:</td>
+                                <td class="w-50 px-0">
+                                  <h6 class="font-weight-normal mb-0"><a href="../node/{{ $replica }}">{{ $replica }} </a></h6>
+                                </td>
+                              </tr>
+                              {{end}}
+                              <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0"></td>
+                                <td class="w-50 px-0">
+                                  <div class="float-end">
+                                    <input type="hidden" name="_method" value="delete"/>
+                                    <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                                    <a href="#!" method="delete" class="btn btn-md btn-inverse-danger btn-fw" onclick="deleteVolume({{$volume.VolumeID}})" >Delete Snapshot</a>
+                                  </div>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  {{ end }}
+
+  {{ define "js" }}
+
+  <script>
+  
+    let attention = Prompt();
+
+    var volMessage = "{{.Flash}}";
+
+    var volError = "{{.Error}}";
+
+    if (volError != "") {
+      notify("error trying to create the volume", "error");
+
+    }
+
+    if (volMessage != "") {
+        notify("volume created successfully","success")
+    }
+
+
+  </script>
+
+  <script>
+
+    var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
+    var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
+    var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
+    var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
+    var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
+    var volumeid = "{{.JsonVolumeInfo.VolumeInfo.VolumeID}}";
+    var volumeReplicas = "{{.JsonVolumeInfo.VolumeInfo.VolumeReplicas}}";
+  </script>
+
+  <script >
+
+    var element = document.getElementById("check-volume-status");
+
+
+      if (element.title == "Done") {
+  
+        let btn = document.createElement("button");
+        btn.innerHTML = "Snapshot Done";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-success btn-fw";
+        element.appendChild(btn);
+  
+        console.log("Snapshot Done");
+  
+      } else if (element.title == "VOLUME_STATUS_DEGRADED" ) {
+        
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Degraded";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-warning btn-fw";
+        element.appendChild(btn);
+  
+        console.log("Volume Degraded");
+  
+      } else {
+
+        let btn = document.createElement("button");
+        btn.innerHTML = "Volume Down";
+        btn.type = "button";
+        btn.name = "formBtn";
+        btn.classList = "btn btn-inverse-danger btn-fw";
+        element.appendChild(btn);
+
+      }
+
+    var sharedv4 = document.getElementById("volume-sharedv4");
+    btn2 = document.createElement("button");
+    btn2.innerHTML = sharedv4.title;
+    btn2.type = "button";
+    btn2.name = "formBtn";
+    btn2.classList = "btn btn-light";
+    sharedv4.appendChild(btn2);
+
+    var encrypted = document.getElementById("volume-encrypted");
+    btn3 = document.createElement("button");
+    btn3.innerHTML = encrypted.title;
+    btn3.type = "button";
+    btn3.name = "formBtn";
+    btn3.classList = "btn btn-light";
+    encrypted.appendChild(btn3);
+
+    var attached = document.getElementById("volume-attached");
+    btn4 = document.createElement("button");
+    btn4.innerHTML = attached.title;
+    btn4.type = "button";
+    btn4.name = "formBtn";
+    btn4.classList = "btn btn-light";
+    attached.appendChild(btn4);
+
+  </script>
+
+  <script> 
+    function deleteVolume(volumeid) {
+      attention.custom({
+              icon: 'warning',
+              msg: 'Are you sure to delete this volume?',
+              callback: function(result) {
+                  if (result !== false) {
+                      window.location.csrf_token = "{{.CSRFToken}}";
+                      window.location.method = "delete";
+                      window.location.href = "/frontend/delete-volume/" + volumeid;
+                  }
+              },
+          })
+      }
+  </script>
+
+<script>
+  function updateHALevel(volumeid) {
+    let html = `
+        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
+          <div class="form-row g-3 align-items-center">
+            <select name="ha-value" id="ha-value" placeholder="can be +/- 1 of current">
+              <option value="" selected disabled hidden>HA level can be +/- 1 current</option>
+              <option value=3>3</option>
+              <option value=2>2</option>
+              <option value=1>1</option>
+            </select>
+          </div>
+        </form>
+        `
+    attention.custom({
+      msg: html,
+      title: "Select new HA Level",
+      callback: function (result) {
+        console.log("called update ha level");
+        window.location.csrf_token = "{{.CSRFToken}}";
+        window.location.method = "patch";
+        window.location.href = "/frontend/update-volume-halevel/" + volumeid + "/" + document.getElementById("ha-value").value;
+      },
+    })  
+  }
+</script>
+
+<script>
+  function updateSize(volumeid) {
+    let html = `
+        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
+          <div class="form-row g-3 align-items-center">
+            <input required class="form-control" type="number" name="new-size" id="new-size" placeholder="In GiB and bigger than current size">
+          </div>
+        </form>
+        `
+    attention.custom({
+      msg: html,
+      title: "Increase volume size",
+      callback: function (result) {
+        console.log("called update volume size");
+        window.location.csrf_token = "{{.CSRFToken}}";
+        window.location.method = "patch";
+        window.location.href = "/frontend/update-volume-size/" + volumeid + "/" + document.getElementById("new-size").value;
+      },
+    })  
+  }
+</script>
+
+<script>
+  function updateIOProfile(volumeid) {
+    let html = `
+        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
+          <div class="form-row g-3 align-items-center">
+            <select name="io-profile" id="new-ioprofile" type="text" placeholder="select io-profile">
+              <option value="" selected disabled hidden>select io-profile</option>
+              <option value="auto">auto</option>
+              <option value="db_remote">db_remote</option>
+              <option value="db">db</option>
+              <option value="sequential">sequential</option>
+              <option value="sync_shared">sync_shared</option>
+            </select>
+          </div>
+        </form>
+        `
+    attention.custom({
+      msg: html,
+      title: "Update IO Profile",
+      callback: function (result) {
+        console.log("called update volume size");
+        window.location.csrf_token = "{{.CSRFToken}}";
+        window.location.method = "patch";
+        window.location.href = "/frontend/update-volume-ioprofile/" + volumeid + "/" + document.getElementById("new-ioprofile").value;
+      },
+    })  
+  }
+</script>
+
+  <!-- Custom js for this page-->
+  <script src="/frontend/static/js/dashboard.js"> </script>
+  <!-- End custom js for this page-->
+
+  {{ end }}

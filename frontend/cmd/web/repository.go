@@ -248,6 +248,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetAllSnaps serves the snapshots page
 func (m *Repository) GetAllSnaps(w http.ResponseWriter, r *http.Request) {
 
 	volumesInfo, err := GetAllVolumesInfo()
@@ -266,23 +267,27 @@ func (m *Repository) GetAllSnaps(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (m *Repository) SnapsInformation(w http.ResponseWriter, r *http.Request) {
+// SpecificSpapInformation serves the specific snapshot information page
+func (m *Repository) SpecificSpapInformation(w http.ResponseWriter, r *http.Request) {
 
-	volumeID := r.Header.Get("Volume-ID")
+	//snapshotID := r.Header.Get("Cloud-Snap-ID")
 
-	snapshotID := r.Header.Get("Snap-ID")
+	exploded := strings.Split(r.RequestURI, "/")
 
-	jsonSnapInfoResponse, err := SnapInfofromID(volumeID, snapshotID)
+	snapshotID := exploded[3] + "/" + exploded[4]
+
+	jsonSnapInfoResponse, err := SnapInfofromID(snapshotID)
 	if err != nil {
 		log.Println(err)
-		m.App.Session.Put(r.Context(), "error", "Error trying to create the volume")
+		m.App.Session.Put(r.Context(), "error", "Error trying to get the snapshot information!")
 	}
 
 	Template(w, r, "snap-specific.page.html", &TemplateData{
-		JsonSnapInfo: jsonSnapInfoResponse,
+		JsonSnapSpecific: jsonSnapInfoResponse,
 	})
 }
 
+// CloudCredentials serves the cloud credentials page
 func (m *Repository) CloudCredentials(w http.ResponseWriter, r *http.Request) {
 
 	cloudCredsList, err := GetCloudCredentials()
@@ -295,6 +300,7 @@ func (m *Repository) CloudCredentials(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// CloudCredentialsInformation serves the specific cloud credentials information page
 func (m *Repository) CloudCredentialsInformation(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "cloud-credential-specific.page.html", &TemplateData{})
 }
@@ -327,6 +333,7 @@ func (m *Repository) DeleteVolume(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// UpdateVolumeHALevelHTTP serves the update volume ha level page
 func (m *Repository) UpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
@@ -347,6 +354,7 @@ func (m *Repository) UpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Requ
 
 }
 
+// UpdateVolumeSizeHTTP serves the update volume size page
 func (m *Repository) UpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
@@ -367,6 +375,7 @@ func (m *Repository) UpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request
 
 }
 
+// UpdateVolumeIOProfileHTTP serves the update volume io profile page
 func (m *Repository) UpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
