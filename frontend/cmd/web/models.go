@@ -302,6 +302,7 @@ type CreateVolumeResponse struct {
 	VolumeID string `json:"volume_id,omitempty"`
 }
 
+// CreateCloudCredentials struct to store Cloud Credentials creation form
 type CreateCloudCredentials struct {
 	CloudCredentialName             string `json:"cloud_credential_name,omitempty"`
 	CloudCredentialAccessKey        string `json:"cloud_credential_access_key,omitempty"`
@@ -313,17 +314,33 @@ type CreateCloudCredentials struct {
 	CloudCredentialIAMPolicyEnabled bool   `json:"cloud_credential_iam_policy_enabled,omitempty"`
 }
 
+// CreateCloudCredentialsResponse struct to store Cloud Credentials creation response.
 type CreateCloudCredentialsResponse struct {
 	Error                  bool                             `json:"error,omitempty"`
 	Message                string                           `json:"message,omitempty"`
 	CloudCredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
 }
 
+// CreateCloudSnap struct to store Cloud Snap creation form
+type CreateCloudSnap struct {
+	VolumeID          string `json:"volume_id,omitempty"`
+	CloudCredentialID string `json:"cloud_credential_id,omitempty"`
+}
+
+// CreateCloudSnapResponse struct to store Cloud Snap creation response.
+type CreateCloudSnapResponse struct {
+	Error   bool   `json:"error,omitempty"`
+	Message string `json:"message,omitempty"`
+	TaskID  string `json:"task_id,omitempty"`
+}
+
+// AllCloudCredsIDsResponse struct to store all cloud credentials IDs
 type AllCloudCredsIDsResponse struct {
 	Error          bool     `json:"error,omitempty"`
 	CloudCredsList []string `json:"cloud_creds_list,omitempty"`
 }
 
+// CloudCredentialsListResponse struct to store all cloud credentials
 type CloudCredentialsListResponse struct {
 	Error              bool                               `json:"error,omitempty"`
 	Message            string                             `json:"message,omitempty"`

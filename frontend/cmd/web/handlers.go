@@ -686,3 +686,40 @@ func GetCloudCredentials() (cloudCredsListMap map[string]any, errorFound error) 
 	return cloudCredsListMap, nil
 
 }
+
+// createCloudSnap sends a POST request to the broker to create a cloud snapshot
+func createCloudSnapshot(createCloudSnap CreateCloudSnap) (taskID string, errorFound error) {
+
+	url := brokerURL + "/postcreatecloudsnap"
+	method := "POST"
+
+	var createCloudSnapResponse CreateCloudSnapResponse
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	req.Header.Add("Volume-ID", createCloudSnap.VolumeID)
+	req.Header.Add("Cloud-Credential-ID", createCloudSnap.CloudCredentialID)
+
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+
+	json.Unmarshal(body, &createCloudSnapResponse)
+
+	taskID = createCloudSnapResponse.TaskID
+
+	return taskID, nil
+}

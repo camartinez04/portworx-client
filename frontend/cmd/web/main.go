@@ -27,6 +27,7 @@ func main() {
 	gob.Register(map[string]int{})
 	gob.Register(CreateVolume{})
 	gob.Register(CreateCloudCredentials{})
+	gob.Register(CreateCloudSnap{})
 
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour

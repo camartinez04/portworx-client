@@ -396,7 +396,7 @@ func (m *Repository) UpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Re
 
 }
 
-// CreateCloudCredentials serves the create volume page
+// CreateCloudCredentials serves the create cloud credentials page
 func (m *Repository) CreateCloudCredentials(w http.ResponseWriter, r *http.Request) {
 
 	res, _ := m.App.Session.Get(r.Context(), "create-credentials").(CreateCloudCredentials)
@@ -414,7 +414,7 @@ func (m *Repository) CreateCloudCredentials(w http.ResponseWriter, r *http.Reque
 
 }
 
-// PostCreateCloudCredentials handles the POST request to /create-volume
+// PostCreateCloudCredentials handles the POST request to /create-credentials
 func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
@@ -469,6 +469,62 @@ func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.R
 	log.Println("successfully created the new cloud credential! ID: " + credentialIDResp)
 
 	result := "/frontend/cloud-credentials"
+
+	http.Redirect(w, r, result, http.StatusSeeOther)
+
+}
+
+// CreateCloudSnap serves the create cloud snap page
+func (m *Repository) CreateCloudSnap(w http.ResponseWriter, r *http.Request) {
+
+	res, _ := m.App.Session.Get(r.Context(), "create-cloudsnap").(CreateCloudSnap)
+
+	data := make(map[string]any)
+
+	data["create-cloudsnap"] = res
+
+	m.App.Session.Put(r.Context(), "create-cloudsnap", res)
+
+	Template(w, r, "create-cloudsnap.page.html", &TemplateData{
+		Form: New(nil),
+		Data: data,
+	})
+
+}
+
+// PostCreateCloudSnap handles the POST request to /create-cloudsnap
+func (m *Repository) PostCreateCloudSnap(w http.ResponseWriter, r *http.Request) {
+
+	err := r.ParseForm()
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't parse form!")
+		log.Println("can't parse form!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	createCloudSnap := CreateCloudSnap{
+		VolumeID:          r.FormValue("volume-id"),
+		CloudCredentialID: r.FormValue("cloud-credential-id"),
+	}
+
+	log.Println("successfully created the struct createCloudSnap!")
+
+	log.Printf("Post to send: %v", createCloudSnap)
+
+	m.App.Session.Put(r.Context(), "create-cloudsnap", createCloudSnap)
+
+	taskID, err := createCloudSnapshot(createCloudSnap)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't create new cloudsnap!")
+		log.Println("can't create cloudsnap!")
+		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		return
+	}
+
+	log.Println("successfully created the new cloudsnap with Task ID: " + taskID)
+
+	result := "/frontend/snapshots"
 
 	http.Redirect(w, r, result, http.StatusSeeOther)
 

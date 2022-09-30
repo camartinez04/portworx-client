@@ -1,0 +1,47 @@
+{{template "base" .}}
+
+  {{ define "content" }}
+
+    {{$newCloudSnapshot := index .Data "create-cloudsnap"}}
+
+      <div class="main-panel">
+        <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Create a ClouSnapshot</h4>
+                  <p class="card-description"> Create a new cloud snapshot of a Volume.</p>
+                  <form method="post" action="create-cloudsnap" class="forms-sample" novalidate>
+                      <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
+                      <div class="form-group">
+                        <label>Volume ID</label>
+                        {{with .Form.Errors.Get "volume-id"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input name="volume-id" type="text" class="form-control" id="volume-id" placeholder="volume id" value="{{$newCloudSnapshot.VolumeID}}" aria-label="volume-id">
+                      </div>
+                      <div class="form-group">
+                        <label>Cloud Credential Id</label>
+                        {{with .Form.Errors.Get "cloud-credential-id"}}
+                          <label class="text-danger">{{.}}</label>
+                        {{end}}
+                        <input name="cloud-credential-id" type="text" class="form-control" id="cloud-credential-id" placeholder="cloud credential id" value="{{$newCloudSnapshot.CloudCredentialID}}" aria-label="cloud-credential-id">
+                      </div>
+                    <button type="submit" class="btn btn-primary me-2">Submit</button>
+                    <button class="btn btn-light">Cancel</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div>
+
+  {{ end }}
+
+  {{ define "js" }}
+
+  {{ end }}
