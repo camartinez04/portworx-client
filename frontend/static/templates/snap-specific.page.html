@@ -138,7 +138,7 @@
   
         console.log("Snapshot Done");
   
-      } else if (element.title == "VOLUME_STATUS_DEGRADED" ) {
+      } else if (element.title == "Queued" ) {
         
         let btn = document.createElement("button");
         btn.innerHTML = "Snapshot with Warnings";
@@ -152,7 +152,7 @@
       } else {
 
         let btn = document.createElement("button");
-        btn.innerHTML = "Snapshot Failed";
+        btn.innerHTML = "Snapshot with Issues";
         btn.type = "button";
         btn.name = "formBtn";
         btn.classList = "btn btn-inverse-danger btn-fw";
