@@ -31,7 +31,7 @@ func routes(app *AppConfig) http.Handler {
 	mux.Use(SessionLoad)
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	mux.Route("/", func(mux chi.Router) {
+	mux.Route("/frontend", func(mux chi.Router) {
 
 		mux.Get("/frontend/login", Repo.GetLogin)
 
@@ -43,7 +43,7 @@ func routes(app *AppConfig) http.Handler {
 
 	})
 
-	mux.Route("/frontend", func(mux chi.Router) {
+	mux.Route("/frontend/px", func(mux chi.Router) {
 		mux.Use(Auth)
 		mux.Use(mdw.verifyToken)
 
