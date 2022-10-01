@@ -45,7 +45,7 @@ func Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if keycloakToken == "" {
 			session.Put(r.Context(), "error", "login first!")
-			http.Redirect(w, r, "/frontend/login", http.StatusSeeOther)
+			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
 			return
 		}
 		next.ServeHTTP(w, r)
