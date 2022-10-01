@@ -33,9 +33,9 @@ func routes(app *AppConfig) http.Handler {
 
 	mux.Route("/frontend", func(mux chi.Router) {
 
-		mux.Get("/frontend/login", Repo.GetLogin)
+		mux.Get("/login", Repo.GetLogin)
 
-		mux.Post("/frontend/login", Repo.PostLogin)
+		mux.Post("/login", Repo.PostLogin)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 
