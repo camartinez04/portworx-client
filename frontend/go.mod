@@ -1,4 +1,4 @@
-module github.com/camartinez04/portworx-client/frontend
+module github.com/camartinez04/portworx-client/portworx
 
 go 1.19
 

@@ -240,7 +240,7 @@
                   if (result !== false) {
                       window.location.csrf_token = "{{.CSRFToken}}";
                       window.location.method = "delete";
-                      window.location.href = "/frontend/delete-volume/" + volumeid;
+                      window.location.href = "/portworx/client/delete-volume/" + volumeid;
                   }
               },
           })
@@ -268,7 +268,7 @@
         console.log("called update ha level");
         window.location.csrf_token = "{{.CSRFToken}}";
         window.location.method = "patch";
-        window.location.href = "/frontend/update-volume-halevel/" + volumeid + "/" + document.getElementById("ha-value").value;
+        window.location.href = "/portworx/client/update-volume-halevel/" + volumeid + "/" + document.getElementById("ha-value").value;
       },
     })  
   }
@@ -290,7 +290,7 @@
         console.log("called update volume size");
         window.location.csrf_token = "{{.CSRFToken}}";
         window.location.method = "patch";
-        window.location.href = "/frontend/update-volume-size/" + volumeid + "/" + document.getElementById("new-size").value;
+        window.location.href = "/portworx/client/update-volume-size/" + volumeid + "/" + document.getElementById("new-size").value;
       },
     })  
   }
@@ -319,14 +319,14 @@
         console.log("called update volume size");
         window.location.csrf_token = "{{.CSRFToken}}";
         window.location.method = "patch";
-        window.location.href = "/frontend/update-volume-ioprofile/" + volumeid + "/" + document.getElementById("new-ioprofile").value;
+        window.location.href = "/portworx/client/update-volume-ioprofile/" + volumeid + "/" + document.getElementById("new-ioprofile").value;
       },
     })  
   }
 </script>
 
   <!-- Custom js for this page-->
-  <script src="/frontend/static/js/dashboard.js"> </script>
+  <script src="/portworx/client/static/js/dashboard.js"> </script>
   <!-- End custom js for this page-->
 
   {{ end }}

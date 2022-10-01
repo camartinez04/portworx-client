@@ -31,7 +31,7 @@ func routes(app *AppConfig) http.Handler {
 	mux.Use(SessionLoad)
 	mux.Use(middleware.Heartbeat("/ping"))
 
-	mux.Route("/frontend", func(mux chi.Router) {
+	mux.Route("/portworx", func(mux chi.Router) {
 
 		mux.Get("/login", Repo.GetLogin)
 
@@ -43,13 +43,13 @@ func routes(app *AppConfig) http.Handler {
 
 	})
 
-	mux.Route("/frontend/px", func(mux chi.Router) {
+	mux.Route("/portworx/client", func(mux chi.Router) {
 		mux.Use(Auth)
 		mux.Use(mdw.verifyToken)
 
 		mux.Get("/", Repo.Cluster)
 
-		mux.Get("/logout", Repo.Logout)
+		mux.Post("/logout", Repo.Logout)
 
 		mux.Get("/oauth/callback", Repo.Cluster)
 

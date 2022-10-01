@@ -177,7 +177,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't parse form!")
 		log.Println("can't parse form!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -185,7 +185,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		log.Println("invalid volume size!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -193,7 +193,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		log.Println("invalid volume ha level!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -201,7 +201,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		log.Println("invalid volume encrypted value!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -209,7 +209,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		log.Println("invalid volume sharedv4 value!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -217,7 +217,7 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		log.Println("invalid volume nodiscard value!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -241,13 +241,13 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't create volume!")
 		log.Println("can't create volume!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
 	log.Println("successfully created the volume!")
 
-	result := "/frontend/volume/" + volumeIDResp
+	result := "/portworx/client/volume/" + volumeIDResp
 
 	http.Redirect(w, r, result, http.StatusSeeOther)
 
@@ -334,7 +334,7 @@ func (m *Repository) DeleteVolume(w http.ResponseWriter, r *http.Request) {
 		JsonAllVolumesInfo: volumesInfo,
 	})
 
-	//http.Redirect(w, r, "/frontend/volumes", http.StatusSeeOther)
+	//http.Redirect(w, r, "/portworx/client/volumes", http.StatusSeeOther)
 
 }
 
@@ -355,7 +355,7 @@ func (m *Repository) UpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Requ
 
 	log.Println(message)
 
-	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
+	http.Redirect(w, r, "/portworx/client/volume/"+volumeID, http.StatusSeeOther)
 
 }
 
@@ -376,7 +376,7 @@ func (m *Repository) UpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request
 
 	log.Println(message)
 
-	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
+	http.Redirect(w, r, "/portworx/client/volume/"+volumeID, http.StatusSeeOther)
 
 }
 
@@ -397,7 +397,7 @@ func (m *Repository) UpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Re
 
 	log.Println(message)
 
-	http.Redirect(w, r, "/frontend/volume/"+volumeID, http.StatusSeeOther)
+	http.Redirect(w, r, "/portworx/client/volume/"+volumeID, http.StatusSeeOther)
 
 }
 
@@ -426,7 +426,7 @@ func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.R
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't parse form!")
 		log.Println("can't parse form!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -434,7 +434,7 @@ func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.R
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		log.Println("invalid disable ssl value!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -442,7 +442,7 @@ func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.R
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "invalid data!")
 		log.Println("invalid disable ssl value!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -467,13 +467,13 @@ func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.R
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't create new credential!")
 		log.Println("can't create credential!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
 	log.Println("successfully created the new cloud credential! ID: " + credentialIDResp)
 
-	result := "/frontend/cloud-credentials"
+	result := "/portworx/client/cloud-credentials"
 
 	http.Redirect(w, r, result, http.StatusSeeOther)
 
@@ -504,7 +504,7 @@ func (m *Repository) PostCreateCloudSnap(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't parse form!")
 		log.Println("can't parse form!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
@@ -523,13 +523,13 @@ func (m *Repository) PostCreateCloudSnap(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		m.App.Session.Put(r.Context(), "error", "can't create new cloudsnap!")
 		log.Println("can't create cloudsnap!")
-		http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+		http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 		return
 	}
 
 	log.Println("successfully created the new cloudsnap with Task ID: " + taskID)
 
-	result := "/frontend/snapshots"
+	result := "/portworx/client/snapshots"
 
 	http.Redirect(w, r, result, http.StatusSeeOther)
 
@@ -590,7 +590,7 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	keycloakToken = jwt.AccessToken
 
-	http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+	http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 
 }
 
@@ -602,5 +602,5 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 
 	keycloakToken = ""
 
-	http.Redirect(w, r, "/frontend/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
 }

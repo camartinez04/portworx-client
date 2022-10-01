@@ -171,7 +171,7 @@
                   if (result !== false) {
                       window.location.csrf_token = "{{.CSRFToken}}";
                       window.location.method = "delete";
-                      window.location.href = "/frontend/delete-snapshot/" + snapid;
+                      window.location.href = "/portworx/client/delete-snapshot/" + snapid;
                   }
               },
           })
