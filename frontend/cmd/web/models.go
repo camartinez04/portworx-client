@@ -13,6 +13,7 @@ type TemplateData struct {
 	Form                  *Form
 	JsonVolumeInspect     JsonVolumeInspect
 	CSRFToken             string
+	KeycloakToken         string
 	Flash                 string
 	Warning               string
 	Error                 string

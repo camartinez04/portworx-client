@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -45,6 +47,9 @@ func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
 
 // Documentation serves the documentation page
 func (m *Repository) Documentation(w http.ResponseWriter, r *http.Request) {
+
+	r.Header.Add("Authorization", "Bearer "+m.App.Session.GetString(r.Context(), "token"))
+
 	Template(w, r, "documentation.page.html", &TemplateData{})
 }
 
@@ -156,7 +161,7 @@ func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
 
 	data["create-volume"] = res
 
-	//m.App.Session.Put(r.Context(), "create-volume", res)
+	m.App.Session.Put(r.Context(), "create-volume", res)
 
 	Template(w, r, "create-volume.page.html", &TemplateData{
 		Form: New(nil),
@@ -528,4 +533,74 @@ func (m *Repository) PostCreateCloudSnap(w http.ResponseWriter, r *http.Request)
 
 	http.Redirect(w, r, result, http.StatusSeeOther)
 
+}
+
+func (m *Repository) GetLogin(w http.ResponseWriter, r *http.Request) {
+
+	token := m.App.Session.GetString(r.Context(), "token")
+
+	Template(w, r, "login.page.html", &TemplateData{
+		Form:          New(nil),
+		KeycloakToken: token,
+	})
+
+}
+
+// PostLogin handles the POST request to /login
+func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
+
+	_ = m.App.Session.RenewToken(r.Context())
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println(err)
+	}
+
+	username := r.Form.Get("username")
+
+	password := r.Form.Get("password")
+
+	//log.Printf("username: %s", username)
+
+	rq := &loginRequest{username, password}
+
+	jwt, err := m.App.NewKeycloak.gocloak.Login(context.Background(),
+		m.App.NewKeycloak.clientId,
+		m.App.NewKeycloak.clientSecret,
+		m.App.NewKeycloak.realm,
+		rq.Username,
+		rq.Password)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
+	}
+
+	rs := &loginResponse{
+		AccessToken:  jwt.AccessToken,
+		RefreshToken: jwt.RefreshToken,
+		ExpiresIn:    jwt.ExpiresIn,
+	}
+
+	//log.Printf("jwt: %v", jwt.AccessToken)
+
+	rsJs, _ := json.Marshal(rs)
+
+	_, _ = w.Write(rsJs)
+
+	keycloakToken = jwt.AccessToken
+
+	http.Redirect(w, r, "/frontend/cluster", http.StatusSeeOther)
+
+}
+
+// Logout logs a user out
+func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
+	_ = m.App.Session.Destroy(r.Context())
+
+	_ = m.App.Session.RenewToken(r.Context())
+
+	keycloakToken = ""
+
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }

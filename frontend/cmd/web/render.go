@@ -50,6 +50,8 @@ func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateD
 
 	td = AddDefaultData(td, r)
 
+	r.Header.Add("Authorization", "Bearer "+td.KeycloakToken)
+
 	_ = t.Execute(buf, td)
 
 	_, err := buf.WriteTo(w)

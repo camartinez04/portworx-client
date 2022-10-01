@@ -15,6 +15,7 @@ var app AppConfig
 var infoLog *log.Logger
 var errorLog *log.Logger
 var session *scs.SessionManager
+var keycloakToken string
 
 func main() {
 
@@ -28,6 +29,9 @@ func main() {
 	gob.Register(CreateVolume{})
 	gob.Register(CreateCloudCredentials{})
 	gob.Register(CreateCloudSnap{})
+	gob.Register(loginRequest{})
+
+	app.NewKeycloak = newKeycloak()
 
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour

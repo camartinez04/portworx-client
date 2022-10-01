@@ -11,7 +11,11 @@ import (
 // routes sets up the routing for the application.
 func routes(app *AppConfig) http.Handler {
 
+	keycloak := Repo.App.NewKeycloak
+
 	mux := chi.NewRouter()
+
+	mdw := newMiddleware(keycloak)
 
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},
@@ -25,12 +29,27 @@ func routes(app *AppConfig) http.Handler {
 	mux.Use(middleware.Recoverer)
 	mux.Use(NoSurf)
 	mux.Use(SessionLoad)
-
 	mux.Use(middleware.Heartbeat("/ping"))
 
+	mux.Route("/", func(mux chi.Router) {
+
+		mux.Get("/login", Repo.GetLogin)
+
+		mux.Post("/login", Repo.PostLogin)
+
+		fileServer := http.FileServer(http.Dir("./static/"))
+
+		mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+
+	})
+
 	mux.Route("/frontend", func(mux chi.Router) {
+		mux.Use(Auth)
+		mux.Use(mdw.verifyToken)
 
 		mux.Get("/", Repo.Cluster)
+
+		mux.Get("/logout", Repo.Logout)
 
 		mux.Get("/oauth/callback", Repo.Cluster)
 
