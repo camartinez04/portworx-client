@@ -78,7 +78,7 @@ func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 
 	if volumeID == "" {
 
-		volumeID = exploded[3]
+		volumeID = exploded[4]
 	}
 
 	volumeInfoResponse, err := VolumeInfofromID(volumeID)
@@ -136,7 +136,7 @@ func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	nodeID := exploded[3]
+	nodeID := exploded[4]
 
 	nodeInfoResponse, replicaPerNodeResponse, err := NodeInfoFromID(nodeID)
 	if err != nil {
@@ -279,7 +279,7 @@ func (m *Repository) SpecificSpapInformation(w http.ResponseWriter, r *http.Requ
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	snapshotID := exploded[3] + "/" + exploded[4]
+	snapshotID := exploded[4] + "/" + exploded[5]
 
 	jsonSnapInfoResponse, err := SnapInfofromID(snapshotID)
 	if err != nil {
@@ -315,7 +315,7 @@ func (m *Repository) DeleteVolume(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[3]
+	volumeID := exploded[4]
 
 	message, err := DeleteVolume(volumeID)
 	if err != nil {
@@ -343,9 +343,9 @@ func (m *Repository) UpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Requ
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[3]
+	volumeID := exploded[4]
 
-	replica := exploded[4]
+	replica := exploded[5]
 
 	message, err := UpdateVolumeHALevel(volumeID, replica)
 	if err != nil {
@@ -364,9 +364,9 @@ func (m *Repository) UpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[3]
+	volumeID := exploded[4]
 
-	newSize := exploded[4]
+	newSize := exploded[5]
 
 	message, err := ResizeVolume(volumeID, newSize)
 	if err != nil {
@@ -385,9 +385,9 @@ func (m *Repository) UpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Re
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[3]
+	volumeID := exploded[4]
 
-	ioProfile := exploded[4]
+	ioProfile := exploded[5]
 
 	message, err := IOProfileVolume(volumeID, ioProfile)
 	if err != nil {

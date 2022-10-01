@@ -41,7 +41,7 @@ spec:
         - name: "BROKER_URL"
           value: "http://pxbroker-service"
         - name: "KEYCLOAK_URL"
-          value: "https://keycloak-keycloak.apps.okd.calvarado04.com"
+          value: "https://keycloak-keycloak.apps.okd.calvarado04.com/"
         - name: "KEYCLOAK_CLIENT_ID"
           value: "portworx-client"
         - name: "KEYCLOAK_SECRET"
