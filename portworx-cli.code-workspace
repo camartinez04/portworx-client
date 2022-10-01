@@ -11,12 +11,12 @@
 		},
 		{
 			"path": "images"
-
 		},
 		{
 			"path": "openshift"
-
+		},
+		{
+			"path": "project"
 		}
-
 	]
 }

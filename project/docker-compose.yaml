@@ -14,6 +14,10 @@ services:
       replicas: 1
     environment:
       BROKER_URL: "http://broker-service:8080"
+      KEYCLOAK_URL: "https://keycloak-keycloak.apps.okd.calvarado04.com"
+      KEYCLOAK_REALM: "portworx"
+      KEYCLOAK_CLIENT_ID: "portworx-frontend"
+      KEYCLOAK_SECRET:
 
   broker-service:
     build:
