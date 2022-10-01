@@ -560,7 +560,7 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 	password := r.Form.Get("password")
 
-	//log.Printf("username: %s", username)
+	log.Printf("username: %s", username)
 
 	rq := &loginRequest{username, password}
 
