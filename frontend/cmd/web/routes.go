@@ -39,7 +39,7 @@ func routes(app *AppConfig) http.Handler {
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 
-		mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+		mux.Handle("/static/*", http.StripPrefix("/portworx/static", fileServer))
 
 	})
 
@@ -104,7 +104,7 @@ func routes(app *AppConfig) http.Handler {
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 
-		mux.Handle("/static/*", http.StripPrefix("/frontend/static", fileServer))
+		mux.Handle("/static/*", http.StripPrefix("/portworx/client/static", fileServer))
 
 	})
 

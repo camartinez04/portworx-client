@@ -5,22 +5,22 @@ metadata:
   namespace: portworx-client
   annotations:
     nginx.ingress.kubernetes.io/add-base-url: 'true'
-    nginx.ingress.kubernetes.io/app-root: /frontend
-    nginx.ingress.kubernetes.io/rewrite-target: /frontend/$2
+    nginx.ingress.kubernetes.io/app-root: /portworx
+    nginx.ingress.kubernetes.io/rewrite-target: /portworx/$2
 spec:
   ingressClassName: nginx
   rules:
     - host: kubernetes.lehi-k8s-vanilla.calvarado04.com
       http:
         paths:
-          - path: /frontend(/|$)(.*)
+          - path: /portworx(/|$)(.*)
             pathType: Prefix
             backend:
               service:
                 name: pxfrontend-service
                 port:
                   number: 8081
-          - path: /frontend
+          - path: /portworx
             pathType: Prefix
             backend:
               service:
