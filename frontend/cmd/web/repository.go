@@ -602,5 +602,5 @@ func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
 
 	keycloakToken = ""
 
-	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	http.Redirect(w, r, "/frontend/login", http.StatusSeeOther)
 }
