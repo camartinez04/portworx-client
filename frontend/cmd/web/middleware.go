@@ -10,6 +10,7 @@ import (
 	"github.com/justinas/nosurf"
 )
 
+// WriteToConsole writes something to the console
 func WriteToConsole(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Hit the page")
@@ -17,6 +18,7 @@ func WriteToConsole(next http.Handler) http.Handler {
 	})
 }
 
+// NoSurf adds CSRF protection
 func NoSurf(next http.Handler) http.Handler {
 
 	csrfHandler := nosurf.New(next)
@@ -35,68 +37,67 @@ func NoSurf(next http.Handler) http.Handler {
 	return csrfHandler
 }
 
+// SessionLoad loads and saves the session on every request
 func SessionLoad(next http.Handler) http.Handler {
 	return session.LoadAndSave(next)
 }
 
-// Auth protects routes, ensuring that the user is logged in
-func Auth(next http.Handler) http.Handler {
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if keycloakToken == "" {
-			session.Put(r.Context(), "error", "login first!")
-			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
-			return
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
+// newMiddleware creates a new middleware with Keycloak
 func newMiddleware(keycloak *keycloak) *keyCloakMiddleware {
 
 	return &keyCloakMiddleware{keycloak: keycloak}
 }
 
+// extractBearerToken extracts the Bearer token from the Authorization header
 func (auth *keyCloakMiddleware) extractBearerToken(token string) string {
 	return strings.Replace(token, "Bearer ", "", 1)
 }
 
-func (auth *keyCloakMiddleware) verifyToken(next http.Handler) http.Handler {
+// AuthKeycloak is a middleware to check if the user is authenticated and check the JWT token
+func (auth *keyCloakMiddleware) AuthKeycloak(next http.Handler) http.Handler {
 
 	f := func(w http.ResponseWriter, r *http.Request) {
+
+		// Check if the user is authenticated
+		if keycloakToken == "" {
+			session.Put(r.Context(), "error", "login first!")
+			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
+			return
+		}
 
 		r.Header.Add("Authorization", "Bearer "+keycloakToken)
 
 		token := r.Header.Get("Authorization")
 
-		//log.Printf("token: %v", token)
-
-		// extract Bearer token
+		// Extract Bearer token
 		token = auth.extractBearerToken(token)
 
 		if token == "" {
-			http.Error(w, "Bearer Token missing", http.StatusUnauthorized)
+			session.Put(r.Context(), "error", "login first!")
+			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
 			return
 		}
 
-		//// call Keycloak API to verify the access token
+		// Call Keycloak API to verify the access token
 		result, err := auth.keycloak.gocloak.RetrospectToken(context.Background(), token, auth.keycloak.clientId, auth.keycloak.clientSecret, auth.keycloak.realm)
 		if err != nil {
-			http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
+			session.Put(r.Context(), "error", fmt.Sprintf("Invalid or malformed token: %s", err.Error()))
+			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
 			return
 		}
 
-		//jwt, _, err := auth.keycloak.gocloak.DecodeAccessToken(context.Background(), token, auth.keycloak.realm, "")
-		//if err != nil {
-		//	http.Error(w, fmt.Sprintf("Invalid or malformed token: %s", err.Error()), http.StatusUnauthorized)
-		//	return
-		//}
+		// Decode the token and validate it
+		_, _, err = auth.keycloak.gocloak.DecodeAccessToken(context.Background(), token, auth.keycloak.realm, "")
+		if err != nil {
+			session.Put(r.Context(), "error", fmt.Sprintf("Invalid or malformed Token when decoding it %s", err.Error()))
+			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
+			return
+		}
 
-		//jwtj, _ := json.Marshal(jwt)
-
-		// check if the token isn't expired and valid
+		// Check if the token isn't expired and valid
 		if !*result.Active {
-			http.Error(w, "Invalid or expired Token", http.StatusUnauthorized)
+			session.Put(r.Context(), "error", "Invalid or expired Token")
+			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
 			return
 		}
 
@@ -106,6 +107,7 @@ func (auth *keyCloakMiddleware) verifyToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(f)
 }
 
+// newController creates a new controller
 func newController(keycloak *keycloak) *controller {
 	return &controller{
 		keycloak: keycloak,
