@@ -74,6 +74,11 @@ You need the broker on your laptop or a valid endpoint where your broker is alre
 ```
 export BROKER_URL=http://localhost:8080
 
+export KEYCLOAK_CLIENT_ID=<keycloak-client-id>
+export KEYCLOAK_REALM=<keycloak-realm>
+export KEYCLOAK_URL=<keycloak-url>
+export KEYCLOAK_SECRET=<keycloak-secret>
+
 cd portworx-client/frontend
 
 go run cmd/web/*.go
