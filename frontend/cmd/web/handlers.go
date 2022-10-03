@@ -723,3 +723,35 @@ func createCloudSnapshot(createCloudSnap CreateCloudSnap) (taskID string, errorF
 
 	return taskID, nil
 }
+
+// getClusterAlarms sends a GET request to the broker to get all cluster alarms
+func getClusterAlarms() (clusterAlarms ClusterAlarms, errorFound error) {
+
+	url := brokerURL + "/getpxclusteralarms"
+	method := "GET"
+
+	client := &http.Client{}
+
+	req, errorFound := http.NewRequest(method, url, nil)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+
+	json.Unmarshal(body, &clusterAlarms)
+
+	return clusterAlarms, nil
+
+}

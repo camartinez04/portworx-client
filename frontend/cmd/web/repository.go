@@ -31,10 +31,15 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
-// Cluster serves the cluster page
-func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
+// ClusterHTTP serves the cluster page
+func (m *Repository) ClusterHTTP(w http.ResponseWriter, r *http.Request) {
 
 	clusterInfo, clusterCapacity, err := GetClusterInfo()
+	if err != nil {
+		log.Println(err)
+	}
+
+	clusterAlarms, err := getClusterAlarms()
 	if err != nil {
 		log.Println(err)
 	}
@@ -42,19 +47,20 @@ func (m *Repository) Cluster(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "index.page.html", &TemplateData{
 		JsonClusterInfo:     clusterInfo,
 		JsonClusterCapacity: clusterCapacity,
+		JsonClusterAlarms:   clusterAlarms,
 	})
 }
 
-// Documentation serves the documentation page
-func (m *Repository) Documentation(w http.ResponseWriter, r *http.Request) {
+// DocumentationHTTP serves the documentation page
+func (m *Repository) DocumentationHTTP(w http.ResponseWriter, r *http.Request) {
 
 	r.Header.Add("Authorization", "Bearer "+m.App.Session.GetString(r.Context(), "token"))
 
 	Template(w, r, "documentation.page.html", &TemplateData{})
 }
 
-// Volumes serves the volumes page
-func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
+// VolumesHTTP serves the volumes page
+func (m *Repository) VolumesHTTP(w http.ResponseWriter, r *http.Request) {
 
 	volumesInfo, err := GetAllVolumesInfo()
 	if err != nil {
@@ -69,8 +75,8 @@ func (m *Repository) Volumes(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// VolumeInformation serves the volume information page
-func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
+// VolumeInformationHTTP serves the volume information page
+func (m *Repository) VolumeInformationHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -114,8 +120,8 @@ func (m *Repository) VolumeInformation(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Nodes serves the nodes page
-func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
+// NodesHTTP serves the nodes page
+func (m *Repository) NodesHTTP(w http.ResponseWriter, r *http.Request) {
 
 	nodesInfo, err := GetAllNodesInfo()
 	if err != nil {
@@ -131,8 +137,8 @@ func (m *Repository) Nodes(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// NodeInformation serves the node information page
-func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
+// NodeInformationHTTP serves the node information page
+func (m *Repository) NodeInformationHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -152,8 +158,8 @@ func (m *Repository) NodeInformation(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// CreateVolume serves the create volume page
-func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
+// CreateVolumeHTTP serves the create volume page
+func (m *Repository) CreateVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res, _ := m.App.Session.Get(r.Context(), "create-volume").(CreateVolume)
 
@@ -170,8 +176,8 @@ func (m *Repository) CreateVolume(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// PostCreateVolume handles the POST request to /create-volume
-func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
+// PostCreateVolumeHTTP handles the POST request to /create-volume
+func (m *Repository) PostCreateVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
@@ -253,8 +259,8 @@ func (m *Repository) PostCreateVolume(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// GetAllSnaps serves the snapshots page
-func (m *Repository) GetAllSnaps(w http.ResponseWriter, r *http.Request) {
+// GetAllSnapsHTTP serves the snapshots page
+func (m *Repository) GetAllSnapsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	volumesInfo, err := GetAllVolumesInfo()
 	if err != nil {
@@ -272,8 +278,8 @@ func (m *Repository) GetAllSnaps(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// SpecificSpapInformation serves the specific snapshot information page
-func (m *Repository) SpecificSpapInformation(w http.ResponseWriter, r *http.Request) {
+// SpecificSpapInformationHTTP serves the specific snapshot information page
+func (m *Repository) SpecificSpapInformationHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//snapshotID := r.Header.Get("Cloud-Snap-ID")
 
@@ -292,8 +298,8 @@ func (m *Repository) SpecificSpapInformation(w http.ResponseWriter, r *http.Requ
 	})
 }
 
-// CloudCredentials serves the cloud credentials page
-func (m *Repository) CloudCredentials(w http.ResponseWriter, r *http.Request) {
+// CloudCredentialsHTTP serves the cloud credentials page
+func (m *Repository) CloudCredentialsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudCredsList, err := GetCloudCredentials()
 	if err != nil {
@@ -305,13 +311,13 @@ func (m *Repository) CloudCredentials(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// CloudCredentialsInformation serves the specific cloud credentials information page
-func (m *Repository) CloudCredentialsInformation(w http.ResponseWriter, r *http.Request) {
+// CloudCredentialsInformationHTTP serves the specific cloud credentials information page
+func (m *Repository) CloudCredentialsInformationHTTP(w http.ResponseWriter, r *http.Request) {
 	Template(w, r, "cloud-credential-specific.page.html", &TemplateData{})
 }
 
-// DeleteVolume serves the delete volume page
-func (m *Repository) DeleteVolume(w http.ResponseWriter, r *http.Request) {
+// DeleteVolumeHTTP serves the delete volume page
+func (m *Repository) DeleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -401,8 +407,8 @@ func (m *Repository) UpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Re
 
 }
 
-// CreateCloudCredentials serves the create cloud credentials page
-func (m *Repository) CreateCloudCredentials(w http.ResponseWriter, r *http.Request) {
+// CreateCloudCredentialsHTTP serves the create cloud credentials page
+func (m *Repository) CreateCloudCredentialsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res, _ := m.App.Session.Get(r.Context(), "create-credentials").(CreateCloudCredentials)
 
@@ -419,8 +425,8 @@ func (m *Repository) CreateCloudCredentials(w http.ResponseWriter, r *http.Reque
 
 }
 
-// PostCreateCloudCredentials handles the POST request to /create-credentials
-func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.Request) {
+// PostCreateCloudCredentialsHTTP handles the POST request to /create-credentials
+func (m *Repository) PostCreateCloudCredentialsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
@@ -479,8 +485,8 @@ func (m *Repository) PostCreateCloudCredentials(w http.ResponseWriter, r *http.R
 
 }
 
-// CreateCloudSnap serves the create cloud snap page
-func (m *Repository) CreateCloudSnap(w http.ResponseWriter, r *http.Request) {
+// CreateCloudSnapHTTP serves the create cloud snap page
+func (m *Repository) CreateCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
 
 	res, _ := m.App.Session.Get(r.Context(), "create-cloudsnap").(CreateCloudSnap)
 
@@ -497,8 +503,8 @@ func (m *Repository) CreateCloudSnap(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// PostCreateCloudSnap handles the POST request to /create-cloudsnap
-func (m *Repository) PostCreateCloudSnap(w http.ResponseWriter, r *http.Request) {
+// PostCreateCloudSnapHTTP handles the POST request to /create-cloudsnap
+func (m *Repository) PostCreateCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := r.ParseForm()
 	if err != nil {
@@ -535,7 +541,8 @@ func (m *Repository) PostCreateCloudSnap(w http.ResponseWriter, r *http.Request)
 
 }
 
-func (m *Repository) GetLogin(w http.ResponseWriter, r *http.Request) {
+// GetLoginHTTP serves the login page
+func (m *Repository) GetLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	token := m.App.Session.GetString(r.Context(), "token")
 
@@ -546,8 +553,8 @@ func (m *Repository) GetLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// PostLogin handles the POST request to /login
-func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
+// PostLoginHTTP handles the POST request to /login
+func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_ = m.App.Session.RenewToken(r.Context())
 
@@ -594,8 +601,8 @@ func (m *Repository) PostLogin(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Logout logs a user out
-func (m *Repository) Logout(w http.ResponseWriter, r *http.Request) {
+// LogoutHTTP logs a user out
+func (m *Repository) LogoutHTTP(w http.ResponseWriter, r *http.Request) {
 	_ = m.App.Session.Destroy(r.Context())
 
 	_ = m.App.Session.RenewToken(r.Context())

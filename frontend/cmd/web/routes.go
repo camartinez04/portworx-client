@@ -33,9 +33,9 @@ func routes(app *AppConfig) http.Handler {
 
 	mux.Route("/portworx", func(mux chi.Router) {
 
-		mux.Get("/login", Repo.GetLogin)
+		mux.Get("/login", Repo.GetLoginHTTP)
 
-		mux.Post("/login", Repo.PostLogin)
+		mux.Post("/login", Repo.PostLoginHTTP)
 
 		fileServer := http.FileServer(http.Dir("./static/"))
 
@@ -47,52 +47,48 @@ func routes(app *AppConfig) http.Handler {
 		mux.Use(Auth)
 		mux.Use(mdw.verifyToken)
 
-		mux.Get("/", Repo.Cluster)
+		mux.Get("/", Repo.ClusterHTTP)
 
-		mux.Post("/logout", Repo.Logout)
+		mux.Post("/logout", Repo.LogoutHTTP)
 
-		mux.Get("/oauth/callback", Repo.Cluster)
+		mux.Get("/oauth/callback", Repo.ClusterHTTP)
 
-		mux.Get("/cluster", Repo.Cluster)
+		mux.Get("/cluster", Repo.ClusterHTTP)
 
-		mux.Get("/volumes", Repo.Volumes)
+		mux.Get("/volumes", Repo.VolumesHTTP)
 
 		middleware.SetHeader("Volume-ID", "{volume_id}")
-		mux.Get("/volume/{volume_id}", Repo.VolumeInformation)
+		mux.Get("/volume/{volume_id}", Repo.VolumeInformationHTTP)
 
-		//mux.Post("/volume/{volume_id}", Repo.VolumeInformation)
-
-		//mux.Delete("/volume/{volume_id}", Repo.VolumeInformation)
-
-		mux.Get("/nodes", Repo.Nodes)
+		mux.Get("/nodes", Repo.NodesHTTP)
 
 		middleware.SetHeader("Node-ID", "{node_id}")
-		mux.Get("/node/{node_id}", Repo.NodeInformation)
+		mux.Get("/node/{node_id}", Repo.NodeInformationHTTP)
 
-		mux.Get("/snapshots", Repo.GetAllSnaps)
+		mux.Get("/snapshots", Repo.GetAllSnapsHTTP)
 
-		mux.Get("/snapshot/{bucket}/{snap_id}", Repo.SpecificSpapInformation)
+		mux.Get("/snapshot/{bucket}/{snap_id}", Repo.SpecificSpapInformationHTTP)
 
-		mux.Get("/cloud-credentials", Repo.CloudCredentials)
+		mux.Get("/cloud-credentials", Repo.CloudCredentialsHTTP)
 
-		mux.Get("/cloud-credential/{cloud_cred_id}", Repo.CloudCredentialsInformation)
+		mux.Get("/cloud-credential/{cloud_cred_id}", Repo.CloudCredentialsInformationHTTP)
 
-		mux.Get("/create-credentials", Repo.CreateCloudCredentials)
+		mux.Get("/create-credentials", Repo.CreateCloudCredentialsHTTP)
 
-		mux.Post("/create-credentials", Repo.PostCreateCloudCredentials)
+		mux.Post("/create-credentials", Repo.PostCreateCloudCredentialsHTTP)
 
-		mux.Get("/create-volume", Repo.CreateVolume)
+		mux.Get("/create-volume", Repo.CreateVolumeHTTP)
 
-		mux.Post("/create-volume", Repo.PostCreateVolume)
+		mux.Post("/create-volume", Repo.PostCreateVolumeHTTP)
 
-		mux.Get("/create-cloudsnap", Repo.CreateCloudSnap)
+		mux.Get("/create-cloudsnap", Repo.CreateCloudSnapHTTP)
 
-		mux.Post("/create-cloudsnap", Repo.PostCreateCloudSnap)
+		mux.Post("/create-cloudsnap", Repo.PostCreateCloudSnapHTTP)
 
-		mux.Get("/documentation", Repo.Documentation)
+		mux.Get("/documentation", Repo.DocumentationHTTP)
 
 		middleware.SetHeader("Volume-ID", "{volume_id}")
-		mux.Get("/delete-volume/{volume_id}", Repo.DeleteVolume)
+		mux.Get("/delete-volume/{volume_id}", Repo.DeleteVolumeHTTP)
 
 		mux.Get("/update-volume-halevel/{volume_id}/{ha-level}", Repo.UpdateVolumeHALevelHTTP)
 

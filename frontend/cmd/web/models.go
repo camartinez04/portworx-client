@@ -34,6 +34,7 @@ type TemplateData struct {
 	JsonAllSnapsInfo      JsonAllCloudSnapResponse
 	JsonSnapSpecific      JsonSpecificCloudSnapResponse
 	JsonCloudCredsList    map[string]any
+	JsonClusterAlarms     ClusterAlarms
 }
 
 // SnapInfoResponse holds the response from the snap info API
@@ -346,4 +347,10 @@ type CloudCredentialsListResponse struct {
 	Error              bool                               `json:"error,omitempty"`
 	Message            string                             `json:"message,omitempty"`
 	CredentialsInspect []api.SdkCredentialInspectResponse `json:"credentials_inspect,omitempty"`
+}
+
+// ClusterAlarms struct to store the cluster alarms
+type ClusterAlarms struct {
+	Error     bool         `json:"error,omitempty"`
+	AlarmList []*api.Alert `json:"alarm_list,omitempty"`
 }
