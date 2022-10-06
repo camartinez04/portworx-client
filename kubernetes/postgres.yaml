@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgresql
+  namespace: portworx-client
+spec:
+  serviceName: postgresql-service
+  selector:
+    matchLabels:
+      app: postgresql
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        - name: postgresql
+          image: postgres:14.5
+          env:
+            - name: POSTGRES_PASSWORD
+              value: testpassword
+            - name: PGDATA
+              value: /data/pgdata
+            - name: POSTGRES_DB
+              value: keycloak
+          volumeMounts:
+            - name: data
+              mountPath: /data/pgdata
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: px-csi-db
+        resources:
+          requests:
+            storage: "5Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: portworx-client
+spec:
+  selector:
+    app: postgresql
+  ports:
+  - port: 5432
+    targetPort: 5432
