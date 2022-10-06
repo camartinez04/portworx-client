@@ -2,10 +2,11 @@ FROM quay.io/keycloak/keycloak:19.0.2 as builder
 
 ENV KC_METRICS_ENABLED=true
 ENV KC_FEATURES=token-exchange,scripts,authorization,step-up-authentication,client-secret-rotation,client-policies,step-up-authentication,web-authn,impersonation,admin2,admin-fine-grained-authz
+RUN mkdir -p /opt/keycloak/data/import
+ADD realm-export.json /opt/keycloak/data/import/realm-export.json
 RUN /opt/keycloak/bin/kc.sh import --file /opt/keycloak/data/import/realm-export.json
 ENV KC_DB=postgres
 RUN /opt/keycloak/bin/kc.sh build --db=postgres
-ADD realm-export.json /opt/keycloak/data/import/realm-export.json
 
 FROM quay.io/keycloak/keycloak:19.0.2
 COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
