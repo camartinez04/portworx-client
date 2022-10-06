@@ -17,5 +17,4 @@ RUN mkdir -p /opt/keycloak/data/import
 ADD realm-export.json /opt/keycloak/data/import/realm-export.json
 ENV KEYCLOAK_ADMIN=admin
 ENV KEYCLOAK_ADMIN_PASSWORD=change_me
-ENV KC_HOSTNAME=0.0.0.0:8443
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--db=postgres"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--import-realm", "--db=postgres", "--http-relative-path=/auth", "--hostname-strict-https=false", "--hostname-strict=false"]

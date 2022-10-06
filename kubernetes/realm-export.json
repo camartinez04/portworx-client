@@ -470,6 +470,29 @@
       },
       "notBefore": 0,
       "groups": []
+    },
+    {
+      "id": "c0e14f79-f58d-4eaa-b9df-e3af478b944e",
+      "createdTimestamp": 1664596681575,
+      "username": "pxadmin",
+      "email": "pxadmin@mail.com",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "pxAdmin123$"
+        }
+      ],
+      "realmRoles": [
+        "default-roles-portworx"
+      ],
+      "clientRoles": {
+        "portworx-client": [
+          "uma_protection"
+        ],
+        "account": [ "manage-account" ]
+      }
     }
   ],
   "scopeMappings": [
@@ -678,7 +701,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "r7ZbwspBT56pP5B5cMNSYwywKIuw3ySs",
       "redirectUris": [
         "http://*",
         "https://*"

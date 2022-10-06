@@ -7,9 +7,12 @@ metadata:
     app: keycloak
 spec:
   ports:
-  - name: http
+  - name: https
     port: 8443
     targetPort: 8443
+  - name: http
+    port: 8080
+    targetPort: 8080
   selector:
     app: keycloak
 ---
@@ -44,15 +47,27 @@ spec:
           value: "postgres"
         - name: KC_DB_PASSWORD
           value: "testpassword" 
+        - name: KC_HOSTNAME_STRICT
+          value: "false"
+        - name: KC_HTTP_ENABLED
+          value: "true"
+        - name: PROXY_ADDRESS_FORWARDING
+          value: "true"
+        - name: KC_HOSTNAME_ADMIN_URL
+          value: "http://localhost:8080/auth"
+        - name: KC_HOSTNAME_URL
+          value: "http://localhost:8080/auth"
         ports:
-        - name: http
+        - name: https
           containerPort: 8443
+        - name: http
+          containerPort: 8080
         readinessProbe:
           exec:
             command:
               - sh
               - -ec
-              - 'curl -k -s https://127.0.0.1:8443/realms/master || exit 1'
+              - 'curl -s http://127.0.0.1:8080/realms/master || exit 1'
         resources:
           requests:
             cpu: 200m
@@ -60,3 +75,15 @@ spec:
           limits:
             cpu: 1000m
             memory: 2Gi
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak
+  namespace: portworx-client
+type: Opaque
+data:
+  keycloakClientID: cG9ydHdvcngtY2xpZW50
+  keycloakRealm: cG9ydHdvcng=
+  keycloakSecret: cjdaYndzcEJUNTZwUDVCNWNNTlNZd3l3S0l1dzN5U3M=
+  keycloakUrl: aHR0cDovL2tleWNsb2FrOjgwODA=
