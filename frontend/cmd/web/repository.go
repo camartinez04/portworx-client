@@ -344,6 +344,23 @@ func (m *Repository) DeleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DeleteCloudSnapHTTP serves the delete cloud snapshot functionality
+func (m *Repository) DeleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	credentialID := exploded[4]
+
+	cloudSnapID := exploded[5]
+
+	err := deleteCloudSnapshot(credentialID, cloudSnapID)
+	if err != nil {
+		log.Println(err)
+		m.App.Session.Put(r.Context(), "error", "Error trying to delete the cloud snapshot")
+	}
+
+}
+
 // UpdateVolumeHALevelHTTP serves the update volume ha level page
 func (m *Repository) UpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Request) {
 

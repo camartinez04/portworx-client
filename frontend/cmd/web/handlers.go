@@ -755,3 +755,34 @@ func getClusterAlarms() (clusterAlarms ClusterAlarms, errorFound error) {
 	return clusterAlarms, nil
 
 }
+
+// deleteCloudSnapshot sends a DELETE request to the broker to delete a cloud snapshot
+func deleteCloudSnapshot(credentialID string, cloudSnapID string) (errorFound error) {
+	url := "localhost:8080/deletecloudsnap"
+	method := "DELETE"
+
+	client := &http.Client{}
+	req, errorFound := http.NewRequest(method, url, nil)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	req.Header.Add("Cloud-Credential-ID", credentialID)
+	req.Header.Add("Cloud-Snap-ID", cloudSnapID)
+
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	body, errorFound := ioutil.ReadAll(res.Body)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	log.Println(string(body))
+
+	return nil
+}
