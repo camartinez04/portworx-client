@@ -191,6 +191,26 @@ func GetSpecificCloudSnapshot(conn *grpc.ClientConn, cloudSnapID string) (cloudS
 
 }
 
+// DeleteCloudSnap deletes a cloud snapshot
+func DeleteCloudSnap(conn *grpc.ClientConn, credentialID string, cloudSnapID string) (errorFound error) {
+
+	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
+
+	// Delete the cloud snapshot
+	_, errorFound = cloudbackups.Delete(context.Background(),
+		&api.SdkCloudBackupDeleteRequest{
+			CredentialId: credentialID,
+			BackupId:     cloudSnapID,
+		})
+	if errorFound != nil {
+		log.Printf("Error deleting backup: %v", errorFound)
+		return errorFound
+	}
+
+	return nil
+
+}
+
 // CloudSnapHistory gets the history of a cloud snapshot
 func CloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 

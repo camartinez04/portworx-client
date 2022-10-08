@@ -60,6 +60,7 @@ func (app *AppConfig) routes() http.Handler {
 	mux.Post("/postcreatelocalsnap", app.postCreateLocalSnapHTTP)
 	mux.Get("/getallcloudcredsids", app.getAllCloudCredentialIDsHTTP)
 	mux.Get("/getspecificcloudsnapshot", app.getSpecificCloudSnapshotHTTP)
+	mux.Delete("/deletecloudsnap", app.deleteCloudSnapHTTP)
 
 	return mux
 
