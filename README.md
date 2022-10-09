@@ -2,6 +2,7 @@
 A Portworx Client with Go
 
 - Built in Go version 1.19
+- Uses [gocloak](github.com/Nerzal/gocloak/v11) for Keycloak auth security integration at Broker and Frontend levels.
 - Uses [libopenstorage](https://github.com/libopenstorage/openstorage-sdk-clients)
 - Uses [gRPC](https://pkg.go.dev/google.golang.org/grpc) to consume the Portworx API
 - Uses [alex edwards](https://github.com/alexedwards/scs) SCS session manager
@@ -58,6 +59,11 @@ Forward the portworx-api service that usually will be located on kube-system nam
 kubectl port-forward svc/portworx-api -n kube-system 9020:9020
 
 export PORTWORX_GRPC_URL=localhost:9020
+
+export KEYCLOAK_CLIENT_ID=<keycloak-client-id>
+export KEYCLOAK_REALM=<keycloak-realm>
+export KEYCLOAK_URL=<keycloak-url>
+export KEYCLOAK_SECRET=<keycloak-secret>
 
 cd portworx-client/broker
 
