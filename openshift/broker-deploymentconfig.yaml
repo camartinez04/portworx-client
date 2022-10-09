@@ -26,6 +26,18 @@ spec:
           env:
           - name: "PORTWORX_GRPC_URL"
             value: "portworx-api.kube-system:9020"
+          - name: "KEYCLOAK_URL"
+            value: "https://keycloak-keycloak.apps.okd.calvarado04.com"
+          - name: "KEYCLOAK_CLIENT_ID"
+            value: "portworx-client"
+          - name: "KEYCLOAK_SECRET"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak
+                key: keycloakSecret
+                optional: false 
+          - name: "KEYCLOAK_REALM"
+            value: "portworx"
           ports:
           - containerPort: 8080
           livenessProbe:
