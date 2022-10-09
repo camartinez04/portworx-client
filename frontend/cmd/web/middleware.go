@@ -87,7 +87,7 @@ func (auth *keyCloakMiddleware) AuthKeycloak(next http.Handler) http.Handler {
 		}
 
 		// Decode the token and validate it
-		_, _, err = auth.keycloak.gocloak.DecodeAccessToken(context.Background(), token, auth.keycloak.realm, "")
+		_, _, err = auth.keycloak.gocloak.DecodeAccessToken(context.Background(), token, auth.keycloak.realm)
 		if err != nil {
 			session.Put(r.Context(), "error", fmt.Sprintf("Invalid or malformed Token when decoding it %s", err.Error()))
 			http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)

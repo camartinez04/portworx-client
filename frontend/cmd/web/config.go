@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/Nerzal/gocloak/v7"
+	"github.com/Nerzal/gocloak/v11"
 	"github.com/alexedwards/scs/v2"
 )
 

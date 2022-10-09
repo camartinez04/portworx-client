@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Nerzal/gocloak/v7"
+	"github.com/Nerzal/gocloak/v11"
 )
 
 func newKeycloak() *keycloak {
