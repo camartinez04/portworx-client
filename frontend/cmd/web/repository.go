@@ -626,6 +626,7 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 // LogoutHTTP logs a user out
 func (m *Repository) LogoutHTTP(w http.ResponseWriter, r *http.Request) {
+
 	_ = m.App.Session.Destroy(r.Context())
 
 	_ = m.App.Session.RenewToken(r.Context())

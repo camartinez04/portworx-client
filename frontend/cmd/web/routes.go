@@ -62,6 +62,8 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Post("/logout", Repo.LogoutHTTP)
 
+		mux.Get("/logout", Repo.LogoutHTTP)
+
 		mux.Get("/oauth/callback", Repo.ClusterHTTP)
 
 		mux.Get("/cluster", Repo.ClusterHTTP)
