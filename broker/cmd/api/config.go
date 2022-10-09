@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/Nerzal/gocloak/v11"
 	"github.com/alexedwards/scs/v2"
 	"github.com/camartinez04/portworx-client/broker/pkg/config"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
@@ -20,6 +21,39 @@ type AppConfig struct {
 	ErrorLog     *log.Logger
 	InProduction bool
 	Models       Models
+	NewKeycloak  *keycloak
+}
+
+var KeycloakURL = os.Getenv("KEYCLOAK_URL")
+var KeycloakClientID = os.Getenv("KEYCLOAK_CLIENT_ID")
+var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
+var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
+
+type keycloak struct {
+	gocloak      gocloak.GoCloak // keycloak client
+	clientId     string          // clientId specified in Keycloak
+	clientSecret string          // client secret specified in Keycloak
+	realm        string          // realm specified in Keycloak
+}
+
+type keyCloakMiddleware struct {
+	keycloak *keycloak
+	Session  *scs.SessionManager
+}
+
+type loginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type loginResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	ExpiresIn    int    `json:"expiresIn"`
+}
+
+type controller struct {
+	keycloak *keycloak
 }
 
 // Models holds the models

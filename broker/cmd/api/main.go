@@ -3,15 +3,24 @@ package main
 import (
 	"context"
 	"crypto/x509"
+	"encoding/gob"
 	"flag"
 	"log"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/alexedwards/scs/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
+
+var keycloakToken string
+
+var session *scs.SessionManager
+
+var app AppConfig
 
 // GetRequestMetadata gets the current request metadata.
 func (t OpenStorageSdkToken) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
@@ -33,6 +42,18 @@ func main() {
 	contextToken := OpenStorageSdkToken{}
 
 	dialOptions := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+
+	gob.Register(loginRequest{})
+
+	session = scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+
+	app.InProduction = false
+
+	app.Session = session
 
 	if *useTls {
 		// Setup a connection
@@ -57,10 +78,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	app.NewKeycloak = newKeycloak()
+
 	// Sends the grpc connection that we've created to AppConfig
 	app := AppConfig{
-		Conn: conn,
+		Conn:        conn,
+		Session:     session,
+		NewKeycloak: newKeycloak(),
 	}
+
+	NewHandlers(&app)
 
 	log.Printf("Connected to Portworx's OpenStorage via gRPC to %s", *address)
 

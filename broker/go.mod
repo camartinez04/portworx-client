@@ -3,16 +3,25 @@ module github.com/camartinez04/portworx-client/broker
 go 1.19
 
 require (
-	github.com/alexedwards/scs/v2 v2.5.0 // indirect
-	github.com/go-chi/chi/v5 v5.0.7 // indirect
-	github.com/go-chi/cors v1.2.1 // indirect
-	github.com/golang/protobuf v1.5.2 // indirect
+	github.com/Nerzal/gocloak/v11 v11.2.0
+	github.com/alexedwards/scs/v2 v2.5.0
+	github.com/go-chi/chi/v5 v5.0.7
+	github.com/go-chi/cors v1.2.1
+	github.com/golang/protobuf v1.5.2
+	github.com/libopenstorage/openstorage-sdk-clients v0.109.0
+	google.golang.org/grpc v1.48.0
+)
+
+require (
+	github.com/go-resty/resty/v2 v2.7.0 // indirect
+	github.com/golang-jwt/jwt/v4 v4.4.1 // indirect
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
-	github.com/libopenstorage/openstorage-sdk-clients v0.109.0 // indirect
-	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
-	golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4 // indirect
-	golang.org/x/text v0.3.3 // indirect
+	github.com/opentracing/opentracing-go v1.2.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/segmentio/ksuid v1.0.4 // indirect
+	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4 // indirect
+	golang.org/x/sys v0.0.0-20211216021012-1d35b9e2eb4e // indirect
+	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/grpc v1.48.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,6 +14,12 @@ import (
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 )
 
+var Application *AppConfig
+
+func NewHandlers(app *AppConfig) {
+	Application = app
+}
+
 // GetVolumeIDHTTP http function to get the volume ID.
 func (app *AppConfig) getVolumeIDsHTTP(w http.ResponseWriter, r *http.Request) {
 
@@ -20,7 +27,7 @@ func (app *AppConfig) getVolumeIDsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	context.Background()
 
-	volumeName := exploded[2]
+	volumeName := exploded[3]
 
 	// http://localhost:8080/getvolumeid
 
@@ -43,7 +50,7 @@ func (app *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Reques
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeName := exploded[2]
+	volumeName := exploded[3]
 
 	volume, replicas, volumenodes, status, ioprofile, err := volumes.InspectVolume(app.Conn, volumeName)
 	if err != nil {
@@ -164,7 +171,7 @@ func (app *AppConfig) getNodesOfVolumeHTTP(w http.ResponseWriter, r *http.Reques
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeName := exploded[2]
+	volumeName := exploded[3]
 
 	nodes, err := nodes.FindVolumeNodes(app.Conn, volumeName)
 	if err != nil {
@@ -204,7 +211,7 @@ func (app *AppConfig) getReplicasPerNodeHTTP(w http.ResponseWriter, r *http.Requ
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	nodeID := exploded[2]
+	nodeID := exploded[3]
 
 	volumes, err := nodes.GetReplicasPerNode(app.Conn, nodeID)
 	if err != nil {
@@ -226,7 +233,7 @@ func (app *AppConfig) getVolumeUsageHTTP(w http.ResponseWriter, r *http.Request)
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeName := exploded[2]
+	volumeName := exploded[3]
 
 	var volUsageFloat, availSpaceFloat, totalSizeFloat float64
 
@@ -302,7 +309,7 @@ func (app *AppConfig) getNodeInfoHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	nodeID := exploded[2]
+	nodeID := exploded[3]
 
 	nodeInformation, err := nodes.GetNodeInfo(app.Conn, nodeID)
 	if err != nil {
@@ -360,7 +367,7 @@ func (app *AppConfig) getVolumeInfoHTTP(w http.ResponseWriter, r *http.Request) 
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	volumeInformation, err := volumes.GetVolumeInfo(app.Conn, volumeID)
 	if err != nil {
@@ -382,7 +389,7 @@ func (app *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.R
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	volumeGBSize, err := strconv.ParseUint((r.Header.Get("Volume-Size")), 10, 64)
 	if err != nil {
@@ -411,7 +418,7 @@ func (app *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *h
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	volumeIOProfile := r.Header.Get("Volume-IO-Profile")
 
@@ -436,7 +443,7 @@ func (app *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *htt
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	volumeHALevel, err := strconv.ParseInt((r.Header.Get("Volume-Ha-Level")), 10, 64)
 	if err != nil {
@@ -465,7 +472,7 @@ func (app *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *ht
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	sharedv4Enabled, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Enabled"))
 	if err != nil {
@@ -494,7 +501,7 @@ func (app *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	sharedv4Service, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Service"))
 	if err != nil {
@@ -523,7 +530,7 @@ func (app *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *h
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	noDiscard, err := strconv.ParseBool(r.Header.Get("Volume-No-Discard"))
 	if err != nil {
@@ -552,7 +559,7 @@ func (app *AppConfig) deleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	volume, err := volumes.DeleteVolume(app.Conn, volumeID)
 	if err != nil {
@@ -577,7 +584,7 @@ func (app *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) 
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	volumeID := exploded[2]
+	volumeID := exploded[3]
 
 	cloudSnaps, err := snapshots.GetCloudSnaps(app.Conn, volumeID)
 	if err != nil {
@@ -814,6 +821,54 @@ func (app *AppConfig) deleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request
 		Error:   false,
 		Message: "Cloud Snap deleted successfully",
 		SnapID:  cloudSnapID,
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}
+
+func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
+
+	_ = app.Session.RenewToken(r.Context())
+
+	username := r.Header.Get("Username")
+
+	password := r.Header.Get("Password")
+
+	//log.Printf("username: %s", username)
+
+	// Authenticate the user
+	rq := &loginRequest{username, password}
+
+	jwt, err := app.NewKeycloak.gocloak.Login(r.Context(),
+		app.NewKeycloak.clientId,
+		app.NewKeycloak.clientSecret,
+		app.NewKeycloak.realm,
+		rq.Username,
+		rq.Password)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
+	}
+
+	rs := &loginResponse{
+		AccessToken:  jwt.AccessToken,
+		RefreshToken: jwt.RefreshToken,
+		ExpiresIn:    jwt.ExpiresIn,
+	}
+
+	//log.Printf("jwt: %v", jwt.AccessToken)
+
+	rsJs, _ := json.Marshal(rs)
+
+	_, _ = w.Write(rsJs)
+
+	keycloakToken = jwt.AccessToken
+
+	resp := JsonResponse{
+		Error:   false,
+		Message: "Login successful",
 	}
 
 	writeJSON(w, http.StatusAccepted, resp)
