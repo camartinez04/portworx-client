@@ -1,10 +1,10 @@
 # portworx-client Web UI
-A Portworx Client with Go
+A Portworx Client with Go with security enabled
 
 - Built in Go version 1.19
-- Uses [gocloak](github.com/Nerzal/gocloak/v11) for Keycloak auth security integration at Broker and Frontend levels.
-- Uses [libopenstorage](https://github.com/libopenstorage/openstorage-sdk-clients)
+- Uses [libopenstorage](https://github.com/libopenstorage/openstorage-sdk-clients) OpenStorage Portworx libraries
 - Uses [gRPC](https://pkg.go.dev/google.golang.org/grpc) to consume the Portworx API
+- Uses [gocloak](https://github.com/Nerzal/gocloak) for Keycloak auth security integration at Broker and Frontend levels.
 - Uses [alex edwards](https://github.com/alexedwards/scs) SCS session manager
 - Uses [chi router](https://github.com/go-chi/chi) to serve the pages
 - Uses [nosurf](https://github.com/justinas/nosurf) for middleware operations
