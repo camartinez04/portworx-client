@@ -590,7 +590,7 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	password := r.Form.Get("password")
 
-	log.Printf("username: %s", username)
+	//log.Printf("username: %s", username)
 
 	rq := &loginRequest{username, password}
 
@@ -619,6 +619,13 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(rsJs)
 
 	keycloakToken = jwt.AccessToken
+
+	// login the backend API too
+	err = postLogin(username, password)
+	if err != nil {
+		m.App.Session.Put(r.Context(), "error", "can't login API!")
+		log.Println("can't login API!")
+	}
 
 	http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
 
