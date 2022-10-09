@@ -101,7 +101,7 @@ func routes(app *AppConfig) http.Handler {
 		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/delete-volume/{volume_id}", Repo.DeleteVolumeHTTP)
 
-		mux.Get("/delete-cloudsnap/{cred_id}/{snap_id}", Repo.DeleteCloudSnapHTTP)
+		mux.Get("/delete-cloudsnap/{bucket}/{snap_id}", Repo.DeleteCloudSnapHTTP)
 
 		mux.Get("/update-volume-halevel/{volume_id}/{ha-level}", Repo.UpdateVolumeHALevelHTTP)
 

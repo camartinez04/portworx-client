@@ -82,7 +82,7 @@
                                 <td class="w-50 px-0">
                                     <input type="hidden" name="_method" value="delete"/>
                                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                                    <a href="#!" method="delete" class="btn btn-inverse-danger" onclick="deleteSnapshot({{$snapSpecific.CloudSnap.Id}})" >Delete Snapshot</a>
+                                    <a href="#!" method="delete" class="btn btn-inverse-danger" onclick="deleteSnapshot({{ $snapSpecific.CloudSnap.Id }})" >Delete Snapshot</a>
                                 </td>
                               </tr>
                             </table>
@@ -171,7 +171,7 @@
                   if (result !== false) {
                       window.location.csrf_token = "{{.CSRFToken}}";
                       window.location.method = "delete";
-                      window.location.href = "/portworx/client/delete-snapshot/" + cloudcredid + "/" + snapid;
+                      window.location.href = "/portworx/client/delete-cloudsnap/" + snapid;
                   }
               },
           })

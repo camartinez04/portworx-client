@@ -802,11 +802,9 @@ func (app *AppConfig) getSpecificCloudSnapshotHTTP(w http.ResponseWriter, r *htt
 // deleteCloudSnapHTTP http function to delete a Portworx CloudSnap.
 func (app *AppConfig) deleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
 
-	credentialID := r.Header.Get("Cloud-Credential-ID")
-
 	cloudSnapID := r.Header.Get("Cloud-Snap-ID")
 
-	err := snapshots.DeleteCloudSnap(app.Conn, credentialID, cloudSnapID)
+	err := snapshots.DeleteCloudSnap(app.Conn, cloudSnapID)
 	if err != nil {
 		app.errorJSON(w, err)
 		return

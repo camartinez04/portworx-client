@@ -349,15 +349,21 @@ func (m *Repository) DeleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request)
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	credentialID := exploded[4]
+	bucket := exploded[4]
 
 	cloudSnapID := exploded[5]
 
-	err := deleteCloudSnapshot(credentialID, cloudSnapID)
+	completeCloudID := bucket + "/" + cloudSnapID
+
+	err := deleteCloudSnapshot(completeCloudID)
 	if err != nil {
 		log.Println(err)
 		m.App.Session.Put(r.Context(), "error", "Error trying to delete the cloud snapshot")
 	}
+
+	result := "/portworx/client/snapshots"
+
+	http.Redirect(w, r, result, http.StatusSeeOther)
 
 }
 

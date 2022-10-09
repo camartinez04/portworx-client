@@ -192,19 +192,47 @@ func GetSpecificCloudSnapshot(conn *grpc.ClientConn, cloudSnapID string) (cloudS
 }
 
 // DeleteCloudSnap deletes a cloud snapshot
-func DeleteCloudSnap(conn *grpc.ClientConn, credentialID string, cloudSnapID string) (errorFound error) {
+func DeleteCloudSnap(conn *grpc.ClientConn, cloudSnapID string) (errorFound error) {
 
 	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
 
-	// Delete the cloud snapshot
-	_, errorFound = cloudbackups.Delete(context.Background(),
-		&api.SdkCloudBackupDeleteRequest{
-			CredentialId: credentialID,
-			BackupId:     cloudSnapID,
-		})
+	// Get the list of cloud credentials
+	credIDsList, errorFound := ListCloudCredentialIDs(conn)
 	if errorFound != nil {
-		log.Printf("Error deleting backup: %v", errorFound)
+		log.Printf("Error getting cloud credentials: %v", errorFound)
 		return errorFound
+	}
+
+	// Iterate over the list of cloud credentials
+
+	for _, credID := range credIDsList {
+
+		cloudSnapInfo, errorFound := cloudbackups.EnumerateWithFilters(
+			context.Background(),
+			&api.SdkCloudBackupEnumerateWithFiltersRequest{
+				CloudBackupId: cloudSnapID,
+				CredentialId:  credID,
+			})
+		if errorFound != nil {
+			log.Printf("Error getting backup status: %v", errorFound)
+			return errorFound
+		}
+
+		if cloudSnapInfo == nil {
+			return nil
+		}
+
+		// Delete the cloud snapshot
+		_, errorFound = cloudbackups.Delete(context.Background(),
+			&api.SdkCloudBackupDeleteRequest{
+				CredentialId: credID,
+				BackupId:     cloudSnapID,
+			})
+		if errorFound != nil {
+			log.Printf("Error deleting backup: %v", errorFound)
+			return errorFound
+		}
+
 	}
 
 	return nil

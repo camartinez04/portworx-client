@@ -757,8 +757,8 @@ func getClusterAlarms() (clusterAlarms ClusterAlarms, errorFound error) {
 }
 
 // deleteCloudSnapshot sends a DELETE request to the broker to delete a cloud snapshot
-func deleteCloudSnapshot(credentialID string, cloudSnapID string) (errorFound error) {
-	url := "localhost:8080/deletecloudsnap"
+func deleteCloudSnapshot(cloudSnapID string) (errorFound error) {
+	url := brokerURL + "/deletecloudsnap"
 	method := "DELETE"
 
 	client := &http.Client{}
@@ -767,7 +767,6 @@ func deleteCloudSnapshot(credentialID string, cloudSnapID string) (errorFound er
 		log.Println(errorFound)
 		return
 	}
-	req.Header.Add("Cloud-Credential-ID", credentialID)
 	req.Header.Add("Cloud-Snap-ID", cloudSnapID)
 
 	res, errorFound := client.Do(req)
