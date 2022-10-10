@@ -882,7 +882,7 @@ func (app *AppConfig) getLogoutHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_ = app.Session.RenewToken(r.Context())
 
-	app.NewKeycloak.gocloak.Logout(context.Background(),
+	app.NewKeycloak.gocloak.Logout(r.Context(),
 		app.NewKeycloak.clientId,
 		app.NewKeycloak.clientSecret,
 		app.NewKeycloak.realm,
@@ -893,5 +893,6 @@ func (app *AppConfig) getLogoutHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_ = app.Session.Destroy(r.Context())
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+
 }
