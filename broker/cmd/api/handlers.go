@@ -866,6 +866,8 @@ func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	keycloakToken = jwt.AccessToken
 
+	keycloakRefreshToken = jwt.RefreshToken
+
 	resp := JsonResponse{
 		Error:   false,
 		Message: "Login successful",
@@ -873,4 +875,23 @@ func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	writeJSON(w, http.StatusAccepted, resp)
 
+}
+
+// getLogoutHTTP logs a user out
+func (app *AppConfig) getLogoutHTTP(w http.ResponseWriter, r *http.Request) {
+
+	_ = app.Session.RenewToken(r.Context())
+
+	app.NewKeycloak.gocloak.Logout(context.Background(),
+		app.NewKeycloak.clientId,
+		app.NewKeycloak.clientSecret,
+		app.NewKeycloak.realm,
+		keycloakRefreshToken)
+
+	keycloakToken = ""
+	keycloakRefreshToken = ""
+
+	_ = app.Session.Destroy(r.Context())
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

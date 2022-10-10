@@ -33,6 +33,7 @@ func (app *AppConfig) routes() http.Handler {
 	mux.Route("/", func(mux chi.Router) {
 
 		mux.Post("/login", app.postLoginHTTP)
+		mux.Get("/logout", app.getLogoutHTTP)
 	})
 
 	mux.Route("/broker", func(mux chi.Router) {

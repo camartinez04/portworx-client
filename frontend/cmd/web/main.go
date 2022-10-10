@@ -16,6 +16,7 @@ var infoLog *log.Logger
 var errorLog *log.Logger
 var session *scs.SessionManager
 var keycloakToken string
+var keycloakRefreshToken string
 
 func main() {
 

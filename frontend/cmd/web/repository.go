@@ -620,6 +620,8 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	keycloakToken = jwt.AccessToken
 
+	keycloakRefreshToken = jwt.RefreshToken
+
 	// login the backend API too
 	err = postLogin(username, password)
 	if err != nil {
@@ -631,14 +633,39 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// LogoutHTTP logs a user out
+// LogoutHTTP logs a user out from Broker and Frontend
 func (m *Repository) LogoutHTTP(w http.ResponseWriter, r *http.Request) {
-
-	_ = m.App.Session.Destroy(r.Context())
 
 	_ = m.App.Session.RenewToken(r.Context())
 
+	url := brokerURL + "/logout"
+	method := "GET"
+
+	client := &http.Client{}
+
+	req, errorFound := http.NewRequest(method, url, nil)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+
+	res, errorFound := client.Do(req)
+	if errorFound != nil {
+		log.Println(errorFound)
+		return
+	}
+	defer res.Body.Close()
+
+	m.App.NewKeycloak.gocloak.Logout(context.Background(),
+		m.App.NewKeycloak.clientId,
+		m.App.NewKeycloak.clientSecret,
+		m.App.NewKeycloak.realm,
+		keycloakRefreshToken)
+
 	keycloakToken = ""
+	keycloakRefreshToken = ""
+
+	_ = m.App.Session.Destroy(r.Context())
 
 	http.Redirect(w, r, "/portworx/login", http.StatusSeeOther)
 }

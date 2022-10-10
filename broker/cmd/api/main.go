@@ -18,6 +18,8 @@ import (
 
 var keycloakToken string
 
+var keycloakRefreshToken string
+
 var session *scs.SessionManager
 
 var app AppConfig
