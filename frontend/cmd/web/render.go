@@ -74,6 +74,7 @@ var functions = template.FuncMap{
 	"resizeVolume":     ResizeVolume,
 	"split":            strings.Split,
 	"removeDuplicates": RemoveDuplicateStr,
+	"dateFromUnix":     DateFormat,
 }
 
 // HumanDate returns time in yyyy-mm-dd format

@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"runtime/debug"
+	"time"
 )
 
 // NewHelpers sets up app config for helpers
@@ -63,4 +64,14 @@ func DeleteEmpty(s []string) []string {
 		}
 	}
 	return r
+}
+
+// DateFormat returns date from UNIX timestamp
+func DateFormat(date int64) string {
+
+	time := time.Unix(date, 0)
+
+	layout := "2006-01-02 15:04:05"
+
+	return time.Format(layout)
 }

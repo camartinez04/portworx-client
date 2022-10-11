@@ -1,5 +1,11 @@
 {{template "base" .}}
 
+  {{ define "css"}}
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
+
+  {{ end }}
+
   {{define "content"}}
 
     {{ $clusterInfo := .JsonClusterInfo }}
@@ -63,7 +69,7 @@
                 <div class="card-body">
                   <h4 class="card-title">Alarms and Messages of this cluster</h4>
                   <div class="table-responsive pt-3">
-                    <table class="table table-bordered">
+                    <table class="table table-striped" id="alerts">
                       <thead>
                         <tr>
                           <th>
@@ -99,10 +105,10 @@
                               {{ $alarm.Severity }}
                             </td>
                             <td>
-                              {{ $alarm.Timestamp.Seconds }}
+                              {{ dateFromUnix $alarm.Timestamp.Seconds }}
                             </td>
                             <td>
-                              {{ $alarm.FirstSeen.Seconds }}
+                              {{ dateFromUnix $alarm.FirstSeen.Seconds }}
                             </td>
                             <td>
                               {{ $alarm.ResourceId }}
@@ -172,5 +178,19 @@
       }
 
     </script>
+
+  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
+
+    <script>
+  
+      $(document).ready(function() {
+        $('#alerts').DataTable( {
+            responsive: true,
+            "pageLength": 10,
+        } );
+    } );
+   </script>
 
  {{end}}

@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 )
 
 // writeJSON marshals the provided interface into JSON and writes it to the response.
@@ -53,4 +54,14 @@ func ServerError(w http.ResponseWriter, err error) {
 
 	http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 
+}
+
+// DateFormat returns date from UNIX timestamp
+func DateFormat(date int64) string {
+
+	time := time.Unix(date, 0)
+
+	layout := "2006-01-02 15:04:05"
+
+	return time.Format(layout)
 }
