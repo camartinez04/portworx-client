@@ -612,9 +612,16 @@ func (App *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 		return
 	}
 
+	AccessKey := cloudCred.GetAwsCredential().AccessKey
+	Endpoint := cloudCred.GetAwsCredential().Endpoint
+	Region := cloudCred.GetAwsCredential().Region
+
 	resp := JsonCredentialInspect{
 		Error:             false,
 		CredentialInspect: *cloudCred,
+		AccessKey:         AccessKey,
+		Endpoint:          Endpoint,
+		Region:            Region,
 	}
 
 	writeJSON(w, http.StatusOK, resp)
@@ -661,9 +668,16 @@ func (App *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 		return
 	}
 
+	AccessKey := credDetails.GetAwsCredential().AccessKey
+	Endpoint := credDetails.GetAwsCredential().Endpoint
+	Region := credDetails.GetAwsCredential().Region
+
 	resp := JsonCredentialInspect{
 		Error:             false,
 		CredentialInspect: *credDetails,
+		AccessKey:         AccessKey,
+		Endpoint:          Endpoint,
+		Region:            Region,
 	}
 
 	writeJSON(w, http.StatusCreated, resp)

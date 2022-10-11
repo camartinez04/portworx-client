@@ -604,7 +604,7 @@ func createNewCredential(createCloudCredential CreateCloudCredentials) (credenti
 
 	json.Unmarshal(body, &cloudCredResponse)
 
-	credentialID = cloudCredResponse.CloudCredentialInspect.CredentialId
+	credentialID = cloudCredResponse.CredentialInspect.CredentialId
 
 	method = "GET"
 
@@ -679,7 +679,7 @@ func GetCloudCredentials() (cloudCredsListMap map[string]any, errorFound error) 
 
 		json.Unmarshal(body, &cloudCredInspect)
 
-		cloudCredsListMap[cloudCredID] = cloudCredInspect.CloudCredentialInspect
+		cloudCredsListMap[cloudCredID] = cloudCredInspect
 
 		log.Printf("cloudCredsListMap: %v", cloudCredsListMap)
 

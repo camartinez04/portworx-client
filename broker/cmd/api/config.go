@@ -208,6 +208,9 @@ type JsonCloudSnapList struct {
 type JsonCredentialInspect struct {
 	Error             bool                             `json:"error,omitempty"`
 	CredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
+	AccessKey         string                           `json:"access_key,omitempty"`
+	Endpoint          string                           `json:"endpoint,omitempty"`
+	Region            string                           `json:"region,omitempty"`
 }
 
 // JsonAlarmList is the response format for JSON for AlarmList

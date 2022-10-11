@@ -368,9 +368,12 @@ type CreateCloudCredentials struct {
 
 // CreateCloudCredentialsResponse struct to store Cloud Credentials creation response.
 type CreateCloudCredentialsResponse struct {
-	Error                  bool                             `json:"error,omitempty"`
-	Message                string                           `json:"message,omitempty"`
-	CloudCredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
+	Error             bool                             `json:"error,omitempty"`
+	Message           string                           `json:"message,omitempty"`
+	CredentialInspect api.SdkCredentialInspectResponse `json:"credential_inspect,omitempty"`
+	AccessKey         string                           `json:"access_key,omitempty"`
+	Endpoint          string                           `json:"endpoint,omitempty"`
+	Region            string                           `json:"region,omitempty"`
 }
 
 // CreateCloudSnap struct to store Cloud Snap creation form
@@ -397,6 +400,9 @@ type CloudCredentialsListResponse struct {
 	Error              bool                               `json:"error,omitempty"`
 	Message            string                             `json:"message,omitempty"`
 	CredentialsInspect []api.SdkCredentialInspectResponse `json:"credentials_inspect,omitempty"`
+	AccessKey          string                             `json:"access_key,omitempty"`
+	Endpoint           string                             `json:"endpoint,omitempty"`
+	Region             string                             `json:"region,omitempty"`
 }
 
 // ClusterAlarms struct to store the cluster alarms
