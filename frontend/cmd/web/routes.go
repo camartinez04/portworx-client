@@ -15,7 +15,7 @@ func routes(app *AppConfig) http.Handler {
 
 	mux := chi.NewRouter()
 
-	mdw := newMiddleware(keycloak)
+	mdw := NewMiddleware(keycloak)
 
 	mux.Use(cors.Handler(cors.Options{
 		AllowedOrigins:   []string{"https://*", "http://*"},

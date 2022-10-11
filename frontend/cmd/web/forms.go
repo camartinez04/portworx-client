@@ -9,12 +9,12 @@ import (
 )
 
 // Add adds an error message for a given form field
-func (e errorsForm) Add(field, message string) {
+func (e ErrorsForm) Add(field, message string) {
 	e[field] = append(e[field], message)
 }
 
 // Get returns the first error message
-func (e errorsForm) Get(field string) string {
+func (e ErrorsForm) Get(field string) string {
 	es := e[field]
 	if len(es) == 0 {
 
@@ -27,7 +27,7 @@ func (e errorsForm) Get(field string) string {
 // Form creates a custom form struct, embeds a url.Values object
 type Form struct {
 	url.Values
-	Errors errorsForm
+	Errors ErrorsForm
 }
 
 func (f *Form) Valid() bool {
@@ -38,7 +38,7 @@ func (f *Form) Valid() bool {
 func New(data url.Values) *Form {
 	return &Form{
 		data,
-		errorsForm(map[string][]string{}),
+		ErrorsForm(map[string][]string{}),
 	}
 }
 

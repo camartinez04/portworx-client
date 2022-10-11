@@ -13,7 +13,7 @@ import (
 )
 
 func NewRenderer(a *AppConfig) {
-	app = *a
+	App = *a
 }
 
 // AddDefaultData adds data for all templates
@@ -28,8 +28,8 @@ func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateD
 
 	var tc map[string]*template.Template
 
-	if app.UseCache {
-		tc = app.TemplateCache
+	if App.UseCache {
+		tc = App.TemplateCache
 	} else {
 		tc, _ = CreateTemplateCache()
 
@@ -65,7 +65,7 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	myCache := map[string]*template.Template{}
 
-	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.html", pathToTemplates))
+	pages, err := filepath.Glob(fmt.Sprintf("%s/*.page.html", PathToTemplates))
 
 	if err != nil {
 		return myCache, err
@@ -73,16 +73,16 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 
 	for _, page := range pages {
 		name := filepath.Base(page)
-		ts, err := template.New(name).Funcs(functions).ParseFiles(page)
+		ts, err := template.New(name).Funcs(Functions).ParseFiles(page)
 		if err != nil {
 			return myCache, err
 		}
-		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.html", pathToTemplates))
+		matches, err := filepath.Glob(fmt.Sprintf("%s/*.layout.html", PathToTemplates))
 		if err != nil {
 			return myCache, err
 		}
 		if len(matches) > 0 {
-			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.html", pathToTemplates))
+			ts, err = ts.ParseGlob(fmt.Sprintf("%s/*.layout.html", PathToTemplates))
 
 			if err != nil {
 				return myCache, err

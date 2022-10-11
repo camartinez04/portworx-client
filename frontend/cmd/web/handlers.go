@@ -11,7 +11,7 @@ import (
 // GetAllVolumesInfo retrieves from the broker /getallvolumesinfo and sends it back as struct JsonAllVolumesInfo
 func GetAllVolumesInfo() (JsonAllVolumesInfo AllVolumesInfoResponse, errorFound error) {
 
-	url := brokerURL + "/broker/getallvolumesinfo"
+	url := BrokerURL + "/broker/getallvolumesinfo"
 	method := "GET"
 
 	client := &http.Client{}
@@ -43,7 +43,7 @@ func GetAllVolumesInfo() (JsonAllVolumesInfo AllVolumesInfoResponse, errorFound 
 // VolumeInfofromID retrieves from the broker /getvolumeinfo/{volumeID} and sends it back as struct VolumeInfo
 func VolumeInfofromID(volumeID string) (jsonVolumeInfo VolumeInfoResponse, errorFound error) {
 
-	url := brokerURL + "/broker/getvolumeinfo/" + volumeID
+	url := BrokerURL + "/broker/getvolumeinfo/" + volumeID
 	method := "GET"
 
 	client := &http.Client{}
@@ -72,7 +72,7 @@ func VolumeInfofromID(volumeID string) (jsonVolumeInfo VolumeInfoResponse, error
 // SnapInfofromID retrieves from the broker /getspecificcloudsnapshot and sends it back as struct JsonSpecificCloudSnapResponse
 func SnapInfofromID(snapID string) (jsonSnapInfo JsonSpecificCloudSnapResponse, errorFound error) {
 
-	url := brokerURL + "/broker/getspecificcloudsnapshot"
+	url := BrokerURL + "/broker/getspecificcloudsnapshot"
 
 	method := "GET"
 
@@ -110,7 +110,7 @@ func InspectVolume(volumeName string) JsonVolumeInspect {
 
 	var jsonVolume JsonVolumeInspect
 
-	url := brokerURL + "/broker/getinspectvolume/" + volumeName
+	url := BrokerURL + "/broker/getinspectvolume/" + volumeName
 
 	method := "GET"
 
@@ -142,7 +142,7 @@ func UsageVolume(volumeName string) JsonUsageVolume {
 
 	var jsonUsage JsonUsageVolume
 
-	url := brokerURL + "/broker/getvolumeusage/" + volumeName
+	url := BrokerURL + "/broker/getvolumeusage/" + volumeName
 
 	method := "GET"
 
@@ -172,7 +172,7 @@ func UsageVolume(volumeName string) JsonUsageVolume {
 // GetAllNodesInfo retrieves from the broker /getallnodesinfo and sends it back as struct AllNodesInfoResponse
 func GetAllNodesInfo() (JsonAllNodesInfo AllNodesInfoResponse, errorFound error) {
 
-	url := brokerURL + "/broker/getallnodesinfo"
+	url := BrokerURL + "/broker/getallnodesinfo"
 	method := "GET"
 
 	client := &http.Client{}
@@ -204,7 +204,7 @@ func GetAllNodesInfo() (JsonAllNodesInfo AllNodesInfoResponse, errorFound error)
 // ListOfNodes retrieves from the broker /getlistofnodes and sends it back as JsonListOfNodes of any
 func ListOfNodes() (JsonListOfNodes any) {
 
-	url := brokerURL + "/broker/getlistofnodes"
+	url := BrokerURL + "/broker/getlistofnodes"
 	method := "GET"
 
 	client := &http.Client{}
@@ -233,7 +233,7 @@ func ListOfNodes() (JsonListOfNodes any) {
 // NodeInfoFromID retrieves from the broker /getvolumeinfo/{volumeID} and sends it back as struct VolumeInfo
 func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPerNode ReplicasPerNodeResponse, errorFound error) {
 
-	url := brokerURL + "/broker/getnodeinfo/" + nodeID
+	url := BrokerURL + "/broker/getnodeinfo/" + nodeID
 	method := "GET"
 
 	client := &http.Client{}
@@ -258,7 +258,7 @@ func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPe
 		log.Println(errorFound)
 	}
 
-	url = brokerURL + "/broker/getreplicaspernode/" + nodeID
+	url = BrokerURL + "/broker/getreplicaspernode/" + nodeID
 
 	client = &http.Client{}
 	req, errorFound = http.NewRequest(method, url, nil)
@@ -289,7 +289,7 @@ func NodeInfoFromID(nodeID string) (jsonNodeInfo NodeInfoResponse, jsonReplicaPe
 // createNewVolume sends a POST request to the broker to create a new volume
 func createNewVolume(createVolume CreateVolume) (volumeID string, errorFound error) {
 
-	url := brokerURL + "/broker/postcreatevolume"
+	url := BrokerURL + "/broker/postcreatevolume"
 
 	method := "POST"
 
@@ -339,7 +339,7 @@ func createNewVolume(createVolume CreateVolume) (volumeID string, errorFound err
 func GetClusterInfo() (jsonClusterInfo ClusterInfo, jsonClusterCapacity ClusterCapacity, errorFound error) {
 
 	//get cluster info
-	url := brokerURL + "/broker/getpxcluster"
+	url := BrokerURL + "/broker/getpxcluster"
 	method := "GET"
 
 	client := &http.Client{}
@@ -365,7 +365,7 @@ func GetClusterInfo() (jsonClusterInfo ClusterInfo, jsonClusterCapacity ClusterC
 	json.Unmarshal(body, &jsonClusterInfo)
 
 	// get the cluster capacity
-	url = brokerURL + "/broker/getpxclustercapacity"
+	url = BrokerURL + "/broker/getpxclustercapacity"
 	method = "GET"
 
 	req, err := http.NewRequest(method, url, nil)
@@ -395,7 +395,7 @@ func GetClusterInfo() (jsonClusterInfo ClusterInfo, jsonClusterCapacity ClusterC
 
 func DeleteVolume(volumeID string) (string, error) {
 
-	url := brokerURL + "/broker/deletevolume/" + volumeID
+	url := BrokerURL + "/broker/deletevolume/" + volumeID
 	method := "DELETE"
 
 	client := &http.Client{}
@@ -427,7 +427,7 @@ func DeleteVolume(volumeID string) (string, error) {
 
 func ResizeVolume(volumeID string, volSize string) (string, error) {
 
-	url := brokerURL + "/broker/patchvolumesize/" + volumeID
+	url := BrokerURL + "/broker/patchvolumesize/" + volumeID
 	method := "PATCH"
 
 	client := &http.Client{}
@@ -461,7 +461,7 @@ func ResizeVolume(volumeID string, volSize string) (string, error) {
 
 func UpdateVolumeHALevel(volumeID string, volHALevel string) (string, error) {
 
-	url := brokerURL + "/broker/patchvolumehalevel/" + volumeID
+	url := BrokerURL + "/broker/patchvolumehalevel/" + volumeID
 	method := "PATCH"
 
 	client := &http.Client{}
@@ -495,7 +495,7 @@ func UpdateVolumeHALevel(volumeID string, volHALevel string) (string, error) {
 
 func IOProfileVolume(volumeID string, volIOProfile string) (string, error) {
 
-	url := brokerURL + "/broker/patchvolumeioprofile/" + volumeID
+	url := BrokerURL + "/broker/patchvolumeioprofile/" + volumeID
 	method := "PATCH"
 
 	client := &http.Client{}
@@ -529,7 +529,7 @@ func IOProfileVolume(volumeID string, volIOProfile string) (string, error) {
 
 func GetAllSnapshotsInfo() (AllSnaps JsonAllCloudSnapResponse, errorFound error) {
 
-	url := brokerURL + "/broker/getallcloudsnaps"
+	url := BrokerURL + "/broker/getallcloudsnaps"
 	method := "GET"
 
 	client := &http.Client{}
@@ -563,7 +563,7 @@ func GetAllSnapshotsInfo() (AllSnaps JsonAllCloudSnapResponse, errorFound error)
 // createNewCredential sends a POST request to the broker to create a new volume
 func createNewCredential(createCloudCredential CreateCloudCredentials) (credentialID string, errorFound error) {
 
-	url := brokerURL + "/broker/postcreateawscloudcreds"
+	url := BrokerURL + "/broker/postcreateawscloudcreds"
 
 	method := "POST"
 
@@ -613,7 +613,7 @@ func createNewCredential(createCloudCredential CreateCloudCredentials) (credenti
 // GetCloudCredentials sends a GET request to the broker to get all cloud credentials
 func GetCloudCredentials() (cloudCredsListMap map[string]any, errorFound error) {
 
-	url := brokerURL + "/broker/getallcloudcredsids"
+	url := BrokerURL + "/broker/getallcloudcredsids"
 	method := "GET"
 
 	allCloudCredsIDsResponse := AllCloudCredsIDsResponse{}
@@ -644,7 +644,7 @@ func GetCloudCredentials() (cloudCredsListMap map[string]any, errorFound error) 
 
 	for _, cloudCredID := range allCloudCredsIDsResponse.CloudCredsList {
 
-		url = brokerURL + "/broker/getinspectawscloudcreds"
+		url = BrokerURL + "/broker/getinspectawscloudcreds"
 
 		method = "GET"
 
@@ -690,7 +690,7 @@ func GetCloudCredentials() (cloudCredsListMap map[string]any, errorFound error) 
 // createCloudSnap sends a POST request to the broker to create a cloud snapshot
 func createCloudSnapshot(createCloudSnap CreateCloudSnap) (taskID string, errorFound error) {
 
-	url := brokerURL + "/broker/postcreatecloudsnap"
+	url := BrokerURL + "/broker/postcreatecloudsnap"
 	method := "POST"
 
 	var createCloudSnapResponse CreateCloudSnapResponse
@@ -727,7 +727,7 @@ func createCloudSnapshot(createCloudSnap CreateCloudSnap) (taskID string, errorF
 // getClusterAlarms sends a GET request to the broker to get all cluster alarms
 func getClusterAlarms() (clusterAlarms ClusterAlarms, errorFound error) {
 
-	url := brokerURL + "/broker/getpxclusteralarms"
+	url := BrokerURL + "/broker/getpxclusteralarms"
 	method := "GET"
 
 	client := &http.Client{}
@@ -758,7 +758,7 @@ func getClusterAlarms() (clusterAlarms ClusterAlarms, errorFound error) {
 
 // deleteCloudSnapshot sends a DELETE request to the broker to delete a cloud snapshot
 func deleteCloudSnapshot(cloudSnapID string) (errorFound error) {
-	url := brokerURL + "/broker/deletecloudsnap"
+	url := BrokerURL + "/broker/deletecloudsnap"
 	method := "DELETE"
 
 	client := &http.Client{}
@@ -789,7 +789,7 @@ func deleteCloudSnapshot(cloudSnapID string) (errorFound error) {
 // postLogin sends a POST request to the broker to login the backend broker API
 func postLogin(Username string, Password string) (errorFound error) {
 
-	url := brokerURL + "/login"
+	url := BrokerURL + "/login"
 	method := "POST"
 
 	client := &http.Client{}

@@ -586,7 +586,7 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//log.Printf("username: %s", username)
 
-	rq := &loginRequest{username, password}
+	rq := &LoginRequest{username, password}
 
 	jwt, err := m.App.NewKeycloak.gocloak.Login(context.Background(),
 		m.App.NewKeycloak.clientId,
@@ -600,7 +600,7 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rs := &loginResponse{
+	rs := &LoginResponse{
 		AccessToken:  jwt.AccessToken,
 		RefreshToken: jwt.RefreshToken,
 		ExpiresIn:    jwt.ExpiresIn,
@@ -612,9 +612,9 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_, _ = w.Write(rsJs)
 
-	keycloakToken = jwt.AccessToken
+	KeycloakToken = jwt.AccessToken
 
-	keycloakRefreshToken = jwt.RefreshToken
+	KeycloakRefreshToken = jwt.RefreshToken
 
 	// login the backend API too
 	err = postLogin(username, password)
@@ -632,7 +632,7 @@ func (m *Repository) LogoutHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_ = m.App.Session.RenewToken(r.Context())
 
-	url := brokerURL + "/logout"
+	url := BrokerURL + "/logout"
 	method := "GET"
 
 	client := &http.Client{}
@@ -654,10 +654,10 @@ func (m *Repository) LogoutHTTP(w http.ResponseWriter, r *http.Request) {
 		m.App.NewKeycloak.clientId,
 		m.App.NewKeycloak.clientSecret,
 		m.App.NewKeycloak.realm,
-		keycloakRefreshToken)
+		KeycloakRefreshToken)
 
-	keycloakToken = ""
-	keycloakRefreshToken = ""
+	KeycloakToken = ""
+	KeycloakRefreshToken = ""
 
 	_ = m.App.Session.Destroy(r.Context())
 

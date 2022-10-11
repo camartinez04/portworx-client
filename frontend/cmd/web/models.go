@@ -17,7 +17,7 @@ type AppConfig struct {
 	ErrorLog      *log.Logger
 	Session       *scs.SessionManager
 	InProduction  bool
-	NewKeycloak   *keycloak
+	NewKeycloak   *Keycloak
 	//Creates the channel MailChan from the model MailData
 }
 
@@ -25,33 +25,33 @@ type Repository struct {
 	App *AppConfig
 }
 
-type errorsForm map[string][]string
+type ErrorsForm map[string][]string
 
-type keycloak struct {
+type Keycloak struct {
 	gocloak      gocloak.GoCloak // keycloak client
 	clientId     string          // clientId specified in Keycloak
 	clientSecret string          // client secret specified in Keycloak
 	realm        string          // realm specified in Keycloak
 }
 
-type keyCloakMiddleware struct {
-	keycloak *keycloak
+type KeyCloakMiddleware struct {
+	keycloak *Keycloak
 	Session  *scs.SessionManager
 }
 
-type loginRequest struct {
+type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-type loginResponse struct {
+type LoginResponse struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 	ExpiresIn    int    `json:"expiresIn"`
 }
 
-type controller struct {
-	keycloak *keycloak
+type Controller struct {
+	keycloak *Keycloak
 }
 
 // TemplateData holds data sent from handlers to template

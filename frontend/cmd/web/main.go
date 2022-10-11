@@ -21,34 +21,34 @@ func main() {
 	gob.Register(CreateVolume{})
 	gob.Register(CreateCloudCredentials{})
 	gob.Register(CreateCloudSnap{})
-	gob.Register(loginRequest{})
+	gob.Register(LoginRequest{})
 
-	app.NewKeycloak = newKeycloak()
+	App.NewKeycloak = NewKeycloak()
 
-	session = scs.New()
-	session.Lifetime = 24 * time.Hour
-	session.Cookie.Persist = true
-	session.Cookie.SameSite = http.SameSiteLaxMode
-	session.Cookie.Secure = app.InProduction
+	Session = scs.New()
+	Session.Lifetime = 24 * time.Hour
+	Session.Cookie.Persist = true
+	Session.Cookie.SameSite = http.SameSiteLaxMode
+	Session.Cookie.Secure = App.InProduction
 
-	app.InProduction = false
+	App.InProduction = false
 
-	app.Session = session
+	App.Session = Session
 
-	app.TemplateCache = tc
-	app.UseCache = false
+	App.TemplateCache = tc
+	App.UseCache = false
 
-	repo := NewRepo(&app)
+	repo := NewRepo(&App)
 
 	NewHandlers(repo)
-	NewRenderer(&app)
-	NewHelpers(&app)
+	NewRenderer(&App)
+	NewHelpers(&App)
 
-	log.Println("Starting Frontend on port", portNumber)
+	log.Println("Starting Frontend on port", PortNumber)
 
 	srv := &http.Server{
-		Addr:    portNumber,
-		Handler: routes(&app),
+		Addr:    PortNumber,
+		Handler: routes(&App),
 	}
 
 	err = srv.ListenAndServe()
