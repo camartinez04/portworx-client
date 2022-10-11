@@ -584,7 +584,9 @@ func (App *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) 
 
 	volumeID := exploded[3]
 
-	cloudSnaps, err := snapshots.GetCloudSnaps(App.Conn, volumeID)
+	var cloudCredList []string
+
+	cloudSnaps, err := snapshots.GetCloudSnaps(App.Conn, volumeID, cloudCredList)
 	if err != nil {
 		App.errorJSON(w, err)
 		return

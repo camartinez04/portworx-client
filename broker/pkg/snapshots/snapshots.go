@@ -106,27 +106,39 @@ func StatusCloudSnap(conn *grpc.ClientConn, volumeID string) (jsonStatus string,
 }
 
 // GetCloudSnaps gets the cloud snapshots of a volume
-func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnapsMap map[string][]*api.SdkCloudBackupInfo, errorFound error) {
+func GetCloudSnaps(conn *grpc.ClientConn, volumeID string, CredIDsList []string) (cloudSnapsMap map[string][]*api.SdkCloudBackupInfo, errorFound error) {
 
 	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
 
-	// Get the list of cloud credentials
-	credIDsList, errorFound := ListCloudCredentialIDs(conn)
-	if errorFound != nil {
-		log.Printf("Error getting cloud credentials: %v", errorFound)
-		return nil, errorFound
-	}
+	//log.Printf("Length of slice: %v", len(CredIDsList))
 
-	// If there are no cloud credentials, return nil but without error too.
-	if credIDsList == nil {
-		log.Printf("No cloud credentials found")
-		return nil, nil
+	if len(CredIDsList) == 0 {
+
+		// Get the list of cloud credentials
+		credIDsListNew, errorFound := ListCloudCredentialIDs(conn)
+		if errorFound != nil {
+			log.Printf("Error getting cloud credentials: %v", errorFound)
+			return nil, errorFound
+		}
+
+		//log.Printf("Length of slice is now: %v", len(credIDsListNew))
+
+		// If there are no cloud credentials, return nil but without error too.
+		if len(credIDsListNew) == 0 {
+			log.Printf("No cloud credentials found")
+			return nil, nil
+		}
+
+		CredIDsList = credIDsListNew
+
 	}
 
 	cloudSnapsMap = make(map[string][]*api.SdkCloudBackupInfo)
 
+	//log.Printf("Length of slice is before the for loop: %v", len(CredIDsList))
+
 	// Iterate over the list of cloud credentials
-	for _, credID := range credIDsList {
+	for _, credID := range CredIDsList {
 
 		// Now check the status of the backup
 		backupStatus, errorFound := cloudbackups.EnumerateWithFilters(
@@ -272,11 +284,24 @@ func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]map[stri
 		return nil, errorFound
 	}
 
+	// Get the list of cloud credentials
+	credIDsList, errorFound := ListCloudCredentialIDs(conn)
+	if errorFound != nil {
+		log.Printf("Error getting cloud credentials: %v", errorFound)
+		return nil, errorFound
+	}
+
+	// If there are no cloud credentials, return nil but without error too.
+	if credIDsList == nil {
+		log.Printf("No cloud credentials found")
+		return nil, nil
+	}
+
 	// Iterate over the volumes list and get the cloud snapshots of each volume, populating the map as well.
 	for _, volume := range volumes {
 
 		// Get the cloud snapshots of the volume
-		snapsOfVolume, errorFound := GetCloudSnaps(conn, volume)
+		snapsOfVolume, errorFound := GetCloudSnaps(conn, volume, credIDsList)
 		if errorFound != nil {
 			log.Fatal(errorFound)
 			return nil, errorFound
