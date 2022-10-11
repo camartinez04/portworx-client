@@ -8,13 +8,9 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
-	"strings"
-	"time"
 
 	"github.com/justinas/nosurf"
 )
-
-var pathToTemplates = "./static/templates"
 
 func NewRenderer(a *AppConfig) {
 	app = *a
@@ -62,68 +58,6 @@ func Template(w http.ResponseWriter, r *http.Request, tmpl string, td *TemplateD
 
 	return nil
 
-}
-
-// Map of functions available to the templates
-var functions = template.FuncMap{
-	"humanDate":        HumanDate,
-	"formatDate":       FormatDate,
-	"iterate":          Iterate,
-	"add":              Add,
-	"divide":           Divide,
-	"resizeVolume":     ResizeVolume,
-	"split":            strings.Split,
-	"removeDuplicates": RemoveDuplicateStr,
-	"dateFromUnix":     DateFormat,
-}
-
-// HumanDate returns time in yyyy-mm-dd format
-func HumanDate(t time.Time) string {
-
-	return t.Format("2006-01-02")
-}
-
-// FormatDate helps to format numeric date into string date
-func FormatDate(t time.Time, f string) string {
-
-	return t.Format(f)
-}
-
-// Add add two numbers
-func Add(a, b int) int {
-
-	return a + b
-}
-
-// Divide divides two numbers and returns the result as a string
-func Divide(a, b uint64) string {
-
-	if b == 0 {
-		return "0"
-	}
-
-	floatA := float64(a)
-
-	floatB := float64(b)
-
-	result := floatA / floatB
-
-	stringresult := fmt.Sprintf("%.0f", result)
-
-	return stringresult
-
-}
-
-// Iterate performs a for loop
-func Iterate(count int) []int {
-	var i int
-	var items []int
-
-	for i = 0; i < count; i++ {
-		items = append(items, i)
-	}
-
-	return items
 }
 
 // Creates a template cache as a map

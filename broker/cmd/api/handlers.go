@@ -14,8 +14,6 @@ import (
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 )
 
-var Application *AppConfig
-
 func NewHandlers(app *AppConfig) {
 	Application = app
 }

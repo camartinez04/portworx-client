@@ -9,12 +9,6 @@ import (
 	"strings"
 )
 
-var Repo *Repository
-
-type Repository struct {
-	App *AppConfig
-}
-
 func NewRepo(a *AppConfig) *Repository {
 	return &Repository{
 		App: a,

@@ -13,6 +13,7 @@ func NewHelpers(a *AppConfig) {
 	app = *a
 }
 
+// ClientError sends a specific status code and corresponding description to the user.
 func ClientError(w http.ResponseWriter, status int) {
 
 	app.InfoLog.Println("Client error with status of", status)
@@ -20,6 +21,7 @@ func ClientError(w http.ResponseWriter, status int) {
 
 }
 
+// ServerError logs the error and sends a generic 500 Internal Server Error response to the user.
 func ServerError(w http.ResponseWriter, err error) {
 
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
@@ -28,6 +30,7 @@ func ServerError(w http.ResponseWriter, err error) {
 
 }
 
+// IsAuthenticated checks if user is authenticated
 func IsAuthenticated(r *http.Request) bool {
 
 	exists := true
@@ -74,4 +77,53 @@ func DateFormat(date int64) string {
 	layout := "2006-01-02 15:04:05"
 
 	return time.Format(layout)
+}
+
+// Add add two numbers
+func Add(a, b int) int {
+
+	return a + b
+}
+
+// Divide divides two numbers and returns the result as a string
+func Divide(a, b uint64) string {
+
+	if b == 0 {
+		return "0"
+	}
+
+	floatA := float64(a)
+
+	floatB := float64(b)
+
+	result := floatA / floatB
+
+	stringresult := fmt.Sprintf("%.0f", result)
+
+	return stringresult
+
+}
+
+// Iterate performs a for loop
+func Iterate(count int) []int {
+	var i int
+	var items []int
+
+	for i = 0; i < count; i++ {
+		items = append(items, i)
+	}
+
+	return items
+}
+
+// HumanDate returns time in yyyy-mm-dd format
+func HumanDate(t time.Time) string {
+
+	return t.Format("2006-01-02")
+}
+
+// FormatDate helps to format numeric date into string date
+func FormatDate(t time.Time, f string) string {
+
+	return t.Format(f)
 }

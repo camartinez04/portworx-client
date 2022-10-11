@@ -9,15 +9,6 @@ import (
 	"github.com/alexedwards/scs/v2"
 )
 
-const portNumber = ":8081"
-
-var app AppConfig
-var infoLog *log.Logger
-var errorLog *log.Logger
-var session *scs.SessionManager
-var keycloakToken string
-var keycloakRefreshToken string
-
 func main() {
 
 	//get the template cache from the app config

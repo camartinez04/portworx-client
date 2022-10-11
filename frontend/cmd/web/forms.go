@@ -8,8 +8,6 @@ import (
 	"github.com/asaskevich/govalidator"
 )
 
-type errorsForm map[string][]string
-
 // Add adds an error message for a given form field
 func (e errorsForm) Add(field, message string) {
 	e[field] = append(e[field], message)

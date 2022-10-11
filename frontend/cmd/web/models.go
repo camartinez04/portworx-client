@@ -1,8 +1,58 @@
 package main
 
 import (
+	"html/template"
+	"log"
+
+	"github.com/Nerzal/gocloak/v11"
+	"github.com/alexedwards/scs/v2"
 	api "github.com/libopenstorage/openstorage-sdk-clients/sdk/golang"
 )
+
+// AppConfig holds the application config
+type AppConfig struct {
+	UseCache      bool
+	TemplateCache map[string]*template.Template
+	InfoLog       *log.Logger
+	ErrorLog      *log.Logger
+	Session       *scs.SessionManager
+	InProduction  bool
+	NewKeycloak   *keycloak
+	//Creates the channel MailChan from the model MailData
+}
+
+type Repository struct {
+	App *AppConfig
+}
+
+type errorsForm map[string][]string
+
+type keycloak struct {
+	gocloak      gocloak.GoCloak // keycloak client
+	clientId     string          // clientId specified in Keycloak
+	clientSecret string          // client secret specified in Keycloak
+	realm        string          // realm specified in Keycloak
+}
+
+type keyCloakMiddleware struct {
+	keycloak *keycloak
+	Session  *scs.SessionManager
+}
+
+type loginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type loginResponse struct {
+	AccessToken  string `json:"accessToken"`
+	RefreshToken string `json:"refreshToken"`
+	ExpiresIn    int    `json:"expiresIn"`
+}
+
+type controller struct {
+	keycloak *keycloak
+}
 
 // TemplateData holds data sent from handlers to template
 type TemplateData struct {

@@ -13,6 +13,35 @@ import (
 	"google.golang.org/grpc"
 )
 
+var KeycloakURL = os.Getenv("KEYCLOAK_URL")
+var KeycloakClientID = os.Getenv("KEYCLOAK_CLIENT_ID")
+var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
+var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
+
+var (
+	useTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")
+	token   = flag.String("token", os.Getenv("PORTWORX_TOKEN"), "Authorization token if any")
+	address = flag.String("address", os.Getenv("PORTWORX_GRPC_URL"), "Address to server as <address>:<port>")
+)
+
+var Application *AppConfig
+
+var keycloakToken string
+
+var keycloakRefreshToken string
+
+var session *scs.SessionManager
+
+var app AppConfig
+
+const (
+	Bytes   = uint64(1)
+	KB      = Bytes * uint64(1024)
+	MB      = KB * uint64(1024)
+	GB      = MB * uint64(1024)
+	webPort = ":8080"
+)
+
 // AppConfig holds the application configuration
 type AppConfig struct {
 	Session      *scs.SessionManager
@@ -23,11 +52,6 @@ type AppConfig struct {
 	Models       Models
 	NewKeycloak  *keycloak
 }
-
-var KeycloakURL = os.Getenv("KEYCLOAK_URL")
-var KeycloakClientID = os.Getenv("KEYCLOAK_CLIENT_ID")
-var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
-var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
 
 type keycloak struct {
 	gocloak      gocloak.GoCloak // keycloak client
@@ -211,20 +235,6 @@ type JsonSpecificCloudSnap struct {
 	CloudSnap   *api.SdkCloudBackupInfo `json:"cloud_snap,omitempty"`
 	CloudSnapId string                  `json:"cloud_snap_id,omitempty"`
 }
-
-const (
-	Bytes   = uint64(1)
-	KB      = Bytes * uint64(1024)
-	MB      = KB * uint64(1024)
-	GB      = MB * uint64(1024)
-	webPort = ":8080"
-)
-
-var (
-	useTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")
-	token   = flag.String("token", os.Getenv("PORTWORX_TOKEN"), "Authorization token if any")
-	address = flag.String("address", os.Getenv("PORTWORX_GRPC_URL"), "Address to server as <address>:<port>")
-)
 
 type OpenStorageSdkToken struct{}
 

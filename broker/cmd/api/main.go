@@ -16,14 +16,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var keycloakToken string
-
-var keycloakRefreshToken string
-
-var session *scs.SessionManager
-
-var app AppConfig
-
 // GetRequestMetadata gets the current request metadata.
 func (t OpenStorageSdkToken) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
