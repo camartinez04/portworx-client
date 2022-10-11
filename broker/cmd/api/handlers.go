@@ -14,12 +14,12 @@ import (
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 )
 
-func NewHandlers(app *AppConfig) {
-	Application = app
+func NewHandlers(App *AppConfig) {
+	Application = App
 }
 
 // GetVolumeIDHTTP http function to get the volume ID.
-func (app *AppConfig) getVolumeIDsHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getVolumeIDsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -29,9 +29,9 @@ func (app *AppConfig) getVolumeIDsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	// http://localhost:8080/getvolumeid
 
-	volumeID, err := volumes.GetVolumeID(app.Conn, volumeName)
+	volumeID, err := volumes.GetVolumeID(App.Conn, volumeName)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -44,15 +44,15 @@ func (app *AppConfig) getVolumeIDsHTTP(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (app *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
 	volumeName := exploded[3]
 
-	volume, replicas, volumenodes, status, ioprofile, err := volumes.InspectVolume(app.Conn, volumeName)
+	volume, replicas, volumenodes, status, ioprofile, err := volumes.InspectVolume(App.Conn, volumeName)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -70,11 +70,11 @@ func (app *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Reques
 }
 
 // getClusterCapacityHTTP http function to get the cluster capacity.
-func (app *AppConfig) getPXClusterCapacityHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getPXClusterCapacityHTTP(w http.ResponseWriter, r *http.Request) {
 
-	cluster, used, available, percentused, percentavailable, err := cluster.ClusterCapacity(app.Conn)
+	cluster, used, available, percentused, percentavailable, err := cluster.ClusterCapacity(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -92,11 +92,11 @@ func (app *AppConfig) getPXClusterCapacityHTTP(w http.ResponseWriter, r *http.Re
 }
 
 // getClusterCapacityHTTP http function to get the cluster capacity.
-func (app *AppConfig) getPXClusterHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getPXClusterHTTP(w http.ResponseWriter, r *http.Request) {
 
-	uuid, status, name, err := cluster.ClusterInfo(app.Conn)
+	uuid, status, name, err := cluster.ClusterInfo(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -112,13 +112,13 @@ func (app *AppConfig) getPXClusterHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // postCreateNewVolumeHTTP http function to create a new volume.
-func (app *AppConfig) postCreateNewVolumeHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) postCreateNewVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	volumeName := r.Header.Get("Volume-Name")
 
 	volumeGBSize, err := strconv.ParseUint((r.Header.Get("Volume-Size")), 10, 64)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -126,31 +126,31 @@ func (app *AppConfig) postCreateNewVolumeHTTP(w http.ResponseWriter, r *http.Req
 
 	volumeHALevel, err := strconv.ParseInt((r.Header.Get("Volume-Ha-Level")), 10, 64)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
 	encryptionEnabled, err := strconv.ParseBool(r.Header.Get("Volume-Encryption-Enabled"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
 	sharedv4Enabled, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Enabled"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
 	noDiscard, err := strconv.ParseBool(r.Header.Get("Volume-No-Discard"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
-	newVolumeID, err := volumes.CreateVolume(app.Conn, volumeName, volumeGBSize, volumeIOProfile, volumeHALevel, encryptionEnabled, sharedv4Enabled, noDiscard)
+	newVolumeID, err := volumes.CreateVolume(App.Conn, volumeName, volumeGBSize, volumeIOProfile, volumeHALevel, encryptionEnabled, sharedv4Enabled, noDiscard)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -165,15 +165,15 @@ func (app *AppConfig) postCreateNewVolumeHTTP(w http.ResponseWriter, r *http.Req
 }
 
 // getNodesOfVolumeHTTP http function to get the nodes of a volume.
-func (app *AppConfig) getNodesOfVolumeHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getNodesOfVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
 	volumeName := exploded[3]
 
-	nodes, err := nodes.FindVolumeNodes(app.Conn, volumeName)
+	nodes, err := nodes.FindVolumeNodes(App.Conn, volumeName)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -187,11 +187,11 @@ func (app *AppConfig) getNodesOfVolumeHTTP(w http.ResponseWriter, r *http.Reques
 }
 
 // getListOfNodesHTTP http function to get the list of nodes of the Portworx cluster.
-func (app *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request) {
 
-	nodeList, err := nodes.GetListOfNodes(app.Conn)
+	nodeList, err := nodes.GetListOfNodes(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -205,15 +205,15 @@ func (app *AppConfig) getListOfNodesHTTP(w http.ResponseWriter, r *http.Request)
 }
 
 // getReplicasPerNodeHTTP http function to get the replicas per node.
-func (app *AppConfig) getReplicasPerNodeHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getReplicasPerNodeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
 	nodeID := exploded[3]
 
-	volumes, err := nodes.GetReplicasPerNode(app.Conn, nodeID)
+	volumes, err := nodes.GetReplicasPerNode(App.Conn, nodeID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -227,7 +227,7 @@ func (app *AppConfig) getReplicasPerNodeHTTP(w http.ResponseWriter, r *http.Requ
 }
 
 // getVolumeUsageHTTP http function to get the volume usage.
-func (app *AppConfig) getVolumeUsageHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getVolumeUsageHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -237,9 +237,9 @@ func (app *AppConfig) getVolumeUsageHTTP(w http.ResponseWriter, r *http.Request)
 
 	var volUsagePercentFloat, volAvailablePercentFloat float32
 
-	volumeUsage, availableSpace, totalSize, err := volumes.RetrieveVolumeUsage(app.Conn, volumeName)
+	volumeUsage, availableSpace, totalSize, err := volumes.RetrieveVolumeUsage(App.Conn, volumeName)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -267,11 +267,11 @@ func (app *AppConfig) getVolumeUsageHTTP(w http.ResponseWriter, r *http.Request)
 }
 
 // getAllVolumesHTTP http function to get the list of volumes.
-func (app *AppConfig) getAllVolumesHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getAllVolumesHTTP(w http.ResponseWriter, r *http.Request) {
 
-	volumes, err := volumes.GetAllVolumes(app.Conn)
+	volumes, err := volumes.GetAllVolumes(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -285,11 +285,11 @@ func (app *AppConfig) getAllVolumesHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 // getAllVolumesCompleteHTTP http function to get the list of volumes with inspect information included.
-func (app *AppConfig) getAllVolumesCompleteHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getAllVolumesCompleteHTTP(w http.ResponseWriter, r *http.Request) {
 
-	volumes, err := volumes.GetAllVolumesComplete(app.Conn)
+	volumes, err := volumes.GetAllVolumesComplete(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -303,15 +303,15 @@ func (app *AppConfig) getAllVolumesCompleteHTTP(w http.ResponseWriter, r *http.R
 }
 
 // getNodeInfoHTTP http function to get the node information.
-func (app *AppConfig) getNodeInfoHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getNodeInfoHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
 	nodeID := exploded[3]
 
-	nodeInformation, err := nodes.GetNodeInfo(app.Conn, nodeID)
+	nodeInformation, err := nodes.GetNodeInfo(App.Conn, nodeID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -325,11 +325,11 @@ func (app *AppConfig) getNodeInfoHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // getAllNodesInfoHTTP http function to get the list of nodes with inspect information included.
-func (app *AppConfig) getAllNodesInfoHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getAllNodesInfoHTTP(w http.ResponseWriter, r *http.Request) {
 
-	nodesInformation, err := nodes.GetAllNodesInfo(app.Conn)
+	nodesInformation, err := nodes.GetAllNodesInfo(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -343,11 +343,11 @@ func (app *AppConfig) getAllNodesInfoHTTP(w http.ResponseWriter, r *http.Request
 }
 
 // getAllVolumesInfoHTTP http function to get the list of nodes with inspect information included.
-func (app *AppConfig) getAllVolumesInfoHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getAllVolumesInfoHTTP(w http.ResponseWriter, r *http.Request) {
 
-	volumesInformation, err := volumes.GetAllVolumesInfo(app.Conn)
+	volumesInformation, err := volumes.GetAllVolumesInfo(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -361,15 +361,15 @@ func (app *AppConfig) getAllVolumesInfoHTTP(w http.ResponseWriter, r *http.Reque
 }
 
 // getNodeVolumesHTTP http function to get the node information.
-func (app *AppConfig) getVolumeInfoHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getVolumeInfoHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
 	volumeID := exploded[3]
 
-	volumeInformation, err := volumes.GetVolumeInfo(app.Conn, volumeID)
+	volumeInformation, err := volumes.GetVolumeInfo(App.Conn, volumeID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -383,7 +383,7 @@ func (app *AppConfig) getVolumeInfoHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 // patchUpdateVolumeSizeHTTP http function to update a Portworx Volume Size.
-func (app *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -391,13 +391,13 @@ func (app *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.R
 
 	volumeGBSize, err := strconv.ParseUint((r.Header.Get("Volume-Size")), 10, 64)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
-	_, err = volumes.UpdateVolumeSize(app.Conn, volumeID, volumeGBSize)
+	_, err = volumes.UpdateVolumeSize(App.Conn, volumeID, volumeGBSize)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -412,7 +412,7 @@ func (app *AppConfig) patchUpdateVolumeSizeHTTP(w http.ResponseWriter, r *http.R
 }
 
 // patchUpdateVolumeSizeHTTP http function to update a Portworx Volume Size.
-func (app *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -420,9 +420,9 @@ func (app *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *h
 
 	volumeIOProfile := r.Header.Get("Volume-IO-Profile")
 
-	_, err := volumes.UpdateVolumeIOProfile(app.Conn, volumeID, volumeIOProfile)
+	_, err := volumes.UpdateVolumeIOProfile(App.Conn, volumeID, volumeIOProfile)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -437,7 +437,7 @@ func (app *AppConfig) patchUpdateVolumeIOProfileHTTP(w http.ResponseWriter, r *h
 }
 
 // patchUpdateVolumeHALevelHTTP http function to update a Portworx Volume HA Level.
-func (app *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -445,13 +445,13 @@ func (app *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *htt
 
 	volumeHALevel, err := strconv.ParseInt((r.Header.Get("Volume-Ha-Level")), 10, 64)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
-	_, err = volumes.UpdateVolumeHALevel(app.Conn, volumeID, volumeHALevel)
+	_, err = volumes.UpdateVolumeHALevel(App.Conn, volumeID, volumeHALevel)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -466,7 +466,7 @@ func (app *AppConfig) patchUpdateVolumeHALevelHTTP(w http.ResponseWriter, r *htt
 }
 
 // patchUpdateVolumeSharedv4HTTP http function to define a Portworx Volume as Sharedv4 or not.
-func (app *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -474,13 +474,13 @@ func (app *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *ht
 
 	sharedv4Enabled, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Enabled"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
-	_, err = volumes.UpdateVolumeSharedv4(app.Conn, volumeID, sharedv4Enabled)
+	_, err = volumes.UpdateVolumeSharedv4(App.Conn, volumeID, sharedv4Enabled)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -495,7 +495,7 @@ func (app *AppConfig) patchUpdateVolumeSharedv4HTTP(w http.ResponseWriter, r *ht
 }
 
 // patchUpdateVolumeSharedvService4HTTP http function to enable or disable a Portworx Volume Sharedv4 Service.
-func (app *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -503,13 +503,13 @@ func (app *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter
 
 	sharedv4Service, err := strconv.ParseBool(r.Header.Get("Volume-Sharedv4-Service"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
-	_, err = volumes.UpdateVolumeSharedv4Service(app.Conn, volumeID, sharedv4Service)
+	_, err = volumes.UpdateVolumeSharedv4Service(App.Conn, volumeID, sharedv4Service)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -524,7 +524,7 @@ func (app *AppConfig) patchUpdateVolumeSharedvService4HTTP(w http.ResponseWriter
 }
 
 // patchUpdateVolumeNoDiscardHTTP http function to enable or disable a Portworx Volume No Discard.
-func (app *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
@@ -532,13 +532,13 @@ func (app *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *h
 
 	noDiscard, err := strconv.ParseBool(r.Header.Get("Volume-No-Discard"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
-	_, err = volumes.UpdateVolumeNoDiscard(app.Conn, volumeID, noDiscard)
+	_, err = volumes.UpdateVolumeNoDiscard(App.Conn, volumeID, noDiscard)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -553,15 +553,15 @@ func (app *AppConfig) patchUpdateVolumeNoDiscardHTTP(w http.ResponseWriter, r *h
 }
 
 // deleteVolumeHTTP http function to delete a Portworx Volume.
-func (app *AppConfig) deleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) deleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
 	volumeID := exploded[3]
 
-	volume, err := volumes.DeleteVolume(app.Conn, volumeID)
+	volume, err := volumes.DeleteVolume(App.Conn, volumeID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -578,15 +578,15 @@ func (app *AppConfig) deleteVolumeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // getCloudSnapsHTTP http function to get a list of Portworx CloudSnaps.
-func (app *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) {
 
 	exploded := strings.Split(r.RequestURI, "/")
 
 	volumeID := exploded[3]
 
-	cloudSnaps, err := snapshots.GetCloudSnaps(app.Conn, volumeID)
+	cloudSnaps, err := snapshots.GetCloudSnaps(App.Conn, volumeID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -600,13 +600,13 @@ func (app *AppConfig) getCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) 
 }
 
 // getInspectAWSCloudCredentialHTTP http function to get a Portworx AWS Cloud Credential.
-func (app *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudCredentialID := r.Header.Get("Cloud-Credential-ID")
 
-	cloudCred, err := snapshots.AWSInspectS3CloudCredential(app.Conn, cloudCredentialID)
+	cloudCred, err := snapshots.AWSInspectS3CloudCredential(App.Conn, cloudCredentialID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -620,7 +620,7 @@ func (app *AppConfig) getInspectAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 }
 
 // postCreateAWSCloudCredentialHTTP http function to create a Portworx AWS Cloud Credential.
-func (app *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
 
 	credName := r.Header.Get("Cloud-Credential-Name")
 	credAccessKey := r.Header.Get("Cloud-Credential-Access-Key")
@@ -630,32 +630,32 @@ func (app *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 	credEndpoint := r.Header.Get("Cloud-Credential-Endpoint")
 	credSSL, err := strconv.ParseBool(r.Header.Get("Cloud-Credential-Disable-SSL"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 	credIAM, err := strconv.ParseBool(r.Header.Get("Cloud-Credential-IAM-Policy-Enabled"))
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
-	cloudCredentialID, err := snapshots.AWSCreateS3CloudCredential(app.Conn, credName, credBucketName, credAccessKey, credSecretKey, credEndpoint, credRegion, credSSL, credIAM)
+	cloudCredentialID, err := snapshots.AWSCreateS3CloudCredential(App.Conn, credName, credBucketName, credAccessKey, credSecretKey, credEndpoint, credRegion, credSSL, credIAM)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
 	//Validate the Cloud Credential
-	err = snapshots.AWSValidateS3CloudCredential(app.Conn, cloudCredentialID)
+	err = snapshots.AWSValidateS3CloudCredential(App.Conn, cloudCredentialID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
 	//Inspect the Cloud Credential
-	credDetails, err := snapshots.AWSInspectS3CloudCredential(app.Conn, cloudCredentialID)
+	credDetails, err := snapshots.AWSInspectS3CloudCredential(App.Conn, cloudCredentialID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -669,13 +669,13 @@ func (app *AppConfig) postCreateAWSCloudCredentialHTTP(w http.ResponseWriter, r 
 }
 
 // deleteAWSCloudCredentialHTTP http function to delete a Portworx AWS Cloud Credential.
-func (app *AppConfig) deleteAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) deleteAWSCloudCredentialHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudCredentialID := r.Header.Get("Cloud-Credential-ID")
 
-	err := snapshots.AWSDeleteS3CloudCredential(app.Conn, cloudCredentialID)
+	err := snapshots.AWSDeleteS3CloudCredential(App.Conn, cloudCredentialID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -690,11 +690,11 @@ func (app *AppConfig) deleteAWSCloudCredentialHTTP(w http.ResponseWriter, r *htt
 }
 
 // getPXClusterAlarmsHTTP http function to get a list of Portworx Cluster Alarms.
-func (app *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Request) {
 
-	alarms, err := cluster.ClusterAlarms(app.Conn)
+	alarms, err := cluster.ClusterAlarms(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -708,13 +708,13 @@ func (app *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Requ
 }
 
 // postCreateLocalSnapHTTP http function to create a Portworx Local Snapshot.
-func (app *AppConfig) postCreateLocalSnapHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) postCreateLocalSnapHTTP(w http.ResponseWriter, r *http.Request) {
 
 	volumeID := r.Header.Get("Volume-ID")
 
-	createSnap, err := snapshots.CreateLocalSnap(app.Conn, volumeID)
+	createSnap, err := snapshots.CreateLocalSnap(App.Conn, volumeID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -728,15 +728,15 @@ func (app *AppConfig) postCreateLocalSnapHTTP(w http.ResponseWriter, r *http.Req
 }
 
 // postCreateCloudSnapHTTP http function to create a Portworx CloudSnap.
-func (app *AppConfig) postCreateCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) postCreateCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudCredentialID := r.Header.Get("Cloud-Credential-ID")
 
 	volumeID := r.Header.Get("Volume-ID")
 
-	createCloudSnap, err := snapshots.CreateCloudSnap(app.Conn, volumeID, cloudCredentialID)
+	createCloudSnap, err := snapshots.CreateCloudSnap(App.Conn, volumeID, cloudCredentialID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -751,11 +751,11 @@ func (app *AppConfig) postCreateCloudSnapHTTP(w http.ResponseWriter, r *http.Req
 }
 
 // getAllCloudSnapsHTTP http function to get a list of all Portworx CloudSnaps.
-func (app *AppConfig) getAllCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getAllCloudSnapsHTTP(w http.ResponseWriter, r *http.Request) {
 
-	cloudSnaps, err := snapshots.AllCloudSnapsCluster(app.Conn)
+	cloudSnaps, err := snapshots.AllCloudSnapsCluster(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -768,11 +768,11 @@ func (app *AppConfig) getAllCloudSnapsHTTP(w http.ResponseWriter, r *http.Reques
 }
 
 // getAllCloudCredentialIDsHTTP http function to get a list of all Portworx Cloud Credential IDs.
-func (app *AppConfig) getAllCloudCredentialIDsHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getAllCloudCredentialIDsHTTP(w http.ResponseWriter, r *http.Request) {
 
-	cloudCreds, err := snapshots.ListCloudCredentialIDs(app.Conn)
+	cloudCreds, err := snapshots.ListCloudCredentialIDs(App.Conn)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -785,13 +785,13 @@ func (app *AppConfig) getAllCloudCredentialIDsHTTP(w http.ResponseWriter, r *htt
 }
 
 // getSpecificCloudSnapshotHTTP http function to get a specific Portworx CloudSnap.
-func (app *AppConfig) getSpecificCloudSnapshotHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getSpecificCloudSnapshotHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudSnapID := r.Header.Get("Cloud-Snap-ID")
 
-	cloudSnap, err := snapshots.GetSpecificCloudSnapshot(app.Conn, cloudSnapID)
+	cloudSnap, err := snapshots.GetSpecificCloudSnapshot(App.Conn, cloudSnapID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -805,13 +805,13 @@ func (app *AppConfig) getSpecificCloudSnapshotHTTP(w http.ResponseWriter, r *htt
 }
 
 // deleteCloudSnapHTTP http function to delete a Portworx CloudSnap.
-func (app *AppConfig) deleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) deleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request) {
 
 	cloudSnapID := r.Header.Get("Cloud-Snap-ID")
 
-	err := snapshots.DeleteCloudSnap(app.Conn, cloudSnapID)
+	err := snapshots.DeleteCloudSnap(App.Conn, cloudSnapID)
 	if err != nil {
-		app.errorJSON(w, err)
+		App.errorJSON(w, err)
 		return
 	}
 
@@ -825,9 +825,9 @@ func (app *AppConfig) deleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request
 
 }
 
-func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
-	_ = app.Session.RenewToken(r.Context())
+	_ = App.Session.RenewToken(r.Context())
 
 	username := r.Header.Get("Username")
 
@@ -836,12 +836,12 @@ func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 	//log.Printf("username: %s", username)
 
 	// Authenticate the user
-	rq := &loginRequest{username, password}
+	rq := &LoginRequest{username, password}
 
-	jwt, err := app.NewKeycloak.gocloak.Login(r.Context(),
-		app.NewKeycloak.clientId,
-		app.NewKeycloak.clientSecret,
-		app.NewKeycloak.realm,
+	jwt, err := App.NewKeycloak.gocloak.Login(r.Context(),
+		App.NewKeycloak.clientId,
+		App.NewKeycloak.clientSecret,
+		App.NewKeycloak.realm,
 		rq.Username,
 		rq.Password)
 
@@ -850,7 +850,7 @@ func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rs := &loginResponse{
+	rs := &LoginResponse{
 		AccessToken:  jwt.AccessToken,
 		RefreshToken: jwt.RefreshToken,
 		ExpiresIn:    jwt.ExpiresIn,
@@ -862,9 +862,9 @@ func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 	_, _ = w.Write(rsJs)
 
-	keycloakToken = jwt.AccessToken
+	KeycloakToken = jwt.AccessToken
 
-	keycloakRefreshToken = jwt.RefreshToken
+	KeycloakRefreshToken = jwt.RefreshToken
 
 	resp := JsonResponse{
 		Error:   false,
@@ -876,20 +876,20 @@ func (app *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // getLogoutHTTP logs a user out
-func (app *AppConfig) getLogoutHTTP(w http.ResponseWriter, r *http.Request) {
+func (App *AppConfig) getLogoutHTTP(w http.ResponseWriter, r *http.Request) {
 
-	_ = app.Session.RenewToken(r.Context())
+	_ = App.Session.RenewToken(r.Context())
 
-	app.NewKeycloak.gocloak.Logout(r.Context(),
-		app.NewKeycloak.clientId,
-		app.NewKeycloak.clientSecret,
-		app.NewKeycloak.realm,
-		keycloakRefreshToken)
+	App.NewKeycloak.gocloak.Logout(r.Context(),
+		App.NewKeycloak.clientId,
+		App.NewKeycloak.clientSecret,
+		App.NewKeycloak.realm,
+		KeycloakRefreshToken)
 
-	keycloakToken = ""
-	keycloakRefreshToken = ""
+	KeycloakToken = ""
+	KeycloakRefreshToken = ""
 
-	_ = app.Session.Destroy(r.Context())
+	_ = App.Session.Destroy(r.Context())
 
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 

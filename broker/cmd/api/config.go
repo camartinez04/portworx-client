@@ -19,27 +19,27 @@ var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
 var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
 
 var (
-	useTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")
-	token   = flag.String("token", os.Getenv("PORTWORX_TOKEN"), "Authorization token if any")
-	address = flag.String("address", os.Getenv("PORTWORX_GRPC_URL"), "Address to server as <address>:<port>")
+	UseTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")
+	Token   = flag.String("token", os.Getenv("PORTWORX_TOKEN"), "Authorization token if any")
+	Address = flag.String("address", os.Getenv("PORTWORX_GRPC_URL"), "Address to server as <address>:<port>")
 )
 
 var Application *AppConfig
 
-var keycloakToken string
+var KeycloakToken string
 
-var keycloakRefreshToken string
+var KeycloakRefreshToken string
 
-var session *scs.SessionManager
+var Session *scs.SessionManager
 
-var app AppConfig
+var App AppConfig
 
 const (
 	Bytes   = uint64(1)
 	KB      = Bytes * uint64(1024)
 	MB      = KB * uint64(1024)
 	GB      = MB * uint64(1024)
-	webPort = ":8080"
+	WebPort = ":8080"
 )
 
 // AppConfig holds the application configuration
@@ -50,34 +50,34 @@ type AppConfig struct {
 	ErrorLog     *log.Logger
 	InProduction bool
 	Models       Models
-	NewKeycloak  *keycloak
+	NewKeycloak  *Keycloak
 }
 
-type keycloak struct {
+type Keycloak struct {
 	gocloak      gocloak.GoCloak // keycloak client
 	clientId     string          // clientId specified in Keycloak
 	clientSecret string          // client secret specified in Keycloak
 	realm        string          // realm specified in Keycloak
 }
 
-type keyCloakMiddleware struct {
-	keycloak *keycloak
+type KeyCloakMiddleware struct {
+	keycloak *Keycloak
 	Session  *scs.SessionManager
 }
 
-type loginRequest struct {
+type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-type loginResponse struct {
+type LoginResponse struct {
 	AccessToken  string `json:"accessToken"`
 	RefreshToken string `json:"refreshToken"`
 	ExpiresIn    int    `json:"expiresIn"`
 }
 
-type controller struct {
-	keycloak *keycloak
+type Controller struct {
+	keycloak *Keycloak
 }
 
 // Models holds the models

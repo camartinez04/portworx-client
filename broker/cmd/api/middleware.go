@@ -6,11 +6,11 @@ import (
 
 // SessionLoad loads and saves the session on every request
 func SessionLoad(next http.Handler) http.Handler {
-	return session.LoadAndSave(next)
+	return Session.LoadAndSave(next)
 }
 
 // newMiddleware creates a new middleware with Keycloak
-func newMiddleware(keycloak *keycloak) *keyCloakMiddleware {
+func newMiddleware(keycloak *Keycloak) *KeyCloakMiddleware {
 
-	return &keyCloakMiddleware{keycloak: keycloak}
+	return &KeyCloakMiddleware{keycloak: keycloak}
 }

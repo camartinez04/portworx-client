@@ -19,13 +19,13 @@ import (
 // GetRequestMetadata gets the current request metadata.
 func (t OpenStorageSdkToken) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
-		"authorization": "bearer " + *token,
+		"authorization": "bearer " + *Token,
 	}, nil
 }
 
 // RequireTransportSecurity indicates whether the credentials requires transport security.
 func (t OpenStorageSdkToken) RequireTransportSecurity() bool {
-	return *useTls
+	return *UseTls
 }
 
 // main is the entry point for the API
@@ -37,19 +37,19 @@ func main() {
 
 	dialOptions := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	gob.Register(loginRequest{})
+	gob.Register(LoginRequest{})
 
-	session = scs.New()
-	session.Lifetime = 24 * time.Hour
-	session.Cookie.Persist = true
-	session.Cookie.SameSite = http.SameSiteLaxMode
-	session.Cookie.Secure = app.InProduction
+	Session = scs.New()
+	Session.Lifetime = 24 * time.Hour
+	Session.Cookie.Persist = true
+	Session.Cookie.SameSite = http.SameSiteLaxMode
+	Session.Cookie.Secure = App.InProduction
 
-	app.InProduction = false
+	App.InProduction = false
 
-	app.Session = session
+	App.Session = Session
 
-	if *useTls {
+	if *UseTls {
 		// Setup a connection
 		capool, err := x509.SystemCertPool()
 		if err != nil {
@@ -61,36 +61,36 @@ func main() {
 		)}
 	}
 
-	if len(*token) != 0 {
+	if len(*Token) != 0 {
 		// Add token interceptor
 		dialOptions = append(dialOptions, grpc.WithPerRPCCredentials(contextToken))
 	}
 
-	conn, err := grpc.Dial(*address, dialOptions...)
+	conn, err := grpc.Dial(*Address, dialOptions...)
 	if err != nil {
-		log.Panicf("Error trying to establish gRPC connection to address %s: %v", err, address)
+		log.Panicf("Error trying to establish gRPC connection to address %s: %v", err, Address)
 		os.Exit(1)
 	}
 
-	app.NewKeycloak = newKeycloak()
+	App.NewKeycloak = NewKeycloak()
 
 	// Sends the grpc connection that we've created to AppConfig
 	app := AppConfig{
 		Conn:        conn,
-		Session:     session,
-		NewKeycloak: newKeycloak(),
+		Session:     Session,
+		NewKeycloak: NewKeycloak(),
 	}
 
 	NewHandlers(&app)
 
-	log.Printf("Connected to Portworx's OpenStorage via gRPC to %s", *address)
+	log.Printf("Connected to Portworx's OpenStorage via gRPC to %s", *Address)
 
 	srv := &http.Server{
-		Addr:    webPort,
+		Addr:    WebPort,
 		Handler: app.routes(),
 	}
 
-	log.Println("Starting Broker server on port", webPort)
+	log.Println("Starting Broker server on port", WebPort)
 
 	err = srv.ListenAndServe()
 	if err != nil {
