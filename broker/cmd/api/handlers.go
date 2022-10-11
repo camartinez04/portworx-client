@@ -789,7 +789,9 @@ func (App *AppConfig) getSpecificCloudSnapshotHTTP(w http.ResponseWriter, r *htt
 
 	cloudSnapID := r.Header.Get("Cloud-Snap-ID")
 
-	cloudSnap, err := snapshots.GetSpecificCloudSnapshot(App.Conn, cloudSnapID)
+	credentialID := r.Header.Get("Cloud-Credential-ID")
+
+	cloudSnap, err := snapshots.GetSpecificCloudSnapshot(App.Conn, cloudSnapID, credentialID)
 	if err != nil {
 		App.errorJSON(w, err)
 		return

@@ -279,9 +279,11 @@ func (m *Repository) SpecificSpapInformationHTTP(w http.ResponseWriter, r *http.
 
 	exploded := strings.Split(r.RequestURI, "/")
 
-	snapshotID := exploded[4] + "/" + exploded[5]
+	snapshotID := exploded[5] + "/" + exploded[6]
 
-	jsonSnapInfoResponse, err := SnapInfofromID(snapshotID)
+	cloudID := exploded[4]
+
+	jsonSnapInfoResponse, err := SnapInfofromID(snapshotID, cloudID)
 	if err != nil {
 		log.Println(err)
 		m.App.Session.Put(r.Context(), "error", "Error trying to get the snapshot information!")

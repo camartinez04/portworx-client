@@ -151,41 +151,29 @@ func GetCloudSnaps(conn *grpc.ClientConn, volumeID string) (cloudSnapsMap map[st
 }
 
 // GetSpecificCloudSnapshot gets a specific cloud snapshot having the CloudSnap ID
-func GetSpecificCloudSnapshot(conn *grpc.ClientConn, cloudSnapID string) (cloudSnap *api.SdkCloudBackupInfo, errorFound error) {
+func GetSpecificCloudSnapshot(conn *grpc.ClientConn, cloudSnapID string, credentialID string) (cloudSnap *api.SdkCloudBackupInfo, errorFound error) {
 
 	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
 
-	// Get the list of cloud credentials
-	credIDsList, errorFound := ListCloudCredentialIDs(conn)
+	cloudSnapInfo, errorFound := cloudbackups.EnumerateWithFilters(
+		context.Background(),
+		&api.SdkCloudBackupEnumerateWithFiltersRequest{
+			CloudBackupId: cloudSnapID,
+			CredentialId:  credentialID,
+		})
 	if errorFound != nil {
-		log.Printf("Error getting cloud credentials: %v", errorFound)
+		log.Printf("Error getting backup status: %v", errorFound)
 		return nil, errorFound
 	}
 
-	// Iterate over the list of cloud credentials
-	for _, credID := range credIDsList {
+	cloudSnapList := cloudSnapInfo.GetBackups()
 
-		cloudSnapInfo, errorFound := cloudbackups.EnumerateWithFilters(
-			context.Background(),
-			&api.SdkCloudBackupEnumerateWithFiltersRequest{
-				CloudBackupId: cloudSnapID,
-				CredentialId:  credID,
-			})
-		if errorFound != nil {
-			log.Printf("Error getting backup status: %v", errorFound)
-			return nil, errorFound
-		}
-
-		cloudSnapList := cloudSnapInfo.GetBackups()
-
-		if len(cloudSnapList) == 0 {
-			log.Printf("No cloud snapshot found with ID %s", cloudSnapID)
-			return nil, nil
-		}
-
-		cloudSnap = cloudSnapList[0]
-
+	if len(cloudSnapList) == 0 {
+		log.Printf("No cloud snapshot found with ID %s", cloudSnapID)
+		return nil, nil
 	}
+
+	cloudSnap = cloudSnapList[0]
 
 	return cloudSnap, nil
 

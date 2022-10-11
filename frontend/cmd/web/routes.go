@@ -80,7 +80,7 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/snapshots", Repo.GetAllSnapsHTTP)
 
-		mux.Get("/snapshot/{bucket}/{snap_id}", Repo.SpecificSpapInformationHTTP)
+		mux.Get("/snapshot/{cred_id}/{bucket}/{snap_id}", Repo.SpecificSpapInformationHTTP)
 
 		mux.Get("/cloud-credentials", Repo.CloudCredentialsHTTP)
 

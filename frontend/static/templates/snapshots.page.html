@@ -69,7 +69,7 @@
 
                                     {{ range $snap := $snaps }}
                                     {{ $snapid := index (split $snap.Id "/") 1 }}
-                                      <td> <a href="snapshot/{{ $snap.Id }}">  {{ index (split $snapid "-") 1 }} </a> </td>
+                                      <td> <a href="snapshot/{{ $key }}/{{ $snap.Id }}">  {{ index (split $snapid "-") 1 }} </a> </td>
                                       <td>  {{ $key }} </td>
                                       <td> {{ (index $snap.Metadata "updatetime") }} </td>
                                       <td> {{ (index $snap.Metadata "status") }} </td>

@@ -70,7 +70,7 @@ func VolumeInfofromID(volumeID string) (jsonVolumeInfo VolumeInfoResponse, error
 }
 
 // SnapInfofromID retrieves from the broker /getspecificcloudsnapshot and sends it back as struct JsonSpecificCloudSnapResponse
-func SnapInfofromID(snapID string) (jsonSnapInfo JsonSpecificCloudSnapResponse, errorFound error) {
+func SnapInfofromID(snapID string, credentialID string) (jsonSnapInfo JsonSpecificCloudSnapResponse, errorFound error) {
 
 	url := BrokerURL + "/broker/getspecificcloudsnapshot"
 
@@ -84,6 +84,8 @@ func SnapInfofromID(snapID string) (jsonSnapInfo JsonSpecificCloudSnapResponse, 
 		return
 	}
 	req.Header.Add("Cloud-Snap-ID", snapID)
+
+	req.Header.Add("Cloud-Credential-ID", credentialID)
 
 	res, errorFound := client.Do(req)
 	if errorFound != nil {
