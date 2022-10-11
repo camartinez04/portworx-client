@@ -9,9 +9,9 @@ import (
 )
 
 // routes sets up the routes for the API
-func (app *AppConfig) routes() http.Handler {
+func (App *AppConfig) routes() http.Handler {
 
-	keycloak := app.NewKeycloak
+	keycloak := App.NewKeycloak
 
 	mux := chi.NewRouter()
 
@@ -32,52 +32,52 @@ func (app *AppConfig) routes() http.Handler {
 
 	mux.Route("/", func(mux chi.Router) {
 
-		mux.Post("/login", app.postLoginHTTP)
-		mux.Get("/login", app.postLoginHTTP)
-		mux.Get("/logout", app.getLogoutHTTP)
+		mux.Post("/login", App.postLoginHTTP)
+		mux.Get("/login", App.postLoginHTTP)
+		mux.Get("/logout", App.getLogoutHTTP)
 	})
 
 	mux.Route("/broker", func(mux chi.Router) {
 
 		mux.Use(mdw.AuthKeycloak)
 
-		mux.Get("/getpxclustercapacity", app.getPXClusterCapacityHTTP)
-		mux.Get("/getpxcluster", app.getPXClusterHTTP)
-		mux.Get("/getpxclusteralarms", app.getPXClusterAlarmsHTTP)
+		mux.Get("/getpxclustercapacity", App.getPXClusterCapacityHTTP)
+		mux.Get("/getpxcluster", App.getPXClusterHTTP)
+		mux.Get("/getpxclusteralarms", App.getPXClusterAlarmsHTTP)
 
-		mux.Post("/postcreatevolume", app.postCreateNewVolumeHTTP)
-		mux.Get("/getvolumeinfo/{volume_id}", app.getVolumeInfoHTTP)
-		mux.Patch("/patchvolumesize/{volume_id}", app.patchUpdateVolumeSizeHTTP)
-		mux.Patch("/patchvolumeioprofile/{volume_id}", app.patchUpdateVolumeIOProfileHTTP)
-		mux.Patch("/patchvolumehalevel/{volume_id}", app.patchUpdateVolumeHALevelHTTP)
-		mux.Patch("/patchvolumesharedv4/{volume_id}", app.patchUpdateVolumeSharedv4HTTP)
-		mux.Patch("/patchvolumesharedv4service/{volume_id}", app.patchUpdateVolumeSharedvService4HTTP)
-		mux.Patch("/patchvolumenodiscard/{volume_id}", app.patchUpdateVolumeNoDiscardHTTP)
-		mux.Delete("/deletevolume/{volume_id}", app.deleteVolumeHTTP)
+		mux.Post("/postcreatevolume", App.postCreateNewVolumeHTTP)
+		mux.Get("/getvolumeinfo/{volume_id}", App.getVolumeInfoHTTP)
+		mux.Patch("/patchvolumesize/{volume_id}", App.patchUpdateVolumeSizeHTTP)
+		mux.Patch("/patchvolumeioprofile/{volume_id}", App.patchUpdateVolumeIOProfileHTTP)
+		mux.Patch("/patchvolumehalevel/{volume_id}", App.patchUpdateVolumeHALevelHTTP)
+		mux.Patch("/patchvolumesharedv4/{volume_id}", App.patchUpdateVolumeSharedv4HTTP)
+		mux.Patch("/patchvolumesharedv4service/{volume_id}", App.patchUpdateVolumeSharedvService4HTTP)
+		mux.Patch("/patchvolumenodiscard/{volume_id}", App.patchUpdateVolumeNoDiscardHTTP)
+		mux.Delete("/deletevolume/{volume_id}", App.deleteVolumeHTTP)
 
-		mux.Get("/getvolumeid/{volume_name}", app.getVolumeIDsHTTP)
-		mux.Get("/getnodesofvolume/{volume_name}", app.getNodesOfVolumeHTTP)
-		mux.Get("/getinspectvolume/{volume_name}", app.getInspectVolumeHTTP)
-		mux.Get("/getvolumeusage/{volume_name}", app.getVolumeUsageHTTP)
+		mux.Get("/getvolumeid/{volume_name}", App.getVolumeIDsHTTP)
+		mux.Get("/getnodesofvolume/{volume_name}", App.getNodesOfVolumeHTTP)
+		mux.Get("/getinspectvolume/{volume_name}", App.getInspectVolumeHTTP)
+		mux.Get("/getvolumeusage/{volume_name}", App.getVolumeUsageHTTP)
 
-		mux.Get("/getallvolumesinfo", app.getAllVolumesInfoHTTP)
-		mux.Get("/getallvolumes", app.getAllVolumesHTTP)
-		mux.Get("/getallvolumescomplete", app.getAllVolumesCompleteHTTP)
-		mux.Get("/getreplicaspernode/{node_id}", app.getReplicasPerNodeHTTP)
+		mux.Get("/getallvolumesinfo", App.getAllVolumesInfoHTTP)
+		mux.Get("/getallvolumes", App.getAllVolumesHTTP)
+		mux.Get("/getallvolumescomplete", App.getAllVolumesCompleteHTTP)
+		mux.Get("/getreplicaspernode/{node_id}", App.getReplicasPerNodeHTTP)
 
-		mux.Get("/getlistofnodes", app.getListOfNodesHTTP)
-		mux.Get("/getallnodesinfo", app.getAllNodesInfoHTTP)
-		mux.Get("/getnodeinfo/{node_id}", app.getNodeInfoHTTP)
-		mux.Get("/getcloudsnaps/{volume_id}", app.getCloudSnapsHTTP)
-		mux.Get("/getallcloudsnaps", app.getAllCloudSnapsHTTP)
-		mux.Get("/getinspectawscloudcreds", app.getInspectAWSCloudCredentialHTTP)
-		mux.Post("/postcreateawscloudcreds", app.postCreateAWSCloudCredentialHTTP)
-		mux.Delete("/deleteawscloudcreds", app.deleteAWSCloudCredentialHTTP)
-		mux.Post("/postcreatecloudsnap", app.postCreateCloudSnapHTTP)
-		mux.Post("/postcreatelocalsnap", app.postCreateLocalSnapHTTP)
-		mux.Get("/getallcloudcredsids", app.getAllCloudCredentialIDsHTTP)
-		mux.Get("/getspecificcloudsnapshot", app.getSpecificCloudSnapshotHTTP)
-		mux.Delete("/deletecloudsnap", app.deleteCloudSnapHTTP)
+		mux.Get("/getlistofnodes", App.getListOfNodesHTTP)
+		mux.Get("/getallnodesinfo", App.getAllNodesInfoHTTP)
+		mux.Get("/getnodeinfo/{node_id}", App.getNodeInfoHTTP)
+		mux.Get("/getcloudsnaps/{volume_id}", App.getCloudSnapsHTTP)
+		mux.Get("/getallcloudsnaps", App.getAllCloudSnapsHTTP)
+		mux.Get("/getinspectawscloudcreds", App.getInspectAWSCloudCredentialHTTP)
+		mux.Post("/postcreateawscloudcreds", App.postCreateAWSCloudCredentialHTTP)
+		mux.Delete("/deleteawscloudcreds", App.deleteAWSCloudCredentialHTTP)
+		mux.Post("/postcreatecloudsnap", App.postCreateCloudSnapHTTP)
+		mux.Post("/postcreatelocalsnap", App.postCreateLocalSnapHTTP)
+		mux.Get("/getallcloudcredsids", App.getAllCloudCredentialIDsHTTP)
+		mux.Get("/getspecificcloudsnapshot", App.getSpecificCloudSnapshotHTTP)
+		mux.Delete("/deletecloudsnap", App.deleteCloudSnapHTTP)
 
 	})
 

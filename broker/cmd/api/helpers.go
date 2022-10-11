@@ -33,7 +33,7 @@ func writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Head
 }
 
 // errorJSON checks for errors on JSON
-func (app *AppConfig) errorJSON(w http.ResponseWriter, err error, status ...int) error {
+func (App *AppConfig) errorJSON(w http.ResponseWriter, err error, status ...int) error {
 
 	statusCode := http.StatusBadRequest
 
