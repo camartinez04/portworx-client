@@ -912,3 +912,45 @@ func (App *AppConfig) getLogoutHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 
 }
+
+// patchUpdateVolumeReplicaSetHTTP http function to update a Portworx Volume Replica Set.
+func (App *AppConfig) patchUpdateVolumeReplicaSetHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	volumeID := exploded[3]
+
+	poolReplicaSet1 := r.Header.Get("PoolUUID-ReplicaSet-1")
+
+	poolReplicaSet2 := r.Header.Get("PoolUUID-ReplicaSet-2")
+
+	poolReplicaSet3 := r.Header.Get("PoolUUID-ReplicaSet-3")
+
+	var PoolUuids []string
+
+	if poolReplicaSet1 != "" {
+		PoolUuids = append(PoolUuids, poolReplicaSet1)
+	}
+
+	if poolReplicaSet2 != "" {
+		PoolUuids = append(PoolUuids, poolReplicaSet2)
+	}
+
+	if poolReplicaSet3 != "" {
+		PoolUuids = append(PoolUuids, poolReplicaSet3)
+	}
+
+	_, err := volumes.UpdateVolumeReplicaSet(App.Conn, volumeID, PoolUuids)
+	if err != nil {
+		App.errorJSON(w, err)
+		return
+	}
+
+	resp := JsonResponse{
+		Error:   false,
+		Message: "Volume Replica Set updated successfully",
+	}
+
+	writeJSON(w, http.StatusAccepted, resp)
+
+}

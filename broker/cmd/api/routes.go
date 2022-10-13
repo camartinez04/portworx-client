@@ -53,6 +53,7 @@ func (App *AppConfig) routes() http.Handler {
 		mux.Patch("/patchvolumesharedv4/{volume_id}", App.patchUpdateVolumeSharedv4HTTP)
 		mux.Patch("/patchvolumesharedv4service/{volume_id}", App.patchUpdateVolumeSharedvService4HTTP)
 		mux.Patch("/patchvolumenodiscard/{volume_id}", App.patchUpdateVolumeNoDiscardHTTP)
+		mux.Patch("/patchvolumereplicaset/{volume_id}", App.patchUpdateVolumeReplicaSetHTTP)
 		mux.Delete("/deletevolume/{volume_id}", App.deleteVolumeHTTP)
 
 		mux.Get("/getvolumeid/{volume_name}", App.getVolumeIDsHTTP)

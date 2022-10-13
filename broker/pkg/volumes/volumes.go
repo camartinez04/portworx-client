@@ -269,6 +269,36 @@ func UpdateVolumeHALevel(conn *grpc.ClientConn, volumeID string, volumeHALevel i
 
 }
 
+// testing UpdateVolumeReplicaSet function
+func UpdateVolumeReplicaSet(conn *grpc.ClientConn, volumeID string, poolUuids []string) (volumeUpdate string, errorFound error) {
+
+	// Opens the volume client connection.
+	volumes := api.NewOpenStorageVolumeClient(conn)
+
+	// Updates the volume.
+	volume, errorFound := volumes.Update(
+		context.Background(),
+		&api.SdkVolumeUpdateRequest{
+			VolumeId: volumeID,
+			Spec: &api.VolumeSpecUpdate{
+				ReplicaSet: &api.ReplicaSet{
+					PoolUuids: poolUuids,
+				},
+			},
+		})
+	if errorFound != nil {
+		log.Printf("error updating volume %s", volumeID)
+		return "", errorFound
+	}
+
+	volumeUpdate = volume.String()
+
+	log.Printf("Volume %s updated to Replica Set on Pool UUIDs: %v", volumeID, poolUuids)
+
+	return volumeUpdate, nil
+
+}
+
 // UpdateVolume updates if a Portworx volume would be Sharedv4 or not.
 func UpdateVolumeSharedv4(conn *grpc.ClientConn, volumeID string, sharedv4Enabled bool) (volumeUpdate string, errorFound error) {
 
