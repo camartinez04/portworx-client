@@ -9,6 +9,10 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /portworx/$2
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - kubernetes.lehi-k8s-vanilla.calvarado04.com
+    secretName: vanilla-tls
   rules:
     - host: kubernetes.lehi-k8s-vanilla.calvarado04.com
       http:
