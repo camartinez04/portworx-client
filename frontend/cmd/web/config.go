@@ -44,4 +44,6 @@ var Functions = template.FuncMap{
 	"split":            strings.Split,
 	"removeDuplicates": RemoveDuplicateStr,
 	"dateFromUnix":     DateFormat,
+	"byteToGigabyte":   BytesToGB,
+	"byteToMegabyte":   BytesToMB,
 }

@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"runtime/debug"
+	"strconv"
 	"time"
 )
 
@@ -126,4 +127,30 @@ func HumanDate(t time.Time) string {
 func FormatDate(t time.Time, f string) string {
 
 	return t.Format(f)
+}
+
+// BytesToGB converts bytes to gigabytes
+func BytesToGB(b string) uint64 {
+
+	toFloat, err := strconv.ParseFloat(b, 64)
+	if err != nil {
+		return 0
+	}
+
+	floatValue := toFloat / 1073741824
+
+	return uint64(floatValue)
+}
+
+// BytesToMB converts bytes to megabytes
+func BytesToMB(b string) uint64 {
+
+	toFloat, err := strconv.ParseFloat(b, 64)
+	if err != nil {
+		return 0
+	}
+
+	floatValue := toFloat / 1048576
+
+	return uint64(floatValue)
 }
