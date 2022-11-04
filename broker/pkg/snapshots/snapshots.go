@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
 	"time"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
@@ -105,8 +106,11 @@ func StatusCloudSnap(conn *grpc.ClientConn, volumeID string) (jsonStatus string,
 
 }
 
-// GetCloudSnaps gets the cloud snapshots of a volume
+// GetCloudSnaps gets the cloud snapshots of a volume, concurrently
 func GetCloudSnaps(conn *grpc.ClientConn, volumeID string, CredIDsList []string) (cloudSnapsMap map[string][]*api.SdkCloudBackupInfo, errorFound error) {
+
+	// sync wait group to wait for all the goroutines to finish
+	var wg sync.WaitGroup
 
 	cloudbackups := api.NewOpenStorageCloudBackupClient(conn)
 
@@ -133,7 +137,13 @@ func GetCloudSnaps(conn *grpc.ClientConn, volumeID string, CredIDsList []string)
 
 	}
 
+	// Add a wait group for each credential ID to work concurrently
+	wg.Add(len(CredIDsList))
+
 	cloudSnapsMap = make(map[string][]*api.SdkCloudBackupInfo)
+
+	// Lock the map to avoid concurrent write access
+	var MapMutex = sync.RWMutex{}
 
 	//log.Printf("Length of slice is before the for loop: %v", len(CredIDsList))
 
@@ -141,22 +151,39 @@ func GetCloudSnaps(conn *grpc.ClientConn, volumeID string, CredIDsList []string)
 	for _, credID := range CredIDsList {
 
 		// Now check the status of the backup
-		backupStatus, errorFound := cloudbackups.EnumerateWithFilters(
-			context.Background(),
-			&api.SdkCloudBackupEnumerateWithFiltersRequest{
-				SrcVolumeId:  volumeID,
-				CredentialId: credID,
-			})
-		if errorFound != nil {
-			log.Printf("Error getting backup status: %v", errorFound)
-			return nil, errorFound
-		}
 
-		backupList := backupStatus.GetBackups()
+		// Create a goroutine for each credential ID for concurrency
+		go func(credID string) error {
 
-		cloudSnapsMap[credID] = backupList
+			backupStatus, errorFound := cloudbackups.EnumerateWithFilters(
+				context.Background(),
+				&api.SdkCloudBackupEnumerateWithFiltersRequest{
+					SrcVolumeId:  volumeID,
+					CredentialId: credID,
+				})
+			if errorFound != nil {
+				log.Printf("Error getting backup status: %v", errorFound)
+				return errorFound
+			}
+
+			backupList := backupStatus.GetBackups()
+
+			// Lock the map to avoid concurrent write access
+			MapMutex.Lock()
+			// Add the list of backups to the map
+			cloudSnapsMap[credID] = backupList
+			// Unlock the map
+			MapMutex.Unlock()
+
+			defer wg.Done()
+
+			return nil
+
+		}(credID)
 
 	}
+
+	wg.Wait()
 
 	return cloudSnapsMap, nil
 
@@ -300,20 +327,22 @@ func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]map[stri
 	// Iterate over the volumes list and get the cloud snapshots of each volume, populating the map as well.
 	for _, volume := range volumes {
 
-		// Get the cloud snapshots of the volume
+		cloudSnaps[volume] = make(map[string][]*api.SdkCloudBackupInfo)
+
+		// Iterate over the list of cloud credentials concurrently
 		snapsOfVolume, errorFound := GetCloudSnaps(conn, volume, credIDsList)
 		if errorFound != nil {
 			log.Fatal(errorFound)
 			return nil, errorFound
 		}
 
-		cloudSnaps[volume] = make(map[string][]*api.SdkCloudBackupInfo)
-
+		// Populate the map with the cloud snapshots of the volume
 		for credID, snaps := range snapsOfVolume {
 
 			cloudSnaps[volume][credID] = snaps
 
 		}
+
 	}
 
 	return cloudSnaps, nil
