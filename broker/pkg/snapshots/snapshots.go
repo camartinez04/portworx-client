@@ -143,9 +143,7 @@ func GetCloudSnaps(conn *grpc.ClientConn, volumeID string, CredIDsList []string)
 	// Lock the map to avoid concurrent write access
 	var MapMutex = sync.RWMutex{}
 
-	MapMutex.Lock()
 	cloudSnapsMap = make(map[string][]*api.SdkCloudBackupInfo)
-	MapMutex.Unlock()
 
 	//log.Printf("Length of slice is before the for loop: %v", len(CredIDsList))
 
