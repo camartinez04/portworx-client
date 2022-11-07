@@ -302,6 +302,9 @@ func CloudSnapHistory(conn *grpc.ClientConn, volumeName string) {
 // AllCloudSnapsCluster retrieves all the cloud snapshots of all the volumes in the Portworx cluster
 func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]map[string][]*api.SdkCloudBackupInfo, errorFound error) {
 
+	// sync wait group to wait for all the goroutines to finish
+	var wg sync.WaitGroup
+
 	cloudSnaps = make(map[string]map[string][]*api.SdkCloudBackupInfo)
 
 	// Get all the volumes in the cluster into a slice of strings
@@ -324,26 +327,45 @@ func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]map[stri
 		return nil, nil
 	}
 
+	// Add a wait group for each volume to work concurrently
+	wg.Add(len(volumes))
+
+	// Lock the map to avoid concurrent write access
+	var MapMutex = sync.RWMutex{}
+
 	// Iterate over the volumes list and get the cloud snapshots of each volume, populating the map as well.
 	for _, volume := range volumes {
 
-		cloudSnaps[volume] = make(map[string][]*api.SdkCloudBackupInfo)
+		go func(volume string) error {
 
-		// Iterate over the list of cloud credentials concurrently
-		snapsOfVolume, errorFound := GetCloudSnaps(conn, volume, credIDsList)
-		if errorFound != nil {
-			log.Fatal(errorFound)
-			return nil, errorFound
-		}
+			cloudSnaps[volume] = make(map[string][]*api.SdkCloudBackupInfo)
 
-		// Populate the map with the cloud snapshots of the volume
-		for credID, snaps := range snapsOfVolume {
+			// Iterate over the list of cloud credentials concurrently
+			snapsOfVolume, errorFound := GetCloudSnaps(conn, volume, credIDsList)
+			if errorFound != nil {
+				log.Fatal(errorFound)
+				return errorFound
+			}
 
-			cloudSnaps[volume][credID] = snaps
+			// Populate the map with the cloud snapshots of the volume
+			for credID, snaps := range snapsOfVolume {
 
-		}
+				// Lock the map to avoid concurrent write access
+				MapMutex.Lock()
+				cloudSnaps[volume][credID] = snaps
+				// Unlock the map
+				MapMutex.Unlock()
+			}
+
+			defer wg.Done()
+
+			return nil
+
+		}(volume)
 
 	}
+
+	wg.Wait()
 
 	return cloudSnaps, nil
 }
