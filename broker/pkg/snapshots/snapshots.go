@@ -338,7 +338,11 @@ func AllCloudSnapsCluster(conn *grpc.ClientConn) (cloudSnaps map[string]map[stri
 
 		go func(volume string) error {
 
+			// Lock the map to avoid concurrent write access
+			MapMutex.Lock()
 			cloudSnaps[volume] = make(map[string][]*api.SdkCloudBackupInfo)
+			// Unlock the map
+			MapMutex.Unlock()
 
 			// Iterate over the list of cloud credentials concurrently
 			snapsOfVolume, errorFound := GetCloudSnaps(conn, volume, credIDsList)
