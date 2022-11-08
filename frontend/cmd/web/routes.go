@@ -98,7 +98,7 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Post("/create-cloudsnap", Repo.PostCreateCloudSnapHTTP)
 
-		mux.Get("/documentation", Repo.DocumentationHTTP)
+		//mux.Get("/documentation", Repo.DocumentationHTTP)
 
 		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/delete-volume/{volume_id}", Repo.DeleteVolumeHTTP)
