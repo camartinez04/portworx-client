@@ -20,14 +20,12 @@ The `pxBrokerDeploy.yaml` Deployment have the `PORTWORX_GRPC_URL` environment va
 For Kubernetes install the yaml manifests: 
 
 ```
-cd ./kubernetes
-
 kubectl create namespace portworx-client
 
-kubectl apply -f postgres.yaml -n portworx-client
-kubectl apply -f keycloak.yaml -n portworx-client
-kubectl apply -f pxBrokerDeploy.yaml -n portworx-client
-kubectl apply -f pxFrontendDeploy.yaml -n portworx-client
+kubectl apply -f https://raw.githubusercontent.com/camartinez04/portworx-client/main/kubernetes/postgres.yaml -n portworx-client
+kubectl apply -f https://raw.githubusercontent.com/camartinez04/portworx-client/main/kubernetes/keycloak.yaml -n portworx-client
+kubectl apply -f https://raw.githubusercontent.com/camartinez04/portworx-client/main/kubernetes/pxBrokerDeploy.yaml -n portworx-client
+kubectl apply -f https://raw.githubusercontent.com/camartinez04/portworx-client/main/kubernetes/pxFrontendDeploy.yaml -n portworx-client
 
 ```
 
