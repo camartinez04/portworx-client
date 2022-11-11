@@ -44,6 +44,9 @@ http://localhost:8080/portworx/
 
 Change your password on Keycloak, you can forward the Keycloak service and do it. 
 
+# Application diagram
+
+![Portworx client, diagram](./images/px-client-diagram.png)
 
 # API Reference
 
