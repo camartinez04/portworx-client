@@ -9,6 +9,44 @@ A Portworx Client with Go with security enabled
 - Uses [chi router](https://github.com/go-chi/chi) to serve the pages
 - Uses [nosurf](https://github.com/justinas/nosurf) for middleware operations
 
+# Installation
+
+You need a Portworx cluster already running on your cluster as prerequisite.
+
+The `postgres.yaml` Statefulset is using the StorageClass `px-csi-db` present on Portworx 2.11 and 2.12 with CSI enabled; if you don't have it, please change it to a SC that your cluster have.
+
+The `pxBrokerDeploy.yaml` Deployment have the `PORTWORX_GRPC_URL` environment variable configured to `kube-system`, change it if you have Portworx installed on a different namespace.
+
+For Kubernetes install the yaml manifests: 
+
+```
+cd ./kubernetes
+
+kubectl create namespace portworx-client
+
+kubectl apply -f postgres.yaml -n portworx-client
+kubectl apply -f keycloak.yaml -n portworx-client
+kubectl apply -f pxBrokerDeploy.yaml -n portworx-client
+kubectl apply -f pxFrontendDeploy.yaml -n portworx-client
+
+```
+
+Forward the service and open it on a web browser.
+
+```
+kubectl port-forward svc/pxfrontend-service -n portworx-client 8080:80
+
+http://localhost:8080/portworx/ 
+
+```
+
+`User: pxadmin`
+
+`Pass: pxAdmin123$`
+
+Change your password on Keycloak, you can forward the Keycloak service and do it. 
+
+
 # API Reference
 
 The Broker service consumes the Portworx API on gRPC and serves a customized API Rest which reference can be found here:
