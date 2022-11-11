@@ -41,9 +41,13 @@ push_images:
 	@echo "Pushing images to docker hub..."
 	docker tag project-frontend-service calvarado2004/portworx-client-frontend:latest
 	docker push calvarado2004/portworx-client-frontend
+	docker tag project-frontend-service calvarado2004/portworx-client-frontend:1.0.0
+	docker push calvarado2004/portworx-client-frontend:1.0.0
 
 	docker tag project-broker-service calvarado2004/portworx-client-broker:latest
 	docker push calvarado2004/portworx-client-broker
+	docker tag project-broker-service calvarado2004/portworx-client-broker:1.0.0
+	docker push calvarado2004/portworx-client-broker:1.0.0
 
 	@echo "Done!"
 
