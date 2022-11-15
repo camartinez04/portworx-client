@@ -42,11 +42,29 @@ http://localhost:8080/portworx/
 
 `Pass: pxAdmin123$`
 
-Change your password on Keycloak, you can forward the Keycloak service and do it. 
-
 # Application diagram
 
 ![Portworx client, diagram](./images/px-client-diagram.png)
+
+# Keycloak
+
+
+Basic keycloak `admin` credentials are configured on the YAML `keycloak.yaml` 
+
+Please change these credentials before applying the YAML.
+
+Change your `pxadmin` password on Keycloak, you can forward the Keycloak service and do it. 
+
+```
+kubectl port-forward svc/keycloak -n portworx-client 8080:8080
+
+http://localhost:8080/auth/ 
+
+```
+
+Base Path is `/auth` for master realm, px-client realm is called portworx.
+
+![Keycloak UI](./images/keycloak.png)
 
 # API Reference
 
