@@ -39,7 +39,7 @@ spec:
             memory: 100Mi
         env:
         - name: "PORTWORX_GRPC_URL"
-          value: "portworx-api.kube-system:9020"
+          value: "portworx-service.kube-system:9020"
         - name: "KEYCLOAK_URL"
           valueFrom:
             secretKeyRef:
