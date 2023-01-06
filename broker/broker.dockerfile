@@ -18,7 +18,7 @@ RUN chmod +x /app/brokerApp
 
 # ========================================================================================================================
 
-FROM alpine:latest 
+FROM busybox:latest 
 
 ENV APP_HOME /app
 
