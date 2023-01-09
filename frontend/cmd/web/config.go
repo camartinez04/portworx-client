@@ -10,7 +10,7 @@ import (
 	"github.com/alexedwards/scs/v2"
 )
 
-const PortNumber = ":8081"
+const PortNumber = ":8082"
 
 var App AppConfig
 var InfoLog *log.Logger

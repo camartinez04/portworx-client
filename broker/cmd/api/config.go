@@ -39,7 +39,7 @@ const (
 	KB      = Bytes * uint64(1024)
 	MB      = KB * uint64(1024)
 	GB      = MB * uint64(1024)
-	WebPort = ":8080"
+	WebPort = ":8081"
 )
 
 // AppConfig holds the application configuration

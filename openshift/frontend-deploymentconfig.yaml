@@ -25,7 +25,7 @@ spec:
               memory: 100Mi
           env:
           - name: "BROKER_URL"
-            value: "http://pxbroker-service:8080"
+            value: "http://pxbroker-service:8081"
           - name: "KEYCLOAK_URL"
             value: "https://keycloak-keycloak.apps.okd.calvarado04.com"
           - name: "KEYCLOAK_CLIENT_ID"
@@ -45,7 +45,7 @@ spec:
               command:
                 - sh
                 - -ec
-                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8081/ping || exit 1'
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
             initialDelaySeconds: 7
             periodSeconds: 10
             timeoutSeconds: 5
@@ -56,7 +56,7 @@ spec:
               command:
                 - sh
                 - -ec
-                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8081/ping || exit 1'
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
             initialDelaySeconds: 5
             periodSeconds: 10
             timeoutSeconds: 5
@@ -73,5 +73,5 @@ spec:
   selector:
     app: pxfrontend
   ports:
-  - port: 8081
-    targetPort: 8081
+  - port: 8082
+    targetPort: 8082

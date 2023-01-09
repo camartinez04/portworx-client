@@ -9,7 +9,7 @@ spec:
     app: pxfrontend
   ports:
   - port: 80
-    targetPort: 8081
+    targetPort: 8082
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -61,13 +61,13 @@ spec:
               name: keycloak
               key: keycloakRealm
         ports:
-        - containerPort: 8081
+        - containerPort: 8082
         livenessProbe:
           exec:
             command:
               - sh
               - -ec
-              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8081/ping || exit 1'
+              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
           initialDelaySeconds: 7
           periodSeconds: 10
           timeoutSeconds: 5
@@ -78,7 +78,7 @@ spec:
             command:
               - sh
               - -ec
-              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8081/ping || exit 1'
+              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
           initialDelaySeconds: 5
           periodSeconds: 10
           timeoutSeconds: 5

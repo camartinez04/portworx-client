@@ -23,11 +23,11 @@ spec:
               service:
                 name: pxfrontend-service
                 port:
-                  number: 8081
+                  number: 8082
           - path: /portworx
             pathType: Prefix
             backend:
               service:
                 name: pxfrontend-service
                 port:
-                  number: 8081
+                  number: 8082

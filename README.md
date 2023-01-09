@@ -32,9 +32,9 @@ kubectl apply -f https://raw.githubusercontent.com/camartinez04/portworx-client/
 Forward the service and open it on a web browser.
 
 ```
-kubectl port-forward svc/pxfrontend-service -n portworx-client 8080:80
+kubectl port-forward svc/pxfrontend-service -n portworx-client 8082:80
 
-http://localhost:8080/portworx/ 
+http://localhost:8082/portworx/ 
 
 ```
 
@@ -92,7 +92,7 @@ docker-compose ps
 Create a test volume once the project is up, we will be using the mock service from OpenStorage as gRPC endpoint.
 
 ```
-curl --location --request POST 'localhost:8080/postcreatevolume' \
+curl --location --request POST 'localhost:8081/postcreatevolume' \
 --header 'Volume-Name: postman-volume' \
 --header 'Volume-Size: 10' \
 --header 'Volume-Ha-Level: 2' \
@@ -104,7 +104,7 @@ curl --location --request POST 'localhost:8080/postcreatevolume' \
 
 Check on the frontend that the mock volume was created:
 
-[http://localhost:8081/frontend/volume/postman-volume](http://localhost:8081/frontend/volume/postman-volume) 
+[http://localhost:8082/frontend/volume/postman-volume](http://localhost:8082/frontend/volume/postman-volume) 
 
 # Test the Broker on Kubernetes (testing with a real Portworx cluster)
 
@@ -135,7 +135,7 @@ Open a Web Brower and try the routes included on broker/cmd/api/routes.go
 You need the broker on your laptop or a valid endpoint where your broker is already running.
 
 ```
-export BROKER_URL=http://localhost:8080
+export BROKER_URL=http://localhost:8081
 
 export KEYCLOAK_CLIENT_ID=<keycloak-client-id>
 export KEYCLOAK_REALM=<keycloak-realm>
@@ -150,4 +150,4 @@ go run cmd/web/*.go
 
 Open a browser and navigate into:
 
-[http://localhost:8081/frontend/cluster](http://localhost:8081/frontend/cluster) 
+[http://localhost:8082/frontend/cluster](http://localhost:8082/frontend/cluster) 
