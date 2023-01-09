@@ -1,6 +1,6 @@
 export CURR_DIR=$(pwd)
 export PORTWORX_GRPC_URL=localhost:9020
-export BROKER_URL=http://localhost:8080
+export BROKER_URL=http://localhost:8081
 export KUBECONFIG=/Users/camartinez/.kube/vanilla-lehi
 
 
