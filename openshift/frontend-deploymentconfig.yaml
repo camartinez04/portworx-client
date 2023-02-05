@@ -27,17 +27,25 @@ spec:
           - name: "BROKER_URL"
             value: "http://pxbroker-service:8081"
           - name: "KEYCLOAK_URL"
-            value: "https://keycloak-keycloak.apps.okd.calvarado04.com"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak
+                key: keycloakUrl
           - name: "KEYCLOAK_CLIENT_ID"
-            value: "portworx-client"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak
+                key: keycloakClientID
           - name: "KEYCLOAK_SECRET"
             valueFrom:
               secretKeyRef:
                 name: keycloak
                 key: keycloakSecret
-                optional: false 
           - name: "KEYCLOAK_REALM"
-            value: "portworx"
+            valueFrom:
+              secretKeyRef:
+                name: keycloak
+                key: keycloakRealm
           ports:
           - containerPort: 8081
           livenessProbe:

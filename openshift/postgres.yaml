@@ -13,23 +13,29 @@ spec:
     metadata:
       labels:
         app: postgresql
+
     spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: postgresql
           image: postgres:14.5
+          securityContext:
+            runAsGroup: 1000
+            supplementalGroups: [0]
           env:
             - name: POSTGRES_PASSWORD
               value: testpassword
             - name: PGDATA
               value: /data/pgdata
+            - name: POSTGRES_USER
+              value: postgres
             - name: POSTGRES_DB
               value: keycloak
           volumeMounts:
             - name: data
               mountPath: /data/pgdata
-          securityContext:
-            privileged: true
-            allowPrivilegeEscalation: true
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -38,7 +44,7 @@ spec:
         storageClassName: portworx-db-sc
         resources:
           requests:
-            storage: "3Gi"
+            storage: "5Gi"
 ---
 apiVersion: v1
 kind: Service
