@@ -13,8 +13,8 @@ spec:
     metadata:
       labels:
         app: postgresql
-
     spec:
+      #oc adm policy add-scc-to-user anyuid -z default -n portworx-client
       securityContext:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
