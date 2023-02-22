@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-// GetRequestMetadata gets the current request metadata.
+// GetRequestMetadata gets the current request metadata. Ensure not adding /n to the end of the token, otherwise it will fail
 func (t OpenStorageSdkToken) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
 		"authorization": "bearer " + t.Token,
@@ -64,7 +64,8 @@ func main() {
 	if len(*Token) != 0 {
 		// Set token
 		contextToken.Token = *Token
-		// Add token interceptor
+
+		// Add token to dial options
 		dialOptions = append(dialOptions, grpc.WithPerRPCCredentials(contextToken))
 	}
 
