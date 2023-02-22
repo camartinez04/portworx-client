@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: px-client-ingress
+  namespace: portworx-client
+  annotations:
+    nginx.ingress.kubernetes.io/add-base-url: 'true'
+    nginx.ingress.kubernetes.io/app-root: /portworx
+    nginx.ingress.kubernetes.io/rewrite-target: /portworx/$2
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - kubernetes.lehi-k8s-chocolate.calvarado04.com
+    secretName: chocolate-tls
+  rules:
+    - host: kubernetes.lehi-k8s-chocolate.calvarado04.com
+      http:
+        paths:
+          - path: /portworx(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: pxfrontend-service
+                port:
+                  number: 8082
+          - path: /portworx
+            pathType: Prefix
+            backend:
+              service:
+                name: pxfrontend-service
+                port:
+                  number: 8082

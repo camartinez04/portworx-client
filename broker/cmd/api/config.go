@@ -239,7 +239,9 @@ type JsonSpecificCloudSnap struct {
 	CloudSnapId string                  `json:"cloud_snap_id,omitempty"`
 }
 
-type OpenStorageSdkToken struct{}
+type OpenStorageSdkToken struct {
+	Token string `json:"token,omitempty"`
+}
 
 type JsonAllCloudCredsList struct {
 	Error          bool     `json:"error,omitempty"`

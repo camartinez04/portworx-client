@@ -1,0 +1,8 @@
+version: 1
+type: go
+resolver:
+  repo: default-go-virtual
+  serverId: calvarado2004
+deployer:
+  repo: default-go-virtual
+  serverId: calvarado2004

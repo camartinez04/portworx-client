@@ -19,7 +19,7 @@ import (
 // GetRequestMetadata gets the current request metadata.
 func (t OpenStorageSdkToken) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	return map[string]string{
-		"authorization": "bearer " + *Token,
+		"authorization": "bearer " + t.Token,
 	}, nil
 }
 
@@ -62,6 +62,8 @@ func main() {
 	}
 
 	if len(*Token) != 0 {
+		// Set token
+		contextToken.Token = *Token
 		// Add token interceptor
 		dialOptions = append(dialOptions, grpc.WithPerRPCCredentials(contextToken))
 	}
