@@ -11,6 +11,14 @@ spec:
   - port: 80
     targetPort: 8081
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: portworx-token
+type: Opaque
+data:
+  token: ""
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -60,6 +68,11 @@ spec:
             secretKeyRef:
               name: keycloak
               key: keycloakRealm
+        - name: "PORTWORX_TOKEN"
+          valueFrom:
+            secretKeyRef:
+              name: portworx-token
+              key: token
         ports:
         - containerPort: 8081
         livenessProbe:
