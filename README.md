@@ -1,7 +1,7 @@
 # portworx-client Web UI
 A Portworx Client with Go with security enabled
 
-- Built in Go version 1.19
+- Built in Go version 1.20
 - Uses [libopenstorage](https://github.com/libopenstorage/openstorage-sdk-clients) OpenStorage Portworx libraries
 - Uses [gRPC](https://pkg.go.dev/google.golang.org/grpc) to consume the Portworx API
 - Uses [gocloak](https://github.com/Nerzal/gocloak) for Keycloak auth security integration at Broker and Frontend levels.
@@ -151,3 +151,19 @@ go run cmd/web/*.go
 Open a browser and navigate into:
 
 [http://localhost:8082/frontend/cluster](http://localhost:8082/frontend/cluster) 
+
+Build binaries:
+
+```
+cd broker 
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./builds/x86_64/linux/brokerApp ./cmd/api
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./builds/arm64/linux/brokerApp ./cmd/api
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./builds/x86_64/darwin/brokerApp ./cmd/api
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ./builds/arm64/darwin/brokerApp ./cmd/api
+
+cd frontend
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o ./builds/x86_64/linux/frontendApp ./cmd/web
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./builds/arm64/linux/frontendApp ./cmd/web
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o ./builds/x86_64/darwin/frontendApp ./cmd/web
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o ./builds/arm64/darwin/frontendApp ./cmd/web
+```
