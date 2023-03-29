@@ -51,6 +51,7 @@ type VolumeInfo struct {
 	VolumeSharedv4            bool                     `json:"volume_sharedv4"`
 	VolumeSharedv4ServiceSpec *api.Sharedv4ServiceSpec `json:"volume_sharedv4_service_spec,omitempty"`
 	VolumeIOStrategy          *api.IoStrategy          `json:"volume_io_strategy,omitempty"`
+	VolumeNoDiscard           bool                     `json:"volume_nodiscard"`
 }
 
 // CloudSnapsIDs struct to store the cloudsnaps information per CloudID.

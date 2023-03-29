@@ -90,6 +90,12 @@
                                 </td>
                               </tr>
                               <tr>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Nodiscard:</td>
+                                <td class="w-50 px-0">
+                                  <h5 class="font-weight-normal mb-0" id="volume-nodiscard" title="{{ $volume.VolumeNoDiscard }}"></h5>
+                                </td>
+                              </tr>
+                              <tr>
                                 <td class="font-weight-bold mb-0 w-50 px-0">Volume attached on:</td>
                                 <td class="w-50 px-0">
                                   <h5 class="font-weight-normal mb-0" id="volume-attached" title="{{ $volume.VolumeAttachedOn }}"></h5>
@@ -228,6 +234,14 @@
     btn4.name = "formBtn";
     btn4.classList = "btn btn-light";
     attached.appendChild(btn4);
+
+    var attached = document.getElementById("volume-nodiscard");
+    btn5 = document.createElement("button");
+    btn5.innerHTML = attached.title;
+    btn5.type = "button";
+    btn5.name = "formBtn";
+    btn5.classList = "btn btn-light";
+    attached.appendChild(btn5);
 
   </script>
 

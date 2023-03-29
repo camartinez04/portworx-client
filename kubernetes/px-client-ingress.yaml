@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: px-client-ingress
-  namespace: portworx-client
+  namespace: px-client
   annotations:
     nginx.ingress.kubernetes.io/add-base-url: 'true'
     nginx.ingress.kubernetes.io/app-root: /portworx
@@ -21,13 +21,13 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: pxfrontend-service
+                name: frontend-svc 
                 port:
                   number: 8082
           - path: /portworx
             pathType: Prefix
             backend:
               service:
-                name: pxfrontend-service
+                name: frontend-svc
                 port:
                   number: 8082

@@ -733,6 +733,7 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 	volumeSharedv4 := volumeInspect.Volume.Spec.GetSharedv4()
 	volumeSharedv4ServiceSpec := volumeInspect.Volume.Spec.GetSharedv4ServiceSpec()
 	volumeIOStrategy := volumeInspect.Volume.Spec.GetIoStrategy()
+	volumeNoDiscard := volumeInspect.Volume.Spec.GetNodiscard()
 
 	volumeInfo = config.VolumeInfo{
 		VolumeName:                volumeName,
@@ -762,6 +763,7 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 		VolumeEncryptionKey:       volumeEncryptionKey,
 		VolumeSharedv4:            volumeSharedv4,
 		VolumeSharedv4ServiceSpec: volumeSharedv4ServiceSpec,
+		VolumeNoDiscard:           volumeNoDiscard,
 	}
 
 	return volumeInfo, nil

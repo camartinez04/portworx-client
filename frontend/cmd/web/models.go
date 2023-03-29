@@ -334,6 +334,7 @@ type VolumeInfo struct {
 	VolumeSharedv4            bool                     `json:"volume_sharedv4"`
 	VolumeSharedv4ServiceSpec *api.Sharedv4ServiceSpec `json:"volume_sharedv4_service_spec,omitempty"`
 	VolumeIOStrategy          *api.IoStrategy          `json:"volume_io_strategy,omitempty"`
+	VolumeNoDiscard           bool                     `json:"volume_nodiscard"`
 }
 
 // CreateVolume struct to store the volume creation information.
@@ -344,7 +345,7 @@ type CreateVolume struct {
 	VolumeHALevel   int64  `json:"volume_ha_level,omitempty"`
 	VolumeEncrypted bool   `json:"volume_encrypted,omitempty"`
 	VolumeSharedv4  bool   `json:"volume_sharedv4,omitempty"`
-	VolumeNoDiscard bool   `json:"volume_no_discard,omitempty"`
+	VolumeNoDiscard bool   `json:"volume_nodiscard,omitempty"`
 }
 
 // CreateVolumeResponse struct to store the volume creation response.
