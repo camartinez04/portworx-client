@@ -13,7 +13,7 @@ A Portworx Client with Go with security enabled
 
 You need a Portworx cluster already running on your cluster as prerequisite.
 
-The `postgres.yaml` Statefulset is using the StorageClass `px-csi-db` present on Portworx 2.11 and 2.12 with CSI enabled; if you don't have it, please change it to a SC that your cluster have.
+The `postgres.yaml` Statefulset is using the StorageClass `px-csi-db` present on Portworx 2.12, 2.13 or 3.0 with CSI enabled; if you don't have it, please change it to a SC that your cluster have.
 
 The `pxBrokerDeploy.yaml` Deployment have the `PORTWORX_GRPC_URL` environment variable configured to `kube-system`, change it if you have Portworx installed on a different namespace.
 
@@ -48,6 +48,7 @@ http://localhost:8082/portworx/
 
 # Keycloak
 
+#### Current version used: Keycloak 22.0
 
 Basic keycloak `admin` credentials are configured on the YAML `keycloak.yaml` 
 
