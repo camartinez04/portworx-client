@@ -7,7 +7,6 @@ import (
 	"flag"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
@@ -53,8 +52,7 @@ func main() {
 		// Setup a connection
 		capool, err := x509.SystemCertPool()
 		if err != nil {
-			log.Panicf("Failed to load system certs: %v\n", err)
-			os.Exit(1)
+			log.Fatalf("Failed to load system certs: %v\n", err)
 		}
 		dialOptions = []grpc.DialOption{grpc.WithTransportCredentials(
 			credentials.NewClientTLSFromCert(capool, ""),
@@ -72,7 +70,6 @@ func main() {
 	conn, err := grpc.Dial(*Address, dialOptions...)
 	if err != nil {
 		log.Panicf("Error trying to establish gRPC connection to address %s: %v", err, Address)
-		os.Exit(1)
 	}
 
 	App.NewKeycloak = NewKeycloak()
@@ -98,7 +95,6 @@ func main() {
 	err = srv.ListenAndServe()
 	if err != nil {
 		log.Panic(err)
-		os.Exit(1)
 	}
 
 	defer func() {

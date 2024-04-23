@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// getVolumeID Retrieve the Portworx volume ID having its Name and a gRPC connection to the Portworx API.
+// GetVolumeID Retrieve the Portworx volume ID having its Name and a gRPC connection to the Portworx API.
 func GetVolumeID(conn *grpc.ClientConn, volumeName string) (volumeID string, errorFound error) {
 
 	// Opens the volume client connection.

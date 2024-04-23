@@ -19,7 +19,7 @@ func NewKeycloak() *Keycloak {
 	}
 }
 
-// extractBearerToken extracts the Bearer token from the Authorization header
+// ExtractBearerToken extracts the Bearer token from the Authorization header
 func (auth *KeyCloakMiddleware) ExtractBearerToken(token string) string {
 	return strings.Replace(token, "Bearer ", "", 1)
 }

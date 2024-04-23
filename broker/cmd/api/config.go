@@ -24,8 +24,6 @@ var (
 	Address = flag.String("address", os.Getenv("PORTWORX_GRPC_URL"), "Address to server as <address>:<port>")
 )
 
-var Application *AppConfig
-
 var KeycloakToken string
 
 var KeycloakRefreshToken string
@@ -35,10 +33,6 @@ var Session *scs.SessionManager
 var App AppConfig
 
 const (
-	Bytes   = uint64(1)
-	KB      = Bytes * uint64(1024)
-	MB      = KB * uint64(1024)
-	GB      = MB * uint64(1024)
 	WebPort = ":8081"
 )
 
@@ -94,9 +88,7 @@ type LogEntry struct {
 	UpdatedAt time.Time `bson:"updatedAt" json:"updatedAt"`
 }
 
-type VolumeInspect []string
-
-// jsonResponse is the response format for JSON
+// JsonResponse is the response format for JSON
 type JsonResponse struct {
 	Error    bool   `json:"error,omitempty"`
 	Message  string `json:"message,omitempty"`

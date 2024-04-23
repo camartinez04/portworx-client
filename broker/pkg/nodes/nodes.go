@@ -24,10 +24,10 @@ func FindVolumeNodes(conn *grpc.ClientConn, volumeName string) (volumeNodes []st
 	}
 
 	// Opens the volume client connection.
-	volumes := api.NewOpenStorageVolumeClient(conn)
+	volumesConn := api.NewOpenStorageVolumeClient(conn)
 
 	// Retrieves the volume information.
-	volumeInspect, errorFound := volumes.Inspect(
+	volumeInspect, errorFound := volumesConn.Inspect(
 		context.Background(),
 		&api.SdkVolumeInspectRequest{
 			VolumeId: volId,
@@ -81,12 +81,12 @@ func FindVolumeNodes(conn *grpc.ClientConn, volumeName string) (volumeNodes []st
 
 }
 
-// getListOfNodes retrieves a list of nodes from the cluster
+// GetListOfNodes retrieves a list of nodes from the cluster
 func GetListOfNodes(conn *grpc.ClientConn) (nodeListReturn map[string][]string, errorFound error) {
 
 	nodeList := make(map[string][]string)
 
-	// First, get all node node IDs in this cluster
+	// First, get all node IDs in this cluster
 	nodeclient := api.NewOpenStorageNodeClient(conn)
 	nodeEnumResp, errorFound := nodeclient.Enumerate(
 		context.Background(),
@@ -304,13 +304,13 @@ func GetNodeInfo(conn *grpc.ClientConn, nodeID string) (nodeInfo config.NodeInfo
 		storagelessNode = true
 		percentAvailablePool = 0
 	} else {
-		percentUsedPool = helpers.RoundFloat(((float64(usedNodePool) / float64(sizeNodePool)) * 100), 2)
+		percentUsedPool = helpers.RoundFloat((float64(usedNodePool)/float64(sizeNodePool))*100, 2)
 		storagelessNode = false
 		percentAvailablePool = 100 - percentUsedPool
 
 	}
 
-	percentUsedMemory = helpers.RoundFloat(((float64(nodeMemUsed) / float64(nodeMemTotal)) * 100), 2)
+	percentUsedMemory = helpers.RoundFloat((float64(nodeMemUsed)/float64(nodeMemTotal))*100, 2)
 
 	nodeInfo = config.NodeInfo{
 		NodeName:             nodeName,
@@ -340,7 +340,7 @@ func GetAllNodesInfo(conn *grpc.ClientConn) (AllNodesInfo []config.NodeInfo, err
 
 	nodeclient := api.NewOpenStorageNodeClient(conn)
 
-	// First, get all node node IDs in this cluster
+	// First, get all node IDs in this cluster
 	nodeEnumResp, errorFound := nodeclient.Enumerate(
 		context.Background(),
 		&api.SdkNodeEnumerateRequest{})

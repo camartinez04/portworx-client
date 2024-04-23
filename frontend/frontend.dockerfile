@@ -1,4 +1,4 @@
-FROM docker.io/golang:1.20 as builder
+FROM docker.io/golang:1.22 as builder
 
 RUN mkdir /app
 

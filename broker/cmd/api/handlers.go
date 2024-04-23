@@ -14,8 +14,9 @@ import (
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 )
 
-func NewHandlers(App *AppConfig) {
-	Application = App
+func NewHandlers(App *AppConfig) *AppConfig {
+	Application := App
+	return Application
 }
 
 // GetVolumeIDHTTP http function to get the volume ID.
@@ -72,7 +73,7 @@ func (App *AppConfig) getInspectVolumeHTTP(w http.ResponseWriter, r *http.Reques
 // getClusterCapacityHTTP http function to get the cluster capacity.
 func (App *AppConfig) getPXClusterCapacityHTTP(w http.ResponseWriter, r *http.Request) {
 
-	cluster, used, available, percentused, percentavailable, err := cluster.ClusterCapacity(App.Conn)
+	cluster, used, available, percentused, percentavailable, err := cluster.PXClusterCapacity(App.Conn)
 	if err != nil {
 		App.errorJSON(w, err)
 		return
@@ -94,7 +95,7 @@ func (App *AppConfig) getPXClusterCapacityHTTP(w http.ResponseWriter, r *http.Re
 // getClusterCapacityHTTP http function to get the cluster capacity.
 func (App *AppConfig) getPXClusterHTTP(w http.ResponseWriter, r *http.Request) {
 
-	uuid, status, name, err := cluster.ClusterInfo(App.Conn)
+	uuid, status, name, err := cluster.PXClusterInfo(App.Conn)
 	if err != nil {
 		App.errorJSON(w, err)
 		return
@@ -708,7 +709,7 @@ func (App *AppConfig) deleteAWSCloudCredentialHTTP(w http.ResponseWriter, r *htt
 // getPXClusterAlarmsHTTP http function to get a list of Portworx Cluster Alarms.
 func (App *AppConfig) getPXClusterAlarmsHTTP(w http.ResponseWriter, r *http.Request) {
 
-	alarms, err := cluster.ClusterAlarms(App.Conn)
+	alarms, err := cluster.PXClusterAlarms(App.Conn)
 	if err != nil {
 		App.errorJSON(w, err)
 		return
