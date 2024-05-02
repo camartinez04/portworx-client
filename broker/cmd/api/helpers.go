@@ -8,28 +8,30 @@ import (
 
 // writeJSON marshals the provided interface into JSON and writes it to the response.
 func writeJSON(w http.ResponseWriter, status int, data any, headers ...http.Header) error {
-
 	out, err := json.Marshal(data)
-
 	if err != nil {
 		return err
 	}
 
+	// Set the content type and other headers.
+	w.Header().Set("Content-Type", "application/json")
 	if len(headers) > 0 {
 		for key, value := range headers[0] {
 			w.Header()[key] = value
 		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusAccepted)
+	// Commit headers and write the status code.
+	// Ensure this is the only place where WriteHeader is called.
+	w.WriteHeader(status)
+
+	// Write the body after setting headers and status.
 	_, err = w.Write(out)
 	if err != nil {
 		return err
 	}
 
 	return nil
-
 }
 
 // errorJSON checks for errors on JSON

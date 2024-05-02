@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -574,19 +573,16 @@ func (m *Repository) GetLoginHTTP(w http.ResponseWriter, r *http.Request) {
 
 // PostLoginHTTP handles the POST request to /login
 func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
-
 	_ = m.App.Session.RenewToken(r.Context())
 
 	err := r.ParseForm()
 	if err != nil {
-		log.Println(err)
+		http.Error(w, "Failed to parse form: "+err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	username := r.Form.Get("username")
-
 	password := r.Form.Get("password")
-
-	//log.Printf("username: %s", username)
 
 	rq := &LoginRequest{username, password}
 
@@ -598,35 +594,28 @@ func (m *Repository) PostLoginHTTP(w http.ResponseWriter, r *http.Request) {
 		rq.Password)
 
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusForbidden)
+		http.Error(w, "Login failed: "+err.Error(), http.StatusForbidden)
 		return
 	}
 
-	rs := &LoginResponse{
-		AccessToken:  jwt.AccessToken,
-		RefreshToken: jwt.RefreshToken,
-		ExpiresIn:    jwt.ExpiresIn,
-	}
-
-	//log.Printf("jwt: %v", jwt.AccessToken)
-
-	rsJs, _ := json.Marshal(rs)
-
-	_, _ = w.Write(rsJs)
-
 	KeycloakToken = jwt.AccessToken
-
 	KeycloakRefreshToken = jwt.RefreshToken
 
-	// login the backend API too
+	// Store JWT tokens in session or send it directly to client depending on requirements
+	m.App.Session.Put(r.Context(), "access_token", jwt.AccessToken)
+	m.App.Session.Put(r.Context(), "refresh_token", jwt.RefreshToken)
+
+	// Optionally redirect or handle API login differently based on the successful login
 	err = postLogin(username, password)
 	if err != nil {
-		m.App.Session.Put(r.Context(), "error", "can't login API!")
-		log.Println("can't login API!")
+		m.App.Session.Put(r.Context(), "error", "Can't login to API: "+err.Error())
+		log.Println("Can't login to API:", err)
+		http.Error(w, "API login failed: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 
+	// Redirect after successful login and API login
 	http.Redirect(w, r, "/portworx/client/cluster", http.StatusSeeOther)
-
 }
 
 // LogoutHTTP logs a user out from Broker and Frontend

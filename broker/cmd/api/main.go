@@ -81,8 +81,6 @@ func main() {
 		NewKeycloak: NewKeycloak(),
 	}
 
-	NewHandlers(&app)
-
 	log.Printf("Connected to Portworx's OpenStorage via gRPC to %s", *Address)
 
 	srv := &http.Server{

@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -13,11 +12,6 @@ import (
 	"github.com/camartinez04/portworx-client/broker/pkg/snapshots"
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
 )
-
-func NewHandlers(App *AppConfig) *AppConfig {
-	Application := App
-	return Application
-}
 
 // GetVolumeIDHTTP http function to get the volume ID.
 func (App *AppConfig) getVolumeIDsHTTP(w http.ResponseWriter, r *http.Request) {
@@ -844,15 +838,12 @@ func (App *AppConfig) deleteCloudSnapHTTP(w http.ResponseWriter, r *http.Request
 
 }
 
+// postLoginHTTP logs a user in and returns a JWT token
 func (App *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
-
 	_ = App.Session.RenewToken(r.Context())
 
 	username := r.Header.Get("Username")
-
 	password := r.Header.Get("Password")
-
-	//log.Printf("username: %s", username)
 
 	// Authenticate the user
 	rq := &LoginRequest{username, password}
@@ -869,29 +860,21 @@ func (App *AppConfig) postLoginHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rs := &LoginResponse{
-		AccessToken:  jwt.AccessToken,
+	KeycloakToken = jwt.AccessToken
+	KeycloakRefreshToken = jwt.RefreshToken
+
+	resp := JsonResponse{
+		Error:        false,
+		Message:      "Login successful",
+		AccessToken:  jwt.AccessToken, // Include token directly in the JSON response
 		RefreshToken: jwt.RefreshToken,
 		ExpiresIn:    jwt.ExpiresIn,
 	}
 
-	//log.Printf("jwt: %v", jwt.AccessToken)
-
-	rsJs, _ := json.Marshal(rs)
-
-	_, _ = w.Write(rsJs)
-
-	KeycloakToken = jwt.AccessToken
-
-	KeycloakRefreshToken = jwt.RefreshToken
-
-	resp := JsonResponse{
-		Error:   false,
-		Message: "Login successful",
+	err = writeJSON(w, http.StatusOK, resp)
+	if err != nil {
+		log.Printf("Error writing JSON: %v", err)
 	}
-
-	writeJSON(w, http.StatusAccepted, resp)
-
 }
 
 // getLogoutHTTP logs a user out

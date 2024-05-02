@@ -64,12 +64,6 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
-type LoginResponse struct {
-	AccessToken  string `json:"accessToken"`
-	RefreshToken string `json:"refreshToken"`
-	ExpiresIn    int    `json:"expiresIn"`
-}
-
 type Controller struct {
 	keycloak *Keycloak
 }
@@ -90,12 +84,15 @@ type LogEntry struct {
 
 // JsonResponse is the response format for JSON
 type JsonResponse struct {
-	Error    bool   `json:"error,omitempty"`
-	Message  string `json:"message,omitempty"`
-	VolumeID string `json:"volume_id,omitempty"`
-	NodeID   string `json:"node_id,omitempty"`
-	SnapID   string `json:"snap_id,omitempty"`
-	CredID   string `json:"cred_id,omitempty"`
+	Error        bool   `json:"error,omitempty"`
+	Message      string `json:"message,omitempty"`
+	VolumeID     string `json:"volume_id,omitempty"`
+	NodeID       string `json:"node_id,omitempty"`
+	SnapID       string `json:"snap_id,omitempty"`
+	CredID       string `json:"cred_id,omitempty"`
+	AccessToken  string `json:"access_token,omitempty"`
+	RefreshToken string `json:"refresh_token,omitempty"`
+	ExpiresIn    int    `json:"expires_in,omitempty"`
 }
 
 // JsonClusterInfo is the response format for JSON for ClusterInfo
