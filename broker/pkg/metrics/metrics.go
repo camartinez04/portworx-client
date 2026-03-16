@@ -98,11 +98,12 @@ func GetVolumeMetrics(metricsURLs, volumeName string) (*VolumeMetrics, error) {
 	return best, nil
 }
 
-// ioScore returns a scalar representing total I/O activity for a volume result.
-// Used to pick the "most active" node result when fanning out.
+// ioScore returns a scalar representing the richness of a volume result.
+// CapacityBytes is the tiebreaker: a node that doesn't have the volume
+// attached returns 0 capacity, while the owning node always has capacity > 0.
 func ioScore(vm *VolumeMetrics) float64 {
 	return vm.ReadThroughput + vm.WriteThroughput + vm.ReadIOPS + vm.WriteIOPS +
-		vm.ReadBytes + vm.WriteBytes
+		vm.ReadBytes + vm.WriteBytes + vm.CapacityBytes + vm.UsageBytes
 }
 
 // fetchVolumeMetrics fetches a single metrics endpoint and parses volume data.
