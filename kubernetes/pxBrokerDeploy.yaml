@@ -1,3 +1,35 @@
+---
+# ServiceAccount used by the broker pod so it can call the Kubernetes API
+# to auto-discover Portworx pod IPs for metrics scraping.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxbroker-sa
+---
+# ClusterRole that allows the broker to list/get pods across namespaces.
+# This is required for auto-discovery of Portworx pod IPs.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pxbroker-pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pxbroker-pod-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pxbroker-pod-reader
+subjects:
+- kind: ServiceAccount
+  name: pxbroker-sa
+  namespace: portworx-client
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -35,6 +67,7 @@ spec:
       labels:
         app: pxbroker
     spec:
+      serviceAccountName: pxbroker-sa
       containers:
       - name: pxbroker
         image: calvarado2004/portworx-client-broker:latest
@@ -73,8 +106,15 @@ spec:
             secretKeyRef:
               name: portworx-token
               key: token
-        - name: "PORTWORX_METRICS_URL"
-          value: ""
+        # Portworx pod auto-discovery settings.
+        # The broker queries the K8s API to find all running Portworx pods
+        # and fans out metrics requests to each node concurrently.
+        - name: "PORTWORX_NAMESPACE"
+          value: "kube-system"
+        - name: "PORTWORX_METRICS_PORT"
+          value: "9001"
+        - name: "PORTWORX_LABEL_SELECTOR"
+          value: "name=portworx"
         ports:
         - containerPort: 8081
         livenessProbe:

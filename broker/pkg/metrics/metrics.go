@@ -49,22 +49,19 @@ type VolumeMetrics struct {
 
 // GetVolumeMetrics fetches Prometheus metrics for the requested volume.
 //
-// metricsURLs may be a single URL or a comma-separated list of URLs
-// (one per Portworx node pod endpoint).  When multiple URLs are given the
-// function fans out concurrently and returns the result that has the highest
-// combined I/O activity for the volume, ensuring data is returned even when
-// the volume lives on a node that is not the one a single URL happens to hit.
+// metricsURLs may be:
+//   - empty string  → auto-discover all Portworx pod endpoints via the K8s API
+//   - single URL    → fetch that one endpoint
+//   - comma-separated list → fan-out across all listed endpoints (local dev)
 //
-// Example values:
-//
-//	Single: "http://localhost:9001/metrics"
-//	Multi:  "http://node1:9001/metrics,http://node2:9001/metrics,http://node3:9001/metrics"
+// When multiple endpoints are used the function fans out concurrently and
+// returns the result with the highest I/O activity for the volume.
 func GetVolumeMetrics(metricsURLs, volumeName string) (*VolumeMetrics, error) {
-	if metricsURLs == "" {
-		return nil, fmt.Errorf("metrics URL is not configured – set PORTWORX_METRICS_URL")
+	urls, err := ResolveMetricsURLs(metricsURLs)
+	if err != nil {
+		return nil, err
 	}
 
-	urls := splitURLs(metricsURLs)
 	if len(urls) == 1 {
 		return fetchVolumeMetrics(urls[0], volumeName)
 	}

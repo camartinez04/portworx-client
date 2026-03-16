@@ -1,3 +1,35 @@
+---
+# ServiceAccount used by the broker pod so it can call the Kubernetes API
+# to auto-discover Portworx pod IPs for metrics scraping.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxbroker-sa
+  namespace: portworx-client
+---
+# ClusterRole that allows the broker to list/get pods across namespaces.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pxbroker-pod-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pxbroker-pod-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pxbroker-pod-reader
+subjects:
+- kind: ServiceAccount
+  name: pxbroker-sa
+  namespace: portworx-client
+---
 apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
@@ -12,6 +44,7 @@ spec:
       labels:
         app: pxbroker
     spec:
+      serviceAccountName: pxbroker-sa
       containers:
         - name: pxbroker
           image: >-
@@ -51,8 +84,14 @@ spec:
               secretKeyRef:
                 name: portworx-token
                 key: token
-          - name: "PORTWORX_METRICS_URL"
-            value: ""
+          # Portworx pod auto-discovery settings.
+          # On OpenShift the metrics port is typically 17001.
+          - name: "PORTWORX_NAMESPACE"
+            value: "kube-system"
+          - name: "PORTWORX_METRICS_PORT"
+            value: "17001"
+          - name: "PORTWORX_LABEL_SELECTOR"
+            value: "name=portworx"
           ports:
           - containerPort: 8081
           livenessProbe:

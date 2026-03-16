@@ -67,19 +67,19 @@ type NodeMetrics struct {
 
 // GetNodeMetrics fetches Prometheus metrics for the requested Portworx node ID.
 //
-// metricsURLs may be a single URL or a comma-separated list.  When multiple
-// URLs are given the function fans out concurrently and returns the result from
-// the endpoint that actually reports metrics for the requested nodeID (each
-// Portworx pod only exposes its own node's metrics).
+// metricsURLs may be:
+//   - empty string  → auto-discover all Portworx pod endpoints via the K8s API
+//   - single URL    → fetch that one endpoint
+//   - comma-separated list → fan-out across all listed endpoints (local dev)
 //
 // nodeID must match the `nodeID` label in the Prometheus output
 // (Portworx UUID, e.g. "6784f98f-6f71-4e55-bbf0-c12bc1ae659e").
 func GetNodeMetrics(metricsURLs, nodeID string) (*NodeMetrics, error) {
-	if metricsURLs == "" {
-		return nil, fmt.Errorf("metrics URL is not configured – set PORTWORX_METRICS_URL")
+	urls, err := ResolveMetricsURLs(metricsURLs)
+	if err != nil {
+		return nil, err
 	}
 
-	urls := splitURLs(metricsURLs)
 	if len(urls) == 1 {
 		return fetchNodeMetrics(urls[0], nodeID)
 	}

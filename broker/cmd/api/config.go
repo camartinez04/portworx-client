@@ -18,15 +18,19 @@ var KeycloakClientID = os.Getenv("KEYCLOAK_CLIENT_ID")
 var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
 var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
 
-// MetricsURL is the Portworx Prometheus metrics endpoint.
-// Must be set via the PORTWORX_METRICS_URL environment variable.
-// Supports a comma-separated list of URLs for multi-node fan-out:
+// MetricsURL is an optional override for the Portworx metrics endpoint(s).
 //
-//	Single : http://portworx-api.<ns>.svc.cluster.local:9001/metrics
-//	Multi  : http://node1:9001/metrics,http://node2:9001/metrics
+// When empty (the default in production) the broker auto-discovers all running
+// Portworx pod IPs via the in-cluster Kubernetes API and fans out metrics
+// requests to each node concurrently.
 //
-// When multiple URLs are given the broker queries all nodes concurrently and
-// returns the result with the highest I/O activity for the requested volume/node.
+// Set PORTWORX_METRICS_URL only for local development with port-forwards:
+//
+//	Single  : http://localhost:9001/metrics
+//	Multi   : http://localhost:9001/metrics,http://localhost:9002/metrics
+//
+// Auto-discovery is controlled by PORTWORX_NAMESPACE, PORTWORX_METRICS_PORT,
+// and PORTWORX_LABEL_SELECTOR (see broker/pkg/metrics/discovery.go).
 var MetricsURL = os.Getenv("PORTWORX_METRICS_URL")
 
 var (
