@@ -35,7 +35,11 @@ func (m *Repository) NodeMetricsAPIHTTP(w http.ResponseWriter, r *http.Request) 
 	token := m.App.Session.GetString(r.Context(), "token")
 	req.Header.Set("Authorization", "Bearer "+token)
 
-	client := &http.Client{}
+	// Do not follow redirects – a 302 to /login means the token is invalid,
+	// and following it would return HTML that the JS can't parse as JSON.
+	client := &http.Client{CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	}}
 	res, err := client.Do(req)
 	if err != nil {
 		log.Printf("NodeMetricsAPIHTTP: broker call failed: %v", err)
@@ -43,6 +47,12 @@ func (m *Repository) NodeMetricsAPIHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		log.Printf("NodeMetricsAPIHTTP: broker returned %d", res.StatusCode)
+		http.Error(w, `{"error":true,"message":"metrics unavailable"}`, http.StatusServiceUnavailable)
+		return
+	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
