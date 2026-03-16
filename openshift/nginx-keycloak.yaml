@@ -48,7 +48,7 @@ spec:
       hostAliases:
       - ip: "192.168.111.1"
         hostnames:
-        - "keycloak-keycloak.apps.okd.calvarado04.com"
+        - "keycloak-keycloak.apps.ocp-think.levelg.io"
       volumes:
       - name: nginx-config
         configMap:

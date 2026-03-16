@@ -80,6 +80,10 @@ func (App *AppConfig) routes() http.Handler {
 		mux.Get("/getspecificcloudsnapshot", App.getSpecificCloudSnapshotHTTP)
 		mux.Delete("/deletecloudsnap", App.deleteCloudSnapHTTP)
 
+		// Live Prometheus metrics – fan-out across all node endpoints in PORTWORX_METRICS_URL.
+		mux.Get("/getvolumemetrics/{volume_name}", App.getVolumeMetricsHTTP)
+		mux.Get("/getnodemetrics/{node_id}", App.getNodeMetricsHTTP)
+
 	})
 
 	return mux

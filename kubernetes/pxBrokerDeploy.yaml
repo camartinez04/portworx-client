@@ -73,6 +73,8 @@ spec:
             secretKeyRef:
               name: portworx-token
               key: token
+        - name: "PORTWORX_METRICS_URL"
+          value: ""
         ports:
         - containerPort: 8081
         livenessProbe:

@@ -18,6 +18,17 @@ var KeycloakClientID = os.Getenv("KEYCLOAK_CLIENT_ID")
 var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
 var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
 
+// MetricsURL is the Portworx Prometheus metrics endpoint.
+// Must be set via the PORTWORX_METRICS_URL environment variable.
+// Supports a comma-separated list of URLs for multi-node fan-out:
+//
+//	Single : http://portworx-api.<ns>.svc.cluster.local:9001/metrics
+//	Multi  : http://node1:9001/metrics,http://node2:9001/metrics
+//
+// When multiple URLs are given the broker queries all nodes concurrently and
+// returns the result with the highest I/O activity for the requested volume/node.
+var MetricsURL = os.Getenv("PORTWORX_METRICS_URL")
+
 var (
 	UseTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")
 	Token   = flag.String("token", os.Getenv("PORTWORX_TOKEN"), "Authorization token if any")

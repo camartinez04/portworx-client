@@ -123,6 +123,10 @@ export KEYCLOAK_REALM=<keycloak-realm>
 export KEYCLOAK_URL=<keycloak-url>
 export KEYCLOAK_SECRET=<keycloak-secret>
 
+# Optional: enable live metrics dashboards (forward portworx-api metrics port first)
+# kubectl port-forward svc/portworx-api -n <portworx-namespace> 9001:9001
+export PORTWORX_METRICS_URL=http://localhost:9001/metrics
+
 cd portworx-client/broker
 
 go run cmd/api/*.go

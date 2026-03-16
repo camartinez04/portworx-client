@@ -14,7 +14,7 @@ services:
       replicas: 1
     environment:
       BROKER_URL: "http://broker-service:8081"
-      KEYCLOAK_URL: "https://keycloak-keycloak.apps.okd.calvarado04.com"
+      KEYCLOAK_URL: "https://keycloak-keycloak.apps.ocp-think.levelg.io"
       KEYCLOAK_REALM: "portworx"
       KEYCLOAK_CLIENT_ID: "portworx-frontend"
       KEYCLOAK_SECRET:

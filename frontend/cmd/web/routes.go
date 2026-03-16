@@ -113,6 +113,10 @@ func routes(app *AppConfig) http.Handler {
 		middleware.SetHeader("Volume-ID", "{volume_id}")
 		mux.Get("/update-volume-ioprofile/{volume_id}/{ioprofile}", Repo.UpdateVolumeIOProfileHTTP)
 
+		// Live metrics API – proxies to broker which fetches from Portworx Prometheus endpoint.
+		mux.Get("/api/metrics/{volume_name}", Repo.VolumeMetricsAPIHTTP)
+		mux.Get("/api/node-metrics/{node_id}", Repo.NodeMetricsAPIHTTP)
+
 		fileServer := http.FileServer(http.Dir("./static/"))
 
 		mux.Handle("/static/*", http.StripPrefix("/portworx/client/static", fileServer))
