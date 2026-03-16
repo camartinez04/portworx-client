@@ -4,6 +4,93 @@
 
   <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
 
+  <style>
+    /* ── Node metrics dashboard – light theme matching app style ─────────── */
+
+    .metrics-section-title {
+      font-size: 12px; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      color: #787878; margin-bottom: 0;
+    }
+    .metrics-divider {
+      border-top: 1px solid #e3e3e3;
+      margin: 28px 0 20px;
+    }
+    .mx-refresh-badge {
+      background: #e8f4e8; color: #71c016;
+      border: 1px solid #c3e6cb;
+      font-size: 10px; font-weight: 600;
+      padding: 3px 8px; border-radius: 2px;
+    }
+
+    /* Stat cards */
+    .mx-stat-card {
+      background: #fff; border: 1px solid #e3e3e3; border-radius: 0;
+      padding: 14px 12px; text-align: center;
+      box-shadow: 2px 4px 6px -1px #d9d7e8;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .mx-stat-card:hover { border-color: #71c016; box-shadow: 2px 4px 10px -1px rgba(113,192,22,0.2); }
+    .mx-stat-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.05em;
+      text-transform: uppercase; color: #787878; margin-bottom: 6px; white-space: nowrap;
+    }
+    .mx-stat-label i { margin-right: 4px; }
+    .mx-stat-value { font-size: 18px; font-weight: 700; color: #71c016; font-variant-numeric: tabular-nums; }
+    .mx-stat-value.blue  { color: #248afd; }
+    .mx-stat-value.amber { color: #f0a500; }
+    .mx-stat-value.red   { color: #e63946; }
+    .mx-stat-value.gray  { color: #787878; }
+    .mx-stat-value.purple { color: #7b5ea7; }
+
+    /* Chart panels */
+    .mx-chart-panel {
+      background: #fff; border: 1px solid #e3e3e3; border-radius: 0;
+      box-shadow: 2px 4px 6px -1px #d9d7e8; padding: 14px 16px 10px; height: 100%;
+    }
+    .mx-chart-header { display: flex; align-items: center; margin-bottom: 10px; }
+    .mx-chart-dot { width: 9px; height: 9px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
+    .mx-chart-title { font-size: 10px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: #787878; }
+    .mx-chart-wrapper { position: relative; height: 148px; }
+
+    /* Refresh dot */
+    .metrics-refresh-dot {
+      display: inline-block; width: 8px; height: 8px;
+      border-radius: 50%; margin-left: 8px; vertical-align: middle;
+    }
+    .metrics-dot-loading { background-color: #f0a500; animation: mx-pulse 1s ease-in-out infinite; }
+    .metrics-dot-ok    { background-color: #71c016; }
+    .metrics-dot-error { background-color: #e63946; }
+    @keyframes mx-pulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+
+    /* Pool cards */
+    .nd-pool-card {
+      background: #fff; border: 1px solid #e3e3e3; border-radius: 0;
+      box-shadow: 2px 4px 6px -1px #d9d7e8; padding: 12px 14px;
+    }
+    .nd-pool-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
+    .nd-pool-id {
+      font-size: 11px; font-weight: 600; color: #787878;
+      font-family: monospace; letter-spacing: 0.02em;
+    }
+    .nd-pool-pct { font-size: 16px; font-weight: 700; }
+    .nd-pool-bar-track {
+      width: 100%; height: 6px; background: #e3e3e3;
+      border-radius: 3px; overflow: hidden; margin-bottom: 6px;
+    }
+    .nd-pool-bar-fill { height: 100%; border-radius: 3px; transition: width 0.4s; }
+    .nd-pool-stats {
+      display: flex; justify-content: space-between;
+      font-size: 10px; color: #787878; margin-bottom: 8px;
+    }
+    .nd-pool-io {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      font-size: 10px; font-weight: 600;
+    }
+  </style>
+
   {{ end }}
 
   {{ define "content" }}
@@ -82,7 +169,155 @@
                         </div>
                       </div>
                     </div>
+                  <!-- ── Live Node Metrics Dashboard ───────────────────────── -->
+                  <div class="metrics-divider"></div>
+
+                  <!-- Header -->
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center">
+                      <span class="metrics-section-title"><i class="ti-pulse"></i> Live Node Metrics</span>
+                      <span id="node-metrics-refresh-dot" class="metrics-refresh-dot metrics-dot-loading" title="Initialising…"></span>
+                    </div>
+                    <div class="d-flex align-items-center" style="gap:10px;">
+                      <small id="node-metrics-last-updated" class="text-muted" style="font-size:11px;">Initialising…</small>
+                      <span class="mx-refresh-badge">↻ 20 s</span>
+                    </div>
                   </div>
+
+                  <!-- Stat Cards: Read TP, Write TP, Read IOPS, Write IOPS, Read Lat, Write Lat, CPU, Mem%, Volumes -->
+                  <div class="row mb-3">
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-arrow-down"></i>Read</div>
+                        <div class="mx-stat-value" id="nd-stat-read-tp">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-arrow-up"></i>Write</div>
+                        <div class="mx-stat-value blue" id="nd-stat-write-tp">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-reload"></i>Read IOPS</div>
+                        <div class="mx-stat-value" id="nd-stat-read-iops">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-reload"></i>Write IOPS</div>
+                        <div class="mx-stat-value blue" id="nd-stat-write-iops">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-timer"></i>Read Lat.</div>
+                        <div class="mx-stat-value amber" id="nd-stat-read-lat">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-timer"></i>Write Lat.</div>
+                        <div class="mx-stat-value red" id="nd-stat-write-lat">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-bar-chart"></i>CPU</div>
+                        <div class="mx-stat-value amber" id="nd-stat-cpu">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-layout-grid2"></i>Mem Used</div>
+                        <div class="mx-stat-value purple" id="nd-stat-mem">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-layers"></i>Volumes</div>
+                        <div class="mx-stat-value gray" id="nd-stat-vols">—</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Charts row 1: Throughput -->
+                  <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#71c016;"></span>
+                          <span class="mx-chart-title">Read Throughput</span>
+                        </div>
+                        <div class="mx-chart-wrapper"><canvas id="nd-read-throughput"></canvas></div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#248afd;"></span>
+                          <span class="mx-chart-title">Write Throughput</span>
+                        </div>
+                        <div class="mx-chart-wrapper"><canvas id="nd-write-throughput"></canvas></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Charts row 2: IOPS -->
+                  <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#71c016;"></span>
+                          <span class="mx-chart-title">Read IOPS</span>
+                        </div>
+                        <div class="mx-chart-wrapper"><canvas id="nd-read-iops"></canvas></div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#248afd;"></span>
+                          <span class="mx-chart-title">Write IOPS</span>
+                        </div>
+                        <div class="mx-chart-wrapper"><canvas id="nd-write-iops"></canvas></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Charts row 3: Latency -->
+                  <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#f0a500;"></span>
+                          <span class="mx-chart-title">Read Latency</span>
+                        </div>
+                        <div class="mx-chart-wrapper"><canvas id="nd-read-latency"></canvas></div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#e63946;"></span>
+                          <span class="mx-chart-title">Write Latency</span>
+                        </div>
+                        <div class="mx-chart-wrapper"><canvas id="nd-write-latency"></canvas></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Storage Pool Breakdown -->
+                  <div class="metrics-divider" style="margin-top:4px;"></div>
+                  <div class="d-flex align-items-center mb-3">
+                    <span class="metrics-section-title"><i class="ti-hdd"></i> Storage Pool Breakdown</span>
+                  </div>
+                  <div id="nd-pool-cards">
+                    <p class="text-muted" style="font-size:12px;">Loading pool data…</p>
+                  </div>
+                  <!-- ── End Live Node Metrics Dashboard ────────────────── -->
+
                 </div>
               </div>
             </div>
@@ -179,6 +414,7 @@
       var usage = "{{.JsonNodeInfo.NodeInfo.UsedNodePool}}";
       var available = "{{.JsonNodeInfo.NodeInfo.FreeNodePool}}";
       var total = "{{.JsonNodeInfo.NodeInfo.SizeNodePool}}";
+      window.nodeID = "{{.JsonNodeInfo.NodeInfo.NodeID}}";
     </script>
 
     <script >
@@ -311,6 +547,8 @@
     <!-- Custom js for this page-->
     <script src="/portworx/client/static/js/dashboard.js"> </script>
     <!-- End custom js for this page-->
+    <!-- Node live-metrics dashboard -->
+    <script src="/portworx/client/static/js/node-metrics.js"></script>
   	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>

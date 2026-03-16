@@ -32,6 +32,9 @@ func (m *Repository) NodeMetricsAPIHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	token := m.App.Session.GetString(r.Context(), "token")
+	req.Header.Set("Authorization", "Bearer "+token)
+
 	client := &http.Client{}
 	res, err := client.Do(req)
 	if err != nil {
