@@ -105,6 +105,10 @@ func routes(app *AppConfig) http.Handler {
 
 		mux.Get("/delete-cloudsnap/{bucket}/{snap_id}", Repo.DeleteCloudSnapHTTP)
 
+		// Live metrics API – proxies to broker which fetches from Portworx Prometheus endpoint.
+		mux.Get("/api/metrics/{volume_name}", Repo.VolumeMetricsAPIHTTP)
+		mux.Get("/api/node-metrics/{node_id}", Repo.NodeMetricsAPIHTTP)
+
 		mux.Get("/update-volume-halevel/{volume_id}/{ha-level}", Repo.UpdateVolumeHALevelHTTP)
 
 		middleware.SetHeader("Volume-ID", "{volume_id}")

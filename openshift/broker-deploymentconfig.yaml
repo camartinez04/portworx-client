@@ -2,7 +2,7 @@ apiVersion: apps.openshift.io/v1
 kind: DeploymentConfig
 metadata:
   name: broker-deploymentconfig
-  namespace: portworx-client
+  namespace: px-client
 spec:
   selector:
     app: pxbroker
@@ -12,6 +12,7 @@ spec:
       labels:
         app: pxbroker
     spec:
+      serviceAccountName: pxbroker-sa
       containers:
         - name: pxbroker
           image: >-
@@ -51,6 +52,14 @@ spec:
               secretKeyRef:
                 name: portworx-token
                 key: token
+          - name: "PORTWORX_METRICS_URL"
+            value: ""
+          - name: "PORTWORX_NAMESPACE"
+            value: "portworx"
+          - name: "PORTWORX_METRICS_PORT"
+            value: "17001"
+          - name: "PORTWORX_LABEL_SELECTOR"
+            value: "name=portworx"
           ports:
           - containerPort: 8081
           livenessProbe:
@@ -96,3 +105,31 @@ metadata:
 type: Opaque
 data:
   token: ""
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxbroker-sa
+  namespace: px-client
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pxbroker-pod-reader
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pxbroker-pod-reader
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pxbroker-pod-reader
+subjects:
+  - kind: ServiceAccount
+    name: pxbroker-sa
+    namespace: px-client

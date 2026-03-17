@@ -1,24 +1,22 @@
-FROM docker.io/golang:1.22 as builder
+FROM docker.io/golang:1.25 as builder
 
 RUN mkdir /app
 
-COPY ./cmd /app/cmd
-
-COPY ./pkg /app/pkg
+COPY ./cmd    /app/cmd
+COPY ./pkg    /app/pkg
+COPY ./vendor /app/vendor
+COPY go.mod   /app/go.mod
+COPY go.sum   /app/go.sum
 
 WORKDIR /app
 
-RUN go mod init github.com/camartinez04/portworx-client/broker
-
-RUN go get github.com/go-chi/chi/v5 && go get github.com/go-chi/cors && go get google.golang.org/grpc && go get google.golang.org/protobuf && go get github.com/alexedwards/scs/v2 && go get github.com/libopenstorage/openstorage-sdk-clients/sdk/golang && go get github.com/Nerzal/gocloak/v11 && go get golang.org/x/sys && go get golang.org/x/net/idna && go mod tidy
-
-RUN CGO_ENABLED=0 go build -o brokerApp ./cmd/api
+RUN CGO_ENABLED=0 go build -mod=vendor -o brokerApp ./cmd/api
 
 RUN chmod +x /app/brokerApp
 
 # ========================================================================================================================
 
-FROM busybox:latest 
+FROM busybox:latest
 
 ENV APP_HOME /app
 

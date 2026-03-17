@@ -1,35 +1,159 @@
 {{template "secondary" .}}
 
-  {{ define "content" }}
-    {{ $volume := .JsonVolumeInfo.VolumeInfo }}
+  {{ define "css"}}
+  <style>
+    /* ── Metrics dashboard – light theme matching app style ───────────────── */
 
+    .metrics-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #787878;
+      margin-bottom: 0;
+    }
+
+    /* Stat cards – white card matching app .card style */
+    .mx-stat-card {
+      background: #fff;
+      border: 1px solid #e3e3e3;
+      border-radius: 0;
+      padding: 14px 12px;
+      text-align: center;
+      box-shadow: 2px 4px 6px -1px #d9d7e8;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .mx-stat-card:hover {
+      border-color: #71c016;
+      box-shadow: 2px 4px 10px -1px rgba(113,192,22,0.2);
+    }
+    .mx-stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #787878;
+      margin-bottom: 6px;
+      white-space: nowrap;
+    }
+    .mx-stat-label i { margin-right: 4px; }
+    .mx-stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #71c016;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+    .mx-stat-value.blue  { color: #248afd; }
+    .mx-stat-value.amber { color: #f0a500; }
+    .mx-stat-value.red   { color: #e63946; }
+    .mx-stat-value.gray  { color: #787878; }
+
+    /* Chart panels – same card appearance */
+    .mx-chart-panel {
+      background: #fff;
+      border: 1px solid #e3e3e3;
+      border-radius: 0;
+      box-shadow: 2px 4px 6px -1px #d9d7e8;
+      padding: 14px 16px 10px;
+      height: 100%;
+    }
+    .mx-chart-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .mx-chart-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    .mx-chart-title {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #787878;
+    }
+    .mx-chart-wrapper {
+      position: relative;
+      height: 148px;
+    }
+
+    /* Refresh indicator dot */
+    .metrics-refresh-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-left: 8px;
+      vertical-align: middle;
+      transition: background-color 0.3s;
+    }
+    .metrics-dot-loading {
+      background-color: #f0a500;
+      animation: mx-pulse 1s ease-in-out infinite;
+    }
+    .metrics-dot-ok    { background-color: #71c016; }
+    .metrics-dot-error { background-color: #e63946; }
+
+    @keyframes mx-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.25; }
+    }
+
+    /* Divider between volume info and metrics */
+    .metrics-divider {
+      border-top: 1px solid #e3e3e3;
+      margin: 28px 0 20px;
+    }
+
+    /* Refresh badge */
+    .mx-refresh-badge {
+      background: #e8f4e8;
+      color: #71c016;
+      border: 1px solid #c3e6cb;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 2px;
+    }
+  </style>
+  {{ end }}
+
+  {{define "content"}}
+    {{ $volume := .JsonVolumeInfo.VolumeInfo }}
     {{ $volumeReplicas := $volume.VolumeReplicas }}
 
       <div class="main-panel">
         <div class="content-wrapper">
+
+          <!-- ── Volume Info Card ──────────────────────────────────────────── -->
           <div class="row">
             <div class="col-md-12 grid-margin stretch-card">
               <div class="card position-relative">
                 <div class="card-body">
-                  <p class="card-title">Volume Inspect of the volume: {{ $volume.VolumeName }}</p>
+                  <p class="card-title">Volume Inspect — {{ $volume.VolumeName }}</p>
                   <div class="row">
                     <h6 class="font-weight-light mb-xl-4">Kubernetes PVC Name: </h6>
                     <h6 class="font-weight-light mb-xl-4">{{ $volume.VolumeK8sPVCName }}</h6>
                     <div class="col-md-12 col-xl-3 d-flex flex-column justify-content-center">
                       <div class="ml-xl-4">
                         <h6 class="font-weight-light mb-xl-4">Volume Name:</h6>
-                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeName }}</h6>                        
+                        <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeName }}</h6>
                       </div>
                       <div class="ml-xl-4">
                         <h6 class="font-weight-light mb-xl-4">Volume ID:</h6>
                         <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeID }}</h6>
-                      </div>  
+                      </div>
                       <div class="ml-xl-4">
                         <h6 class="font-weight-light mb-xl-4">Kubernetes Namespace:</h6>
                         <h6 class="font-weight-light mb-xl-3">{{ $volume.VolumeK8sNamespace }}</h6>
                       </div>
-                      <div> 
-                        <p class="text-muted mb-2 mb-xl-0">This is the current information of your Portworx volume.</p>
+                      <div>
+                        <p class="text-muted mb-2 mb-xl-0">Current configuration of your Portworx volume.</p>
                       </div>
                     </div>
                     <div class="col-md-12 col-xl-9">
@@ -42,9 +166,9 @@
                           <div class="table-responsive mb-3 mb-md-0">
                             <table class="table table-borderless report-table">
                               <tr>
-                                <td class="font-weight-bold mb-0 w-50 px-0" >Volume Status:</td>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Volume Status:</td>
                                 <td class="w-50 px-0">
-                                  <h5 class="font-weight-normal mb-0" id="check-volume-status" title="{{ $volume.VolumeStatus  }}"></h5>
+                                  <h5 class="font-weight-normal mb-0" id="check-volume-status" title="{{ $volume.VolumeStatus }}"></h5>
                                 </td>
                               </tr>
                               <tr>
@@ -53,7 +177,7 @@
                                   <h5 class="font-weight-normal mb-0" id="volume-size" title="{{$volume.VolumeSizeMB}}">
                                     <input type="hidden" name="_method" value="patch"/>
                                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateSize({{$volume.VolumeID}})" >{{ divide $volume.VolumeSizeMB 1024 }}</a>
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateSize({{$volume.VolumeID}})">{{ divide $volume.VolumeSizeMB 1024 }}</a>
                                   </h5>
                                 </td>
                               </tr>
@@ -63,7 +187,7 @@
                                   <h5 class="font-weight-normal mb-0" id="volume-replicas" title="{{ $volume.VolumeReplicas }}">
                                     <input type="hidden" name="_method" value="patch"/>
                                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateHALevel({{$volume.VolumeID}})" >{{ $volume.VolumeReplicas }}</a>
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateHALevel({{$volume.VolumeID}})">{{ $volume.VolumeReplicas }}</a>
                                   </h5>
                                 </td>
                               </tr>
@@ -73,7 +197,7 @@
                                   <h5 class="font-weight-normal mb-0" id="volume-ioprofile" title="{{ $volume.VolumeIOProfile }}">
                                     <input type="hidden" name="_method" value="patch"/>
                                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateIOProfile({{$volume.VolumeID}})" >{{ $volume.VolumeIOProfile }}</a>
+                                    <a href="#!" method="patch" class="btn btn-md btn-info btn-fw" onclick="updateIOProfile({{$volume.VolumeID}})">{{ $volume.VolumeIOProfile }}</a>
                                   </h5>
                                 </td>
                               </tr>
@@ -108,13 +232,13 @@
                                 </td>
                               </tr>
                               <tr>
-                                <td class="font-weight-bold mb-0 w-50 px-0">Nodes where the volume have a replica:</td>
+                                <td class="font-weight-bold mb-0 w-50 px-0">Nodes with a replica:</td>
                               </tr>
                               {{ range $index, $replica := $volume.VolumeReplicaNodes}}
                               <tr>
-                                <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} located on node:</td>
+                                <td class="font-weight-light mb-0 w-50 px-0">Replica {{$index}} on node:</td>
                                 <td class="w-50 px-0">
-                                  <h6 class="font-weight-normal mb-0"><a href="../node/{{ $replica }}">{{ $replica }} </a></h6>
+                                  <h6 class="font-weight-normal mb-0"><a href="../node/{{ $replica }}">{{ $replica }}</a></h6>
                                 </td>
                               </tr>
                               {{end}}
@@ -123,7 +247,7 @@
                                 <td class="w-50 px-0">
                                     <input type="hidden" name="_method" value="delete"/>
                                     <input type="hidden" name="csrf_token" value="{{.CSRFToken}}">
-                                    <a href="#!" method="delete" class="btn btn-md btn-inverse-danger btn-fw" onclick="deleteVolume({{$volume.VolumeID}})" >Delete Volume</a>
+                                    <a href="#!" method="delete" class="btn btn-md btn-inverse-danger btn-fw" onclick="deleteVolume({{$volume.VolumeID}})">Delete Volume</a>
                                 </td>
                               </tr>
                             </table>
@@ -132,10 +256,154 @@
                       </div>
                     </div>
                   </div>
+
+                  <!-- ── Live Metrics Dashboard ─────────────────────────────── -->
+                  <div class="metrics-divider"></div>
+
+                  <!-- Header -->
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center">
+                      <span class="metrics-section-title">
+                        <i class="ti-pulse me-2"></i>Live Metrics
+                      </span>
+                      <span id="metrics-refresh-dot" class="metrics-refresh-dot metrics-dot-loading" title="Initialising…"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                      <small id="metrics-last-updated" class="text-muted" style="font-size:11px;">Initialising…</small>
+                      <span class="mx-refresh-badge">↻ 20 s</span>
+                    </div>
+                  </div>
+
+                  <!-- Stat Cards (row 1: 7 cards in a responsive grid) -->
+                  <div class="row mb-3">
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-arrow-down"></i>Read</div>
+                        <div class="mx-stat-value" id="stat-read-throughput">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-arrow-up"></i>Write</div>
+                        <div class="mx-stat-value blue" id="stat-write-throughput">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-reload"></i>Read IOPS</div>
+                        <div class="mx-stat-value" id="stat-read-iops">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-reload"></i>Write IOPS</div>
+                        <div class="mx-stat-value blue" id="stat-write-iops">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-timer"></i>Read Lat.</div>
+                        <div class="mx-stat-value amber" id="stat-read-latency">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-timer"></i>Write Lat.</div>
+                        <div class="mx-stat-value red" id="stat-write-latency">—</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-md-4 col-xl mb-2">
+                      <div class="mx-stat-card">
+                        <div class="mx-stat-label"><i class="ti-layers"></i>IO Depth</div>
+                        <div class="mx-stat-value gray" id="stat-io-depth">—</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Charts row 1: Throughput -->
+                  <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#71c016;"></span>
+                          <span class="mx-chart-title">Read Throughput</span>
+                        </div>
+                        <div class="mx-chart-wrapper">
+                          <canvas id="mx-read-bytes"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#248afd;"></span>
+                          <span class="mx-chart-title">Write Throughput</span>
+                        </div>
+                        <div class="mx-chart-wrapper">
+                          <canvas id="mx-write-bytes"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Charts row 2: IOPS -->
+                  <div class="row mb-3">
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#71c016;"></span>
+                          <span class="mx-chart-title">Read IOPS</span>
+                        </div>
+                        <div class="mx-chart-wrapper">
+                          <canvas id="mx-read-iops"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#248afd;"></span>
+                          <span class="mx-chart-title">Write IOPS</span>
+                        </div>
+                        <div class="mx-chart-wrapper">
+                          <canvas id="mx-write-iops"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Charts row 3: Latency -->
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#f0a500;"></span>
+                          <span class="mx-chart-title">Read Latency</span>
+                        </div>
+                        <div class="mx-chart-wrapper">
+                          <canvas id="mx-read-latency"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <div class="mx-chart-panel">
+                        <div class="mx-chart-header">
+                          <span class="mx-chart-dot" style="background:#e63946;"></span>
+                          <span class="mx-chart-title">Write Latency</span>
+                        </div>
+                        <div class="mx-chart-wrapper">
+                          <canvas id="mx-write-latency"></canvas>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- ── End Live Metrics Dashboard ─────────────────────── -->
+
                 </div>
               </div>
             </div>
           </div>
+
         </div>
 
   {{ end }}
@@ -143,204 +411,130 @@
   {{ define "js" }}
 
   <script>
-  
-    let attention = Prompt();
+    /* ── Pass Go template data to JS ── */
+    window.volumeName    = "{{.JsonVolumeInfo.VolumeInfo.VolumeName}}";
 
-    var volMessage = "{{.Flash}}";
-
-    var volError = "{{.Error}}";
-
-    if (volError != "") {
-      notify("error trying to create the volume", "error");
-
-    }
-
-    if (volMessage != "") {
-        notify("volume created successfully","success")
-    }
-
-
+    var usagePercent     = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
+    var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
+    var usage            = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
+    var available        = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
+    var total            = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
+    var volumeid         = "{{.JsonVolumeInfo.VolumeInfo.VolumeID}}";
+    var volumeReplicas   = "{{.JsonVolumeInfo.VolumeInfo.VolumeReplicas}}";
   </script>
 
   <script>
+    var volMessage = "{{.Flash}}";
+    var volError   = "{{.Error}}";
+    var attention  = Prompt();
 
-    var usagePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedPercent}}";
-    var availablePercent = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailablePercent}}";
-    var usage = "{{.JsonVolumeInfo.VolumeInfo.VolumeUsedMB}}";
-    var available = "{{.JsonVolumeInfo.VolumeInfo.VolumeAvailable}}";
-    var total = "{{.JsonVolumeInfo.VolumeInfo.VolumeSizeMB}}";
-    var volumeid = "{{.JsonVolumeInfo.VolumeInfo.VolumeID}}";
-    var volumeReplicas = "{{.JsonVolumeInfo.VolumeInfo.VolumeReplicas}}";
+    if (volError   !== "") { notify("error trying to update the volume", "error");   }
+    if (volMessage !== "") { notify("volume updated successfully",        "success"); }
   </script>
 
-  <script >
-
-    var element = document.getElementById("check-volume-status");
-
-
-      if (element.title == "VOLUME_STATUS_UP") {
-  
-        let btn = document.createElement("button");
+  <script>
+    /* ── Volume status badge ── */
+    (function () {
+      var el = document.getElementById("check-volume-status");
+      if (!el) return;
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.name = "formBtn";
+      if (el.title === "VOLUME_STATUS_UP") {
         btn.innerHTML = "Volume Up";
-        btn.type = "button";
-        btn.name = "formBtn";
-        btn.classList = "btn btn-inverse-success btn-fw";
-        element.appendChild(btn);
-  
-        console.log("Volume Up");
-  
-      } else if (element.title == "VOLUME_STATUS_DEGRADED" ) {
-        
-        let btn = document.createElement("button");
+        btn.className = "btn btn-inverse-success btn-fw";
+      } else if (el.title === "VOLUME_STATUS_DEGRADED") {
         btn.innerHTML = "Volume Degraded";
-        btn.type = "button";
-        btn.name = "formBtn";
-        btn.classList = "btn btn-inverse-warning btn-fw";
-        element.appendChild(btn);
-  
-        console.log("Volume Degraded");
-  
+        btn.className = "btn btn-inverse-warning btn-fw";
       } else {
-
-        let btn = document.createElement("button");
         btn.innerHTML = "Volume Down";
-        btn.type = "button";
-        btn.name = "formBtn";
-        btn.classList = "btn btn-inverse-danger btn-fw";
-        element.appendChild(btn);
-
+        btn.className = "btn btn-inverse-danger btn-fw";
       }
+      el.appendChild(btn);
 
-    var sharedv4 = document.getElementById("volume-sharedv4");
-    btn2 = document.createElement("button");
-    btn2.innerHTML = sharedv4.title;
-    btn2.type = "button";
-    btn2.name = "formBtn";
-    btn2.classList = "btn btn-light";
-    sharedv4.appendChild(btn2);
-
-    var encrypted = document.getElementById("volume-encrypted");
-    btn3 = document.createElement("button");
-    btn3.innerHTML = encrypted.title;
-    btn3.type = "button";
-    btn3.name = "formBtn";
-    btn3.classList = "btn btn-light";
-    encrypted.appendChild(btn3);
-
-    var attached = document.getElementById("volume-attached");
-    btn4 = document.createElement("button");
-    btn4.innerHTML = attached.title;
-    btn4.type = "button";
-    btn4.name = "formBtn";
-    btn4.classList = "btn btn-light";
-    attached.appendChild(btn4);
-
-    var attached = document.getElementById("volume-nodiscard");
-    btn5 = document.createElement("button");
-    btn5.innerHTML = attached.title;
-    btn5.type = "button";
-    btn5.name = "formBtn";
-    btn5.classList = "btn btn-light";
-    attached.appendChild(btn5);
-
+      function mkBadge(id) {
+        var wrapper = document.getElementById(id);
+        if (!wrapper) return;
+        var b = document.createElement("button");
+        b.innerHTML = wrapper.title;
+        b.type = "button";
+        b.className = "btn btn-light";
+        wrapper.appendChild(b);
+      }
+      mkBadge("volume-sharedv4");
+      mkBadge("volume-encrypted");
+      mkBadge("volume-attached");
+      mkBadge("volume-nodiscard");
+    })();
   </script>
 
-  <script> 
-    function deleteVolume(volumeid) {
+  <script>
+    function deleteVolume(vid) {
       attention.custom({
-              icon: 'warning',
-              msg: 'Are you sure to delete this volume?',
-              callback: function(result) {
-                  if (result !== false) {
-                      window.location.csrf_token = "{{.CSRFToken}}";
-                      window.location.method = "delete";
-                      window.location.href = "/portworx/client/delete-volume/" + volumeid;
-                  }
-              },
-          })
-      }
+        icon: 'warning',
+        msg: 'Are you sure you want to delete this volume?',
+        callback: function (result) {
+          if (result !== false) {
+            window.location.csrf_token = "{{.CSRFToken}}";
+            window.location.method     = "delete";
+            window.location.href       = "/portworx/client/delete-volume/" + vid;
+          }
+        }
+      });
+    }
+
+    function updateHALevel(vid) {
+      var html = '<form><div class="form-row g-3 align-items-center">' +
+        '<select name="ha-value" id="ha-value">' +
+        '<option value="" selected disabled hidden>HA level can be +/- 1 current</option>' +
+        '<option value=3>3</option><option value=2>2</option><option value=1>1</option>' +
+        '</select></div></form>';
+      attention.custom({
+        msg: html, title: "Select new HA Level",
+        callback: function () {
+          window.location.href = "/portworx/client/update-volume-halevel/" + vid +
+            "/" + document.getElementById("ha-value").value;
+        }
+      });
+    }
+
+    function updateSize(vid) {
+      var html = '<form><div class="form-row g-3 align-items-center">' +
+        '<input required class="form-control" type="number" id="new-size" ' +
+        'placeholder="In GiB – must be larger than current"></div></form>';
+      attention.custom({
+        msg: html, title: "Increase volume size",
+        callback: function () {
+          window.location.href = "/portworx/client/update-volume-size/" + vid +
+            "/" + document.getElementById("new-size").value;
+        }
+      });
+    }
+
+    function updateIOProfile(vid) {
+      var html = '<form><div class="form-row g-3 align-items-center">' +
+        '<select id="new-ioprofile">' +
+        '<option value="" selected disabled hidden>select io-profile</option>' +
+        '<option value="auto">auto</option>' +
+        '<option value="db_remote">db_remote</option>' +
+        '<option value="db">db</option>' +
+        '<option value="sequential">sequential</option>' +
+        '<option value="sync_shared">sync_shared</option>' +
+        '</select></div></form>';
+      attention.custom({
+        msg: html, title: "Update IO Profile",
+        callback: function () {
+          window.location.href = "/portworx/client/update-volume-ioprofile/" + vid +
+            "/" + document.getElementById("new-ioprofile").value;
+        }
+      });
+    }
   </script>
 
-<script>
-  function updateHALevel(volumeid) {
-    let html = `
-        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
-          <div class="form-row g-3 align-items-center">
-            <select name="ha-value" id="ha-value" placeholder="can be +/- 1 of current">
-              <option value="" selected disabled hidden>HA level can be +/- 1 current</option>
-              <option value=3>3</option>
-              <option value=2>2</option>
-              <option value=1>1</option>
-            </select>
-          </div>
-        </form>
-        `
-    attention.custom({
-      msg: html,
-      title: "Select new HA Level",
-      callback: function (result) {
-        console.log("called update ha level");
-        window.location.csrf_token = "{{.CSRFToken}}";
-        window.location.method = "patch";
-        window.location.href = "/portworx/client/update-volume-halevel/" + volumeid + "/" + document.getElementById("ha-value").value;
-      },
-    })  
-  }
-</script>
+  <!-- Doughnut utilisation chart (existing) -->
+  <script src="/portworx/client/static/js/dashboard.js"></script>
 
-<script>
-  function updateSize(volumeid) {
-    let html = `
-        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
-          <div class="form-row g-3 align-items-center">
-            <input required class="form-control" type="number" name="new-size" id="new-size" placeholder="In GiB and bigger than current size">
-          </div>
-        </form>
-        `
-    attention.custom({
-      msg: html,
-      title: "Increase volume size",
-      callback: function (result) {
-        console.log("called update volume size");
-        window.location.csrf_token = "{{.CSRFToken}}";
-        window.location.method = "patch";
-        window.location.href = "/portworx/client/update-volume-size/" + volumeid + "/" + document.getElementById("new-size").value;
-      },
-    })  
-  }
-</script>
-
-<script>
-  function updateIOProfile(volumeid) {
-    let html = `
-        <form id="check-availability-form" action="" method="PATCH" novalidate class="needs-validation" >
-          <div class="form-row g-3 align-items-center">
-            <select name="io-profile" id="new-ioprofile" type="text" placeholder="select io-profile">
-              <option value="" selected disabled hidden>select io-profile</option>
-              <option value="auto">auto</option>
-              <option value="db_remote">db_remote</option>
-              <option value="db">db</option>
-              <option value="sequential">sequential</option>
-              <option value="sync_shared">sync_shared</option>
-            </select>
-          </div>
-        </form>
-        `
-    attention.custom({
-      msg: html,
-      title: "Update IO Profile",
-      callback: function (result) {
-        console.log("called update volume size");
-        window.location.csrf_token = "{{.CSRFToken}}";
-        window.location.method = "patch";
-        window.location.href = "/portworx/client/update-volume-ioprofile/" + volumeid + "/" + document.getElementById("new-ioprofile").value;
-      },
-    })  
-  }
-</script>
-
-  <!-- Custom js for this page-->
-  <script src="/portworx/client/static/js/dashboard.js"> </script>
-  <!-- End custom js for this page-->
+  <!-- Live metrics chart & polling -->
+  <script src="/portworx/client/static/js/volume-metrics.js"></script>
 
   {{ end }}

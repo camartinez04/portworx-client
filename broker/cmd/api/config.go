@@ -18,6 +18,14 @@ var KeycloakClientID = os.Getenv("KEYCLOAK_CLIENT_ID")
 var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
 var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
 
+// MetricsURL is the Portworx Prometheus metrics endpoint.
+// Must be set via the PORTWORX_METRICS_URL environment variable.
+// Example values:
+//   K8s : http://portworx-api.<namespace>.svc.cluster.local:9001/metrics
+//   OCP : http://portworx-api.<namespace>.svc.cluster.local:17001/metrics
+// If unset, metric API calls will return an error asking the operator to configure the variable.
+var MetricsURL = os.Getenv("PORTWORX_METRICS_URL")
+
 var (
 	UseTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")
 	Token   = flag.String("token", os.Getenv("PORTWORX_TOKEN"), "Authorization token if any")

@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/camartinez04/portworx-client/broker/pkg/cluster"
+	pxmetrics "github.com/camartinez04/portworx-client/broker/pkg/metrics"
 	"github.com/camartinez04/portworx-client/broker/pkg/nodes"
 	"github.com/camartinez04/portworx-client/broker/pkg/snapshots"
 	"github.com/camartinez04/portworx-client/broker/pkg/volumes"
@@ -937,4 +939,50 @@ func (App *AppConfig) patchUpdateVolumeReplicaSetHTTP(w http.ResponseWriter, r *
 
 	writeJSON(w, http.StatusAccepted, resp)
 
+}
+
+// getVolumeMetricsHTTP returns live Prometheus metrics for a single volume.
+// Route: GET /broker/getvolumemetrics/{volume_name}
+func (App *AppConfig) getVolumeMetricsHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	if len(exploded) < 4 {
+		App.errorJSON(w, fmt.Errorf("volume name not specified"))
+		return
+	}
+
+	volumeName := exploded[3]
+
+	vm, err := pxmetrics.GetVolumeMetrics(MetricsURL, volumeName)
+	if err != nil {
+		log.Printf("getVolumeMetricsHTTP: %v", err)
+		App.errorJSON(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, vm)
+}
+
+// getNodeMetricsHTTP returns live Prometheus metrics for a single node + its storage pools.
+// Route: GET /broker/getnodemetrics/{node_id}
+func (App *AppConfig) getNodeMetricsHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	if len(exploded) < 4 {
+		App.errorJSON(w, fmt.Errorf("node ID not specified"))
+		return
+	}
+
+	nodeID := exploded[3]
+
+	nm, err := pxmetrics.GetNodeMetrics(MetricsURL, nodeID)
+	if err != nil {
+		log.Printf("getNodeMetricsHTTP: %v", err)
+		App.errorJSON(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, nm)
 }
