@@ -34,11 +34,13 @@ func (m *Repository) VolumeMetricsAPIHTTP(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	token := m.App.Session.GetString(r.Context(), "token")
-	req.Header.Set("Authorization", "Bearer "+token)
+	// Do not set Authorization header here — the broker middleware injects its
+	// own global KeycloakToken.  Setting an empty Bearer token (the "token"
+	// session key is never written by the login handler) causes the broker to
+	// see an empty bearer and return 405, the same bug that broke all metrics.
 
-	// Do not follow redirects – a 302 to /login means the token is invalid,
-	// and following it would return HTML that the JS can't parse as JSON.
+	// Do not follow redirects – a 303/405 to /login means the broker token
+	// is invalid; return a clean 503 so the JS error handler retries.
 	client := &http.Client{CheckRedirect: func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}}

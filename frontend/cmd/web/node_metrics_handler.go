@@ -32,11 +32,11 @@ func (m *Repository) NodeMetricsAPIHTTP(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	token := m.App.Session.GetString(r.Context(), "token")
-	req.Header.Set("Authorization", "Bearer "+token)
+	// Do not set Authorization header — broker middleware injects its global
+	// KeycloakToken.  An empty bearer (from the "token" session key that is
+	// never written) causes the broker to return 405.
 
-	// Do not follow redirects – a 302 to /login means the token is invalid,
-	// and following it would return HTML that the JS can't parse as JSON.
+	// Do not follow redirects.
 	client := &http.Client{CheckRedirect: func(req *http.Request, via []*http.Request) error {
 		return http.ErrUseLastResponse
 	}}
