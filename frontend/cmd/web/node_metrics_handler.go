@@ -51,5 +51,49 @@ func (m *Repository) NodeMetricsAPIHTTP(w http.ResponseWriter, r *http.Request) 
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Cache-Control", "no-store")
 	w.WriteHeader(http.StatusOK)
-	w.Write(body)
+	w.Write(body) //nolint:errcheck
+}
+
+// NodeMetricsHistoryAPIHTTP proxies the Thanos range-query history request to
+// the broker and relays the time-series JSON back to the browser.  Called once
+// on page load to pre-populate dashboard charts with the last ~10 minutes of data.
+//
+// Route: GET /portworx/client/api/node-metrics/{node_id}/history
+func (m *Repository) NodeMetricsHistoryAPIHTTP(w http.ResponseWriter, r *http.Request) {
+
+	nodeID := chi.URLParam(r, "node_id")
+	if nodeID == "" {
+		http.Error(w, `{"error":true,"message":"node ID is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	targetURL := BrokerURL + "/broker/getnodemetricshistory/" + nodeID
+
+	req, err := http.NewRequest(http.MethodGet, targetURL, nil)
+	if err != nil {
+		log.Printf("NodeMetricsHistoryAPIHTTP: build request: %v", err)
+		http.Error(w, `{"error":true,"message":"internal error"}`, http.StatusInternalServerError)
+		return
+	}
+
+	client := &http.Client{}
+	res, err := client.Do(req)
+	if err != nil {
+		log.Printf("NodeMetricsHistoryAPIHTTP: broker call failed: %v", err)
+		http.Error(w, `{"error":true,"message":"metrics broker unavailable"}`, http.StatusServiceUnavailable)
+		return
+	}
+	defer res.Body.Close()
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Printf("NodeMetricsHistoryAPIHTTP: read body: %v", err)
+		http.Error(w, `{"error":true,"message":"failed to read metrics history response"}`, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Cache-Control", "no-store")
+	w.WriteHeader(http.StatusOK)
+	w.Write(body) //nolint:errcheck
 }

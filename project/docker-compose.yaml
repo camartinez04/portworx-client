@@ -31,6 +31,8 @@ services:
       replicas: 1
     environment:
       PORTWORX_GRPC_URL: "portworx-openstorage:9100"
+      PORTWORX_METRICS_URL: "https://thanos-querier.openshift-monitoring.svc.cluster.local:9091"
+      PORTWORX_METRICS_TOKEN:
 
   portworx-openstorage:
     image: openstorage/mock-sdk-server:latest
