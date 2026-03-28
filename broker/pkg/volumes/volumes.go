@@ -492,7 +492,10 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 
 	apiVolumeInspect = *volumeInspect.Volume
 
-	apiVolumeReplicas = apiVolumeInspect.ReplicaSets[0].Nodes
+	// ReplicaSets may be empty for snapshot, cloud-backed, or degraded volumes.
+	if len(apiVolumeInspect.ReplicaSets) > 0 {
+		apiVolumeReplicas = apiVolumeInspect.ReplicaSets[0].Nodes
+	}
 
 	apiVolumeStatus = apiVolumeInspect.GetStatus().String()
 
@@ -504,7 +507,7 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 	nodeclient := api.NewOpenStorageNodeClient(conn)
 
 	// For each node ID, get its information
-	for _, nodeID := range apiVolumeInspect.ReplicaSets[0].Nodes {
+	for _, nodeID := range apiVolumeReplicas {
 
 		// Retrieves the node information.
 		nodeIdResponse, errorFound := nodeclient.Inspect(
@@ -708,8 +711,14 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 	volumeIOPriorityPrev := volumeInspect.Volume.Spec.GetCos()
 
 	volumeName := volumeInspect.Volume.Locator.GetName()
-	volumeReplicas := len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
-	volumeReplicaNodes := volumeInspect.Volume.ReplicaSets[0].GetNodes()
+
+	// ReplicaSets may be empty for snapshot, cloud-backed, or degraded volumes.
+	var volumeReplicas int
+	var volumeReplicaNodes []string
+	if len(volumeInspect.Volume.ReplicaSets) > 0 {
+		volumeReplicas = len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
+		volumeReplicaNodes = volumeInspect.Volume.ReplicaSets[0].GetNodes()
+	}
 	volumeIOProfile := IoProfile_name[int32(volumeIOProfilePrev)]
 	volumeIOProfileAPI := volumeInspect.Volume.Spec.GetIoProfile().String()
 	volumeIOPriority := CosType_name[int32(volumeIOPriorityPrev)]
