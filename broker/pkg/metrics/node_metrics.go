@@ -1,14 +1,13 @@
 package metrics
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
-	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
-// PoolMetrics holds parsed Prometheus metrics for a single Portworx storage pool.
+// PoolMetrics holds Prometheus metrics for a single Portworx storage pool.
 //
 // Units:
 //   - Bytes fields      – raw bytes
@@ -29,10 +28,10 @@ type PoolMetrics struct {
 	Status          float64 `json:"status"` // 1 = online, 0 = degraded/offline
 }
 
-// NodeMetrics holds parsed Prometheus metrics for a Portworx node.
+// NodeMetrics holds Prometheus metrics for a Portworx node.
 //
-// Node-level I/O metrics use the target="1" label variant – this represents
-// the node acting as storage target (actual physical disk activity).
+// Node-level I/O metrics use the target="1" label variant (actual physical
+// disk activity at the storage-target role).
 //
 // Units:
 //   - Bytes fields      – raw bytes
@@ -65,73 +64,54 @@ type NodeMetrics struct {
 	StoragePools map[string]*PoolMetrics `json:"storage_pools"`
 }
 
-// GetNodeMetrics fetches Prometheus metrics for the requested Portworx node ID.
+// NodeMetricsHistory holds time-series I/O data for a node over the last
+// ~10 minutes for dashboard chart pre-population.
+// Timestamps are Unix milliseconds; all value arrays are index-aligned.
+type NodeMetricsHistory struct {
+	NodeID          string    `json:"node_id"`
+	Timestamps      []int64   `json:"timestamps"`
+	ReadThroughput  []float64 `json:"read_throughput_bytes_s"`
+	WriteThroughput []float64 `json:"write_throughput_bytes_s"`
+	ReadIOPS        []float64 `json:"read_iops"`
+	WriteIOPS       []float64 `json:"write_iops"`
+	ReadLatencyMs   []float64 `json:"read_latency_ms"`
+	WriteLatencyMs  []float64 `json:"write_latency_ms"`
+}
+
+// nodeMetricRegex covers all px_node_stats_* and px_pool_stats_* metrics
+// fetched in a single instant query for a given node.
+const nodeMetricRegex = `px_node_stats_readthroughput|px_node_stats_writethroughput|` +
+	`px_node_stats_read_iops|px_node_stats_write_iops|` +
+	`px_node_stats_read_latency_seconds|px_node_stats_write_latency_seconds|` +
+	`px_node_stats_cpu_usage|px_node_stats_total_mem|px_node_stats_used_mem|` +
+	`px_node_stats_free_mem|px_node_stats_num_volumes|` +
+	`px_pool_stats_readthroughput|px_pool_stats_writethroughput|` +
+	`px_pool_stats_read_iops|px_pool_stats_write_iops|` +
+	`px_pool_stats_read_latency_seconds|px_pool_stats_write_latency_seconds|` +
+	`px_pool_stats_total_bytes|px_pool_stats_used_bytes|px_pool_stats_available_bytes|` +
+	`px_pool_stats_status|px_pool_stats_pool_status`
+
+// GetNodeMetrics fetches current Prometheus metrics for the named Portworx node
+// from the Thanos Querier.
 //
-// metricsURLs may be a single URL or a comma-separated list.  When multiple
-// URLs are given the function fans out concurrently and returns the result from
-// the endpoint that actually reports metrics for the requested nodeID (each
-// Portworx pod only exposes its own node's metrics).
+// metricsURL must be the Thanos HTTP API base URL, e.g.:
 //
-// nodeID must match the `nodeID` label in the Prometheus output
+//	https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
+//
+// nodeID must match the nodeID label in the Prometheus output
 // (Portworx UUID, e.g. "6784f98f-6f71-4e55-bbf0-c12bc1ae659e").
-func GetNodeMetrics(metricsURLs, nodeID string) (*NodeMetrics, error) {
-	if metricsURLs == "" {
+func GetNodeMetrics(metricsURL, token, nodeID string) (*NodeMetrics, error) {
+	if metricsURL == "" {
 		return nil, fmt.Errorf("metrics URL is not configured – set PORTWORX_METRICS_URL")
 	}
 
-	urls := splitURLs(metricsURLs)
-	if len(urls) == 1 {
-		return fetchNodeMetrics(urls[0], nodeID)
-	}
+	// One instant query fetches all node + pool metrics at once.
+	sel := `nodeID="` + nodeID + `"`
+	promQL := `{__name__=~"` + nodeMetricRegex + `",` + sel + `}`
 
-	// Fan-out across all endpoints concurrently.
-	type result struct {
-		nm  *NodeMetrics
-		err error
-	}
-	ch := make(chan result, len(urls))
-	for _, u := range urls {
-		go func(url string) {
-			nm, err := fetchNodeMetrics(url, nodeID)
-			ch <- result{nm, err}
-		}(u)
-	}
-
-	var best *NodeMetrics
-	var lastErr error
-	for range urls {
-		r := <-ch
-		if r.err != nil {
-			lastErr = r.err
-			continue
-		}
-		if best == nil || nodeIOScore(r.nm) > nodeIOScore(best) {
-			best = r.nm
-		}
-	}
-
-	if best == nil {
-		return nil, lastErr
-	}
-	return best, nil
-}
-
-// nodeIOScore returns a scalar representing total I/O activity for a node result.
-func nodeIOScore(nm *NodeMetrics) float64 {
-	return nm.ReadThroughput + nm.WriteThroughput + nm.ReadIOPS + nm.WriteIOPS +
-		nm.CPUPercent + nm.NumVolumes
-}
-
-// fetchNodeMetrics fetches a single metrics endpoint and parses node data.
-func fetchNodeMetrics(metricsURL, nodeID string) (*NodeMetrics, error) {
-	resp, err := http.Get(metricsURL) //nolint:gosec // URL comes from operator-configured env var
+	results, err := instantQuery(metricsURL, token, promQL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to reach metrics endpoint %s: %w", metricsURL, err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("metrics endpoint returned HTTP %d", resp.StatusCode)
+		return nil, err
 	}
 
 	nm := &NodeMetrics{
@@ -139,169 +119,211 @@ func fetchNodeMetrics(metricsURL, nodeID string) (*NodeMetrics, error) {
 		StoragePools: make(map[string]*PoolMetrics),
 	}
 
-	// Label selectors
-	nodeIDSelector := `nodeID="` + nodeID + `"`
-
-	scanner := bufio.NewScanner(resp.Body)
-	// 4 MiB buffer – node metrics lines can be very long.
-	scanner.Buffer(make([]byte, 4*1024*1024), 4*1024*1024)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		if line == "" || strings.HasPrefix(line, "#") {
+	for _, r := range results {
+		name := r.Metric["__name__"]
+		if name == "" || len(r.Value) < 2 {
+			continue
+		}
+		val, ok := parseScalar(r.Value[1])
+		if !ok {
 			continue
 		}
 
-		// Only process lines for our node.
-		if !strings.Contains(line, nodeIDSelector) {
-			continue
-		}
+		labels := r.Metric
+		isTarget := labels["target"] == "1"
+		isCoord := labels["coordinator"] == "1"
+		poolID := uuidLabel(labels, "pool")
+		hasIntPool := isIntegerPool(labels)
 
-		// Parse Prometheus exposition format:
-		//   metricname{label="val",...} value [timestamp]
-		braceIdx := strings.Index(line, "{")
-		if braceIdx < 0 {
-			continue
-		}
-		metricName := line[:braceIdx]
-
-		closeBraceIdx := strings.LastIndex(line, "}")
-		if closeBraceIdx < 0 || closeBraceIdx+1 >= len(line) {
-			continue
-		}
-
-		labelsSection := line[braceIdx+1 : closeBraceIdx]
-
-		rest := strings.TrimSpace(line[closeBraceIdx+1:])
-		parts := strings.Fields(rest)
-		if len(parts) == 0 {
-			continue
-		}
-		value, err := strconv.ParseFloat(parts[0], 64)
-		if err != nil {
-			continue
-		}
-
-		// ── Determine which label variant this line belongs to ────────────────
-		isTarget      := strings.Contains(labelsSection, `target="1"`)
-		isCoordinator := strings.Contains(labelsSection, `coordinator="1"`)
-		poolUUID      := extractLabelUUID(labelsSection, "pool")
-		hasPoolInt    := hasIntegerPool(labelsSection)
-
-		// Skip coordinator-role and integer-pool-index lines.
-		if isCoordinator || hasPoolInt {
+		// Skip coordinator-role and integer-pool-index lines (same as before).
+		if isCoord || hasIntPool {
 			continue
 		}
 
 		switch {
-
-		// ── Node-level I/O metrics (target role) ─────────────────────────────
 		case isTarget:
-			switch metricName {
+			// Node-level I/O metrics (target role).
+			switch name {
 			case "px_node_stats_readthroughput":
-				nm.ReadThroughput = value
+				nm.ReadThroughput = val
 			case "px_node_stats_writethroughput":
-				nm.WriteThroughput = value
+				nm.WriteThroughput = val
 			case "px_node_stats_read_iops":
-				nm.ReadIOPS = value
+				nm.ReadIOPS = val
 			case "px_node_stats_write_iops":
-				nm.WriteIOPS = value
+				nm.WriteIOPS = val
 			case "px_node_stats_read_latency_seconds":
-				nm.ReadLatencyMs = value * 1000
+				nm.ReadLatencyMs = val * 1000
 			case "px_node_stats_write_latency_seconds":
-				nm.WriteLatencyMs = value * 1000
+				nm.WriteLatencyMs = val * 1000
 			}
 
-		// ── Per-pool metrics (pool UUID label) ───────────────────────────────
-		case poolUUID != "":
-			pool := getOrCreatePool(nm, poolUUID)
-			switch metricName {
+		case poolID != "":
+			// Per-pool metrics (UUID pool label).
+			pool := getOrCreatePool(nm, poolID)
+			switch name {
 			case "px_pool_stats_readthroughput":
-				pool.ReadThroughput = value
+				pool.ReadThroughput = val
 			case "px_pool_stats_writethroughput":
-				pool.WriteThroughput = value
+				pool.WriteThroughput = val
 			case "px_pool_stats_read_iops":
-				pool.ReadIOPS = value
+				pool.ReadIOPS = val
 			case "px_pool_stats_write_iops":
-				pool.WriteIOPS = value
+				pool.WriteIOPS = val
 			case "px_pool_stats_read_latency_seconds":
-				pool.ReadLatencyMs = value * 1000
+				pool.ReadLatencyMs = val * 1000
 			case "px_pool_stats_write_latency_seconds":
-				pool.WriteLatencyMs = value * 1000
+				pool.WriteLatencyMs = val * 1000
 			case "px_pool_stats_total_bytes":
-				pool.TotalBytes = value
+				pool.TotalBytes = val
 			case "px_pool_stats_used_bytes":
-				pool.UsedBytes = value
+				pool.UsedBytes = val
 			case "px_pool_stats_available_bytes":
-				pool.AvailableBytes = value
+				pool.AvailableBytes = val
 			case "px_pool_stats_status", "px_pool_stats_pool_status":
 				if pool.Status == 0 {
-					pool.Status = value
+					pool.Status = val
 				}
 			}
 
-		// ── Node-level gauges (no secondary label) ───────────────────────────
 		default:
-			switch metricName {
+			// Node-level gauges (no secondary label).
+			switch name {
 			case "px_node_stats_cpu_usage":
-				nm.CPUPercent = value
+				nm.CPUPercent = val
 			case "px_node_stats_total_mem":
-				nm.TotalMemory = value
+				nm.TotalMemory = val
 			case "px_node_stats_used_mem":
-				nm.UsedMemory = value
+				nm.UsedMemory = val
 			case "px_node_stats_free_mem":
-				nm.FreeMemory = value
+				nm.FreeMemory = val
 			case "px_node_stats_num_volumes":
-				nm.NumVolumes = value
+				nm.NumVolumes = val
 			}
 		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error reading metrics response: %w", err)
 	}
 
 	return nm, nil
 }
 
+// GetNodeMetricsHistory fetches the last ~10 minutes of I/O time-series data
+// for the named node from the Thanos Querier. Only node-level chart metrics are
+// included (per-pool data is snapshot-only via GetNodeMetrics).
+func GetNodeMetricsHistory(metricsURL, token, nodeID string) (*NodeMetricsHistory, error) {
+	if metricsURL == "" {
+		return nil, fmt.Errorf("metrics URL is not configured – set PORTWORX_METRICS_URL")
+	}
+
+	now := time.Now()
+	start := now.Add(-historyWindowSec * time.Second)
+	sel := `nodeID="` + nodeID + `",target="1"`
+
+	type rangeSpec struct {
+		promQL  string
+		scaleFn func(float64) float64
+	}
+
+	queries := []rangeSpec{
+		{promQL: `sum(px_node_stats_readthroughput{` + sel + `})`},
+		{promQL: `sum(px_node_stats_writethroughput{` + sel + `})`},
+		{promQL: `sum(px_node_stats_read_iops{` + sel + `})`},
+		{promQL: `sum(px_node_stats_write_iops{` + sel + `})`},
+		{
+			promQL:  `sum(px_node_stats_read_latency_seconds{` + sel + `})`,
+			scaleFn: func(v float64) float64 { return v * 1000 },
+		},
+		{
+			promQL:  `sum(px_node_stats_write_latency_seconds{` + sel + `})`,
+			scaleFn: func(v float64) float64 { return v * 1000 },
+		},
+	}
+
+	type seriesResult struct {
+		idx  int
+		ts   []int64
+		vals []float64
+	}
+
+	ch := make(chan seriesResult, len(queries))
+	var wg sync.WaitGroup
+
+	for i, q := range queries {
+		wg.Add(1)
+		go func(idx int, spec rangeSpec) {
+			defer wg.Done()
+			results, err := rangeQuery(metricsURL, token, spec.promQL, start, now, historyStepSec)
+			if err != nil {
+				ch <- seriesResult{idx: idx}
+				return
+			}
+			ts, vals := extractTimeSeries(results)
+			if spec.scaleFn != nil {
+				for j, v := range vals {
+					vals[j] = spec.scaleFn(v)
+				}
+			}
+			ch <- seriesResult{idx: idx, ts: ts, vals: vals}
+		}(i, q)
+	}
+
+	wg.Wait()
+	close(ch)
+
+	seriesMap := make(map[int]seriesResult, len(queries))
+	for sr := range ch {
+		seriesMap[sr.idx] = sr
+	}
+
+	var refTS []int64
+	for i := 0; i < len(queries); i++ {
+		if sr := seriesMap[i]; len(sr.ts) > 0 {
+			refTS = sr.ts
+			break
+		}
+	}
+	if refTS == nil {
+		return &NodeMetricsHistory{NodeID: nodeID}, nil
+	}
+
+	align := func(idx int) []float64 {
+		sr := seriesMap[idx]
+		if len(sr.ts) == 0 {
+			return make([]float64, len(refTS))
+		}
+		return alignToTimestamps(refTS, buildTSMap(sr.ts, sr.vals))
+	}
+
+	return &NodeMetricsHistory{
+		NodeID:          nodeID,
+		Timestamps:      refTS,
+		ReadThroughput:  align(0),
+		WriteThroughput: align(1),
+		ReadIOPS:        align(2),
+		WriteIOPS:       align(3),
+		ReadLatencyMs:   align(4),
+		WriteLatencyMs:  align(5),
+	}, nil
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// extractLabelUUID returns the value of `key` from a Prometheus labels string
-// only when it looks like a UUID (contains hyphens and is longer than 8 chars).
-func extractLabelUUID(labels, key string) string {
-	search := key + `="`
-	idx := strings.Index(labels, search)
-	if idx < 0 {
-		return ""
-	}
-	start := idx + len(search)
-	end := strings.Index(labels[start:], `"`)
-	if end < 0 {
-		return ""
-	}
-	val := labels[start : start+end]
-	// Accept only UUID-like values (contains at least one hyphen and len > 8).
+// uuidLabel returns the value of the given label key only when it looks like a
+// UUID (contains hyphens and is longer than 8 chars).
+func uuidLabel(labels map[string]string, key string) string {
+	val := labels[key]
 	if strings.Contains(val, "-") && len(val) > 8 {
 		return val
 	}
 	return ""
 }
 
-// hasIntegerPool returns true if the labels contain pool="<integer>" (pool index).
-func hasIntegerPool(labels string) bool {
-	search := `pool="`
-	idx := strings.Index(labels, search)
-	if idx < 0 {
+// isIntegerPool returns true when the "pool" label contains an integer value
+// (pool index) rather than a UUID.
+func isIntegerPool(labels map[string]string) bool {
+	val := labels["pool"]
+	if val == "" {
 		return false
 	}
-	start := idx + len(search)
-	end := strings.Index(labels[start:], `"`)
-	if end < 0 {
-		return false
-	}
-	val := labels[start : start+end]
-	// Integer pool index has no hyphens.
 	return !strings.Contains(val, "-")
 }
 

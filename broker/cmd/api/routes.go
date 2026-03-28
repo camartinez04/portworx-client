@@ -65,7 +65,9 @@ func (App *AppConfig) routes() http.Handler {
 		mux.Get("/getallvolumes", App.getAllVolumesHTTP)
 		mux.Get("/getallvolumescomplete", App.getAllVolumesCompleteHTTP)
 		mux.Get("/getvolumemetrics/{volume_name}", App.getVolumeMetricsHTTP)
+		mux.Get("/getvolumemetricshistory/{volume_name}", App.getVolumeMetricsHistoryHTTP)
 		mux.Get("/getnodemetrics/{node_id}", App.getNodeMetricsHTTP)
+		mux.Get("/getnodemetricshistory/{node_id}", App.getNodeMetricsHistoryHTTP)
 		mux.Get("/getreplicaspernode/{node_id}", App.getReplicasPerNodeHTTP)
 
 		mux.Get("/getlistofnodes", App.getListOfNodesHTTP)

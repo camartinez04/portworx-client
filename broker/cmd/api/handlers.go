@@ -941,7 +941,7 @@ func (App *AppConfig) patchUpdateVolumeReplicaSetHTTP(w http.ResponseWriter, r *
 
 }
 
-// getVolumeMetricsHTTP returns live Prometheus metrics for a single volume.
+// getVolumeMetricsHTTP returns current Thanos-sourced metrics for a single volume.
 // Route: GET /broker/getvolumemetrics/{volume_name}
 func (App *AppConfig) getVolumeMetricsHTTP(w http.ResponseWriter, r *http.Request) {
 
@@ -954,7 +954,7 @@ func (App *AppConfig) getVolumeMetricsHTTP(w http.ResponseWriter, r *http.Reques
 
 	volumeName := exploded[3]
 
-	vm, err := pxmetrics.GetVolumeMetrics(MetricsURL, volumeName)
+	vm, err := pxmetrics.GetVolumeMetrics(MetricsURL, MetricsToken, volumeName)
 	if err != nil {
 		log.Printf("getVolumeMetricsHTTP: %v", err)
 		App.errorJSON(w, err)
@@ -964,7 +964,31 @@ func (App *AppConfig) getVolumeMetricsHTTP(w http.ResponseWriter, r *http.Reques
 	writeJSON(w, http.StatusOK, vm)
 }
 
-// getNodeMetricsHTTP returns live Prometheus metrics for a single node + its storage pools.
+// getVolumeMetricsHistoryHTTP returns ~10 minutes of time-series metrics for a
+// volume from Thanos, used to pre-populate dashboard charts on page load.
+// Route: GET /broker/getvolumemetricshistory/{volume_name}
+func (App *AppConfig) getVolumeMetricsHistoryHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	if len(exploded) < 4 {
+		App.errorJSON(w, fmt.Errorf("volume name not specified"))
+		return
+	}
+
+	volumeName := exploded[3]
+
+	history, err := pxmetrics.GetVolumeMetricsHistory(MetricsURL, MetricsToken, volumeName)
+	if err != nil {
+		log.Printf("getVolumeMetricsHistoryHTTP: %v", err)
+		App.errorJSON(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, history)
+}
+
+// getNodeMetricsHTTP returns current Thanos-sourced metrics for a single node + its storage pools.
 // Route: GET /broker/getnodemetrics/{node_id}
 func (App *AppConfig) getNodeMetricsHTTP(w http.ResponseWriter, r *http.Request) {
 
@@ -977,7 +1001,7 @@ func (App *AppConfig) getNodeMetricsHTTP(w http.ResponseWriter, r *http.Request)
 
 	nodeID := exploded[3]
 
-	nm, err := pxmetrics.GetNodeMetrics(MetricsURL, nodeID)
+	nm, err := pxmetrics.GetNodeMetrics(MetricsURL, MetricsToken, nodeID)
 	if err != nil {
 		log.Printf("getNodeMetricsHTTP: %v", err)
 		App.errorJSON(w, err)
@@ -985,4 +1009,28 @@ func (App *AppConfig) getNodeMetricsHTTP(w http.ResponseWriter, r *http.Request)
 	}
 
 	writeJSON(w, http.StatusOK, nm)
+}
+
+// getNodeMetricsHistoryHTTP returns ~10 minutes of time-series I/O metrics for a
+// node from Thanos, used to pre-populate dashboard charts on page load.
+// Route: GET /broker/getnodemetricshistory/{node_id}
+func (App *AppConfig) getNodeMetricsHistoryHTTP(w http.ResponseWriter, r *http.Request) {
+
+	exploded := strings.Split(r.RequestURI, "/")
+
+	if len(exploded) < 4 {
+		App.errorJSON(w, fmt.Errorf("node ID not specified"))
+		return
+	}
+
+	nodeID := exploded[3]
+
+	history, err := pxmetrics.GetNodeMetricsHistory(MetricsURL, MetricsToken, nodeID)
+	if err != nil {
+		log.Printf("getNodeMetricsHistoryHTTP: %v", err)
+		App.errorJSON(w, err)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, history)
 }

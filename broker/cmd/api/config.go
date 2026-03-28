@@ -18,13 +18,20 @@ var KeycloakClientID = os.Getenv("KEYCLOAK_CLIENT_ID")
 var KeycloakSecret = os.Getenv("KEYCLOAK_SECRET")
 var KeycloakRealm = os.Getenv("KEYCLOAK_REALM")
 
-// MetricsURL is the Portworx Prometheus metrics endpoint.
-// Must be set via the PORTWORX_METRICS_URL environment variable.
-// Example values:
-//   K8s : http://portworx-api.<namespace>.svc.cluster.local:9001/metrics
-//   OCP : http://portworx-api.<namespace>.svc.cluster.local:17001/metrics
+// MetricsURL is the Thanos Querier HTTP API base URL used for all Portworx
+// Prometheus metrics. Must be set via the PORTWORX_METRICS_URL environment variable.
+// Example value (OpenShift in-cluster):
+//
+//	https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
+//
 // If unset, metric API calls will return an error asking the operator to configure the variable.
 var MetricsURL = os.Getenv("PORTWORX_METRICS_URL")
+
+// MetricsToken is an optional Bearer token used to authenticate against the
+// Thanos Querier endpoint.  Set via the PORTWORX_METRICS_TOKEN environment
+// variable.  Leave empty when the endpoint is accessible without authentication
+// within the cluster network.
+var MetricsToken = os.Getenv("PORTWORX_METRICS_TOKEN")
 
 var (
 	UseTls  = flag.Bool("usetls", false, "Connect to server using TLS. Loads CA from the system")

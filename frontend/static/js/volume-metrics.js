@@ -3,8 +3,11 @@
  * Live Portworx volume metrics dashboard – Chart.js v2 compatible.
  *
  * Expects window.volumeName to be set by the host template before this script
- * is loaded.  Polls /portworx/client/api/metrics/{volumeName} every
- * REFRESH_INTERVAL ms and updates six time-series charts plus six stat cards.
+ * is loaded.  On page load, fetches the last ~10 minutes of historical data
+ * from Thanos via /portworx/client/api/metrics/{volumeName}/history to
+ * pre-populate charts (no dead lines on reopen), then polls
+ * /portworx/client/api/metrics/{volumeName} every REFRESH_INTERVAL ms for
+ * new data points.
  */
 (function () {
   'use strict';
@@ -18,8 +21,8 @@
   var COLOR_WRITE     = '#248afd';       // primary blue   ($primary)
   var COLOR_LATENCY_R = '#f0a500';       // amber/warning
   var COLOR_LATENCY_W = '#e63946';       // danger red
-  var GRID_COLOR      = 'rgba(0,0,0,0.06)';  // subtle on white background
-  var TICK_COLOR      = '#787878';            // matches $card-title-color
+  var GRID_COLOR      = 'rgba(0,0,0,0.06)';
+  var TICK_COLOR      = '#787878';
 
   /* ─── State ───────────────────────────────────────────────────────────── */
   var charts      = {};
@@ -75,6 +78,11 @@
     var dot = document.getElementById('metrics-refresh-dot');
     if (!dot) return;
     dot.className = 'metrics-refresh-dot metrics-dot-' + state;
+  }
+
+  /** Format a Unix-ms timestamp as a locale time string for chart labels. */
+  function tsToLabel(unixMs) {
+    return new Date(unixMs).toLocaleTimeString();
   }
 
   /* ─── Chart factory ───────────────────────────────────────────────────── */
@@ -158,6 +166,71 @@
     chart.update(0);   // 0 = skip animation for live updates
   }
 
+  function refreshAllCharts() {
+    refreshChart(charts.readRate,    rollingData.labels, rollingData.readRate);
+    refreshChart(charts.writeRate,   rollingData.labels, rollingData.writeRate);
+    refreshChart(charts.readIops,    rollingData.labels, rollingData.readIops);
+    refreshChart(charts.writeIops,   rollingData.labels, rollingData.writeIops);
+    refreshChart(charts.readLatency, rollingData.labels, rollingData.readLatency);
+    refreshChart(charts.writeLatency,rollingData.labels, rollingData.writeLatency);
+  }
+
+  /* ─── History pre-population ──────────────────────────────────────────── */
+  /**
+   * Fetches the last ~10 minutes of Thanos range-query data and pre-populates
+   * the rolling window so charts show real history instead of flat zeros.
+   * Resolves (with or without data) so that polling always starts afterward.
+   */
+  function loadHistory(volName) {
+    return fetch('/portworx/client/api/metrics/' + encodeURIComponent(volName) + '/history')
+      .then(function (r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function (h) {
+        if (!h.timestamps || h.timestamps.length === 0) return;
+
+        // Take up to MAX_POINTS most-recent points from the history window.
+        var pts = h.timestamps.length;
+        var start = Math.max(0, pts - MAX_POINTS);
+
+        rollingData.labels       = [];
+        rollingData.readRate     = [];
+        rollingData.writeRate    = [];
+        rollingData.readIops     = [];
+        rollingData.writeIops    = [];
+        rollingData.readLatency  = [];
+        rollingData.writeLatency = [];
+
+        for (var i = start; i < pts; i++) {
+          rollingData.labels.push(tsToLabel(h.timestamps[i]));
+          rollingData.readRate.push(h.read_throughput_bytes_s[i]  || 0);
+          rollingData.writeRate.push(h.write_throughput_bytes_s[i] || 0);
+          rollingData.readIops.push(h.read_iops[i]                || 0);
+          rollingData.writeIops.push(h.write_iops[i]              || 0);
+          rollingData.readLatency.push(h.read_latency_ms[i]       || 0);
+          rollingData.writeLatency.push(h.write_latency_ms[i]     || 0);
+        }
+
+        // Pad to MAX_POINTS with leading empty slots if fewer points returned.
+        while (rollingData.labels.length < MAX_POINTS) {
+          rollingData.labels.unshift('');
+          rollingData.readRate.unshift(0);
+          rollingData.writeRate.unshift(0);
+          rollingData.readIops.unshift(0);
+          rollingData.writeIops.unshift(0);
+          rollingData.readLatency.unshift(0);
+          rollingData.writeLatency.unshift(0);
+        }
+
+        refreshAllCharts();
+      })
+      .catch(function (err) {
+        // Non-fatal – history unavailable; charts start from scratch.
+        console.warn('[metrics] history load failed:', err);
+      });
+  }
+
   /* ─── Metrics fetch & update ──────────────────────────────────────────── */
   function fetchMetrics() {
     var volName = window.volumeName;
@@ -179,13 +252,10 @@
         /* ── Throughput (prefer pre-computed gauges; fall back to delta/s) ── */
         var readRate = 0, writeRate = 0;
 
-        // Portworx exposes px_volume_readthroughput / px_volume_writethroughput
-        // as pre-computed bytes/s gauges — use them when available.
         if (data.read_throughput_bytes_s > 0 || data.write_throughput_bytes_s > 0) {
           readRate  = data.read_throughput_bytes_s  || 0;
           writeRate = data.write_throughput_bytes_s || 0;
         } else if (lastSample) {
-          // Fallback: derive rate from cumulative byte counters
           var dtSec = (nowMs - lastSample.ts) / 1000;
           if (dtSec > 0) {
             readRate  = Math.max(0, (data.read_bytes  - lastSample.readBytes)  / dtSec);
@@ -208,13 +278,7 @@
         push(rollingData.readLatency,  readLatMs);
         push(rollingData.writeLatency, writeLatMs);
 
-        /* ── Refresh charts ── */
-        refreshChart(charts.readRate,    rollingData.labels, rollingData.readRate);
-        refreshChart(charts.writeRate,   rollingData.labels, rollingData.writeRate);
-        refreshChart(charts.readIops,    rollingData.labels, rollingData.readIops);
-        refreshChart(charts.writeIops,   rollingData.labels, rollingData.writeIops);
-        refreshChart(charts.readLatency, rollingData.labels, rollingData.readLatency);
-        refreshChart(charts.writeLatency,rollingData.labels, rollingData.writeLatency);
+        refreshAllCharts();
 
         /* ── Update stat cards ── */
         setText('stat-read-throughput',  fmtBytes(readRate));
@@ -240,8 +304,12 @@
     if (!window.volumeName) return;
 
     initCharts();
-    fetchMetrics();                              // immediate first fetch
-    pollTimer = setInterval(fetchMetrics, REFRESH_INTERVAL);
+
+    // Pre-populate charts from Thanos history, then start live polling.
+    loadHistory(window.volumeName).then(function () {
+      fetchMetrics();
+      pollTimer = setInterval(fetchMetrics, REFRESH_INTERVAL);
+    });
   });
 
 })();

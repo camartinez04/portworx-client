@@ -1,30 +1,28 @@
 package metrics
 
 import (
-	"bufio"
 	"fmt"
-	"net/http"
-	"strconv"
-	"strings"
+	"sync"
+	"time"
 )
 
-// VolumeMetrics holds parsed Prometheus metrics for a specific Portworx volume.
+// VolumeMetrics holds the current Prometheus metrics for a specific Portworx volume.
 //
 // Units:
-//   - Bytes fields     – raw bytes
+//   - Bytes fields      – raw bytes
 //   - Throughput fields – bytes / second  (from px_volume_readthroughput / px_volume_writethroughput)
-//   - IOPS fields      – operations / second
-//   - Latency fields   – milliseconds (internally seconds are converted)
-//   - IODepth          – average queue depth (gauge)
+//   - IOPS fields       – operations / second
+//   - Latency fields    – milliseconds (Portworx reports seconds; converted here)
+//   - IODepth           – average queue depth (gauge)
 type VolumeMetrics struct {
 	Error   bool   `json:"error,omitempty"`
 	Message string `json:"message,omitempty"`
 
 	VolumeName string `json:"volume_name"`
 
-	// Cumulative byte counters (useful for rate calculation client-side)
+	// Cumulative byte counters
 	ReadBytes  float64 `json:"read_bytes"`
-	WriteBytes float64 `json:"write_bytes"` // px_volume_vol_written_bytes
+	WriteBytes float64 `json:"write_bytes"`
 
 	// Direct throughput gauges (bytes/s, pre-computed by Portworx)
 	ReadThroughput  float64 `json:"read_throughput_bytes_s"`
@@ -47,185 +45,219 @@ type VolumeMetrics struct {
 	UsageBytes    float64 `json:"usage_bytes"`
 }
 
-// GetVolumeMetrics fetches Prometheus metrics for the requested volume.
+// VolumeMetricsHistory holds time-series data for a volume over the last
+// ~10 minutes, suitable for pre-populating dashboard charts on page load.
+// Timestamps are Unix milliseconds; all value arrays are index-aligned with Timestamps.
+type VolumeMetricsHistory struct {
+	VolumeName      string    `json:"volume_name"`
+	Timestamps      []int64   `json:"timestamps"`
+	ReadThroughput  []float64 `json:"read_throughput_bytes_s"`
+	WriteThroughput []float64 `json:"write_throughput_bytes_s"`
+	ReadIOPS        []float64 `json:"read_iops"`
+	WriteIOPS       []float64 `json:"write_iops"`
+	ReadLatencyMs   []float64 `json:"read_latency_ms"`
+	WriteLatencyMs  []float64 `json:"write_latency_ms"`
+}
+
+// volumeMetricNames is the set of Portworx volume metric names fetched from Thanos.
+// Using a regex match across all of them in a single instant query is the most
+// efficient approach (one HTTP round-trip per call).
+const volumeMetricRegex = `px_volume_readthroughput|px_volume_writethroughput|` +
+	`px_volume_read_iops|px_volume_write_iops|px_volume_iops|` +
+	`px_volume_vol_read_latency_seconds|px_volume_read_latency_seconds|` +
+	`px_volume_vol_write_latency_seconds|px_volume_write_latency_seconds|` +
+	`px_volume_depth_io|` +
+	`px_volume_capacity_bytes|px_volume_fs_capacity_bytes|` +
+	`px_volume_usage_bytes|px_volume_fs_usage_bytes|` +
+	`px_volume_vol_read_bytes|px_volume_read_bytes|` +
+	`px_volume_vol_written_bytes|px_volume_written_bytes`
+
+// GetVolumeMetrics fetches current Prometheus metrics for the named volume from
+// the Thanos Querier.
 //
-// metricsURLs may be a single URL or a comma-separated list of URLs
-// (one per Portworx node pod endpoint).  When multiple URLs are given the
-// function fans out concurrently and returns the result that has the highest
-// combined I/O activity for the volume, ensuring data is returned even when
-// the volume lives on a node that is not the one a single URL happens to hit.
+// metricsURL must be the Thanos HTTP API base URL, e.g.:
 //
-// Example values:
+//	https://thanos-querier.openshift-monitoring.svc.cluster.local:9091
 //
-//	Single: "http://localhost:9001/metrics"
-//	Multi:  "http://node1:9001/metrics,http://node2:9001/metrics,http://node3:9001/metrics"
-func GetVolumeMetrics(metricsURLs, volumeName string) (*VolumeMetrics, error) {
-	if metricsURLs == "" {
+// token is an optional Bearer token for Thanos authentication (leave empty if
+// the endpoint is unauthenticated within the cluster).
+func GetVolumeMetrics(metricsURL, token, volumeName string) (*VolumeMetrics, error) {
+	if metricsURL == "" {
 		return nil, fmt.Errorf("metrics URL is not configured – set PORTWORX_METRICS_URL")
 	}
 
-	urls := splitURLs(metricsURLs)
-	if len(urls) == 1 {
-		return fetchVolumeMetrics(urls[0], volumeName)
-	}
+	// One instant query fetches all px_volume metrics for this volume at once.
+	sel := `volumename="` + volumeName + `"`
+	promQL := `{__name__=~"` + volumeMetricRegex + `",` + sel + `}`
 
-	// Fan-out across all endpoints concurrently.
-	type result struct {
-		vm  *VolumeMetrics
-		err error
-	}
-	ch := make(chan result, len(urls))
-	for _, u := range urls {
-		go func(url string) {
-			vm, err := fetchVolumeMetrics(url, volumeName)
-			ch <- result{vm, err}
-		}(u)
-	}
-
-	var best *VolumeMetrics
-	var lastErr error
-	for range urls {
-		r := <-ch
-		if r.err != nil {
-			lastErr = r.err
-			continue
-		}
-		if best == nil || ioScore(r.vm) > ioScore(best) {
-			best = r.vm
-		}
-	}
-
-	if best == nil {
-		return nil, lastErr
-	}
-	return best, nil
-}
-
-// ioScore returns a scalar representing total I/O activity for a volume result.
-// Used to pick the "most active" node result when fanning out.
-func ioScore(vm *VolumeMetrics) float64 {
-	return vm.ReadThroughput + vm.WriteThroughput + vm.ReadIOPS + vm.WriteIOPS +
-		vm.ReadBytes + vm.WriteBytes
-}
-
-// fetchVolumeMetrics fetches a single metrics endpoint and parses volume data.
-func fetchVolumeMetrics(metricsURL, volumeName string) (*VolumeMetrics, error) {
-	resp, err := http.Get(metricsURL) //nolint:gosec // URL comes from operator-configured env var
+	results, err := instantQuery(metricsURL, token, promQL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to reach metrics endpoint %s: %w", metricsURL, err)
+		return nil, err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("metrics endpoint returned HTTP %d", resp.StatusCode)
-	}
+	// Aggregate: sum values per metric name across all series (handles data
+	// replicated across multiple Portworx nodes in Thanos).
+	sums := sumInstantByName(results)
+	// For capacity/usage we want max (same physical value on all replicas).
+	maxes := maxInstantByName(results)
 
 	vm := &VolumeMetrics{VolumeName: volumeName}
 
-	// Label selector we look for in each line.
-	labelSelector := `volumename="` + volumeName + `"`
+	vm.ReadThroughput = sums["px_volume_readthroughput"]
+	vm.WriteThroughput = sums["px_volume_writethroughput"]
+	vm.ReadIOPS = sums["px_volume_read_iops"]
+	vm.WriteIOPS = sums["px_volume_write_iops"]
+	vm.IOPS = sums["px_volume_iops"]
+	vm.IODepth = sums["px_volume_depth_io"]
 
-	scanner := bufio.NewScanner(resp.Body)
-	// 2 MiB scan buffer – Portworx metrics lines can be very long (many labels).
-	scanner.Buffer(make([]byte, 2*1024*1024), 2*1024*1024)
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		// Skip HELP/TYPE comments and blank lines.
-		if line == "" || strings.HasPrefix(line, "#") {
-			continue
-		}
-
-		// Skip lines that don't mention our volume.
-		if !strings.Contains(line, labelSelector) {
-			continue
-		}
-
-		// Prometheus exposition format:
-		//   metricname{label="val",...} value [unix_timestamp_ms]
-		braceIdx := strings.Index(line, "{")
-		if braceIdx < 0 {
-			continue
-		}
-		metricName := line[:braceIdx]
-
-		closeBraceIdx := strings.LastIndex(line, "}")
-		if closeBraceIdx < 0 || closeBraceIdx+1 >= len(line) {
-			continue
-		}
-
-		// Take only the first token after "} " – the numeric value.
-		rest := strings.TrimSpace(line[closeBraceIdx+1:])
-		parts := strings.Fields(rest)
-		if len(parts) == 0 {
-			continue
-		}
-		value, err := strconv.ParseFloat(parts[0], 64)
-		if err != nil {
-			continue
-		}
-
-		// ── Map Portworx metric names to struct fields ──────────────────────
-		switch metricName {
-
-		// ── Cumulative byte counters ─────────────────────────────────────────
-		case "px_volume_vol_read_bytes", "px_volume_read_bytes":
-			vm.ReadBytes = value
-		case "px_volume_vol_written_bytes", "px_volume_written_bytes":
-			vm.WriteBytes = value
-
-		// ── Direct throughput gauges (bytes/s, pre-computed) ─────────────────
-		case "px_volume_readthroughput":
-			vm.ReadThroughput = value
-		case "px_volume_writethroughput":
-			vm.WriteThroughput = value
-
-		// ── IOPS gauges ──────────────────────────────────────────────────────
-		case "px_volume_read_iops":
-			vm.ReadIOPS = value
-		case "px_volume_write_iops":
-			vm.WriteIOPS = value
-		case "px_volume_iops":
-			vm.IOPS = value
-
-		// ── Latency (Portworx reports in seconds → convert to ms) ────────────
-		case "px_volume_vol_read_latency_seconds", "px_volume_read_latency_seconds":
-			vm.ReadLatencyMs = value * 1000
-		case "px_volume_vol_write_latency_seconds", "px_volume_write_latency_seconds":
-			vm.WriteLatencyMs = value * 1000
-
-		// ── IO queue depth ───────────────────────────────────────────────────
-		case "px_volume_depth_io":
-			vm.IODepth = value
-
-		// ── Capacity / usage ─────────────────────────────────────────────────
-		case "px_volume_capacity_bytes", "px_volume_fs_capacity_bytes":
-			if vm.CapacityBytes == 0 {
-				vm.CapacityBytes = value
-			}
-		case "px_volume_usage_bytes", "px_volume_fs_usage_bytes":
-			if vm.UsageBytes == 0 {
-				vm.UsageBytes = value
-			}
-		}
+	// Latency: Portworx reports seconds; convert to ms.
+	latR := sums["px_volume_vol_read_latency_seconds"]
+	if latR == 0 {
+		latR = sums["px_volume_read_latency_seconds"]
 	}
+	vm.ReadLatencyMs = latR * 1000
 
-	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error reading metrics response: %w", err)
+	latW := sums["px_volume_vol_write_latency_seconds"]
+	if latW == 0 {
+		latW = sums["px_volume_write_latency_seconds"]
 	}
+	vm.WriteLatencyMs = latW * 1000
+
+	// Capacity / usage: prefer the plain name; fall back to fs_ variant.
+	cap := maxes["px_volume_capacity_bytes"]
+	if cap == 0 {
+		cap = maxes["px_volume_fs_capacity_bytes"]
+	}
+	vm.CapacityBytes = cap
+
+	usage := maxes["px_volume_usage_bytes"]
+	if usage == 0 {
+		usage = maxes["px_volume_fs_usage_bytes"]
+	}
+	vm.UsageBytes = usage
+
+	// Cumulative byte counters.
+	rb := sums["px_volume_vol_read_bytes"]
+	if rb == 0 {
+		rb = sums["px_volume_read_bytes"]
+	}
+	vm.ReadBytes = rb
+
+	wb := sums["px_volume_vol_written_bytes"]
+	if wb == 0 {
+		wb = sums["px_volume_written_bytes"]
+	}
+	vm.WriteBytes = wb
 
 	return vm, nil
 }
 
-// splitURLs splits a comma-separated URL list, trimming whitespace and skipping blanks.
-func splitURLs(raw string) []string {
-	parts := strings.Split(raw, ",")
-	out := make([]string, 0, len(parts))
-	for _, p := range parts {
-		if s := strings.TrimSpace(p); s != "" {
-			out = append(out, s)
+// historyWindowSec is the lookback window for chart pre-population (10 minutes).
+const historyWindowSec = 600
+
+// historyStepSec is the resolution step – matches the JS polling interval (20 s).
+const historyStepSec = 20
+
+// GetVolumeMetricsHistory fetches the last ~10 minutes of time-series data for
+// the named volume from the Thanos Querier. All six chart metrics are fetched
+// concurrently. The returned arrays are all index-aligned with Timestamps.
+func GetVolumeMetricsHistory(metricsURL, token, volumeName string) (*VolumeMetricsHistory, error) {
+	if metricsURL == "" {
+		return nil, fmt.Errorf("metrics URL is not configured – set PORTWORX_METRICS_URL")
+	}
+
+	now := time.Now()
+	start := now.Add(-historyWindowSec * time.Second)
+	sel := `volumename="` + volumeName + `"`
+
+	type rangeSpec struct {
+		promQL  string
+		scaleFn func(float64) float64 // optional transformation (e.g. s→ms)
+	}
+
+	// Six metrics that drive the six dashboard charts.
+	queries := []rangeSpec{
+		{promQL: `sum(px_volume_readthroughput{` + sel + `})`},
+		{promQL: `sum(px_volume_writethroughput{` + sel + `})`},
+		{promQL: `sum(px_volume_read_iops{` + sel + `})`},
+		{promQL: `sum(px_volume_write_iops{` + sel + `})`},
+		{
+			promQL: `sum(px_volume_vol_read_latency_seconds{` + sel + `} or px_volume_read_latency_seconds{` + sel + `})`,
+			scaleFn: func(v float64) float64 { return v * 1000 },
+		},
+		{
+			promQL: `sum(px_volume_vol_write_latency_seconds{` + sel + `} or px_volume_write_latency_seconds{` + sel + `})`,
+			scaleFn: func(v float64) float64 { return v * 1000 },
+		},
+	}
+
+	type seriesResult struct {
+		idx  int
+		ts   []int64
+		vals []float64
+	}
+
+	ch := make(chan seriesResult, len(queries))
+	var wg sync.WaitGroup
+
+	for i, q := range queries {
+		wg.Add(1)
+		go func(idx int, spec rangeSpec) {
+			defer wg.Done()
+			results, err := rangeQuery(metricsURL, token, spec.promQL, start, now, historyStepSec)
+			if err != nil {
+				ch <- seriesResult{idx: idx}
+				return
+			}
+			ts, vals := extractTimeSeries(results)
+			if spec.scaleFn != nil {
+				for j, v := range vals {
+					vals[j] = spec.scaleFn(v)
+				}
+			}
+			ch <- seriesResult{idx: idx, ts: ts, vals: vals}
+		}(i, q)
+	}
+
+	wg.Wait()
+	close(ch)
+
+	// Collect results.
+	seriesMap := make(map[int]seriesResult, len(queries))
+	for sr := range ch {
+		seriesMap[sr.idx] = sr
+	}
+
+	// Use the first series with data as the timestamp reference.
+	var refTS []int64
+	for i := 0; i < len(queries); i++ {
+		if sr := seriesMap[i]; len(sr.ts) > 0 {
+			refTS = sr.ts
+			break
 		}
 	}
-	return out
+	if refTS == nil {
+		// No data available – return an empty history rather than an error.
+		return &VolumeMetricsHistory{VolumeName: volumeName}, nil
+	}
+
+	// Align all series to the reference timestamp grid.
+	align := func(idx int) []float64 {
+		sr := seriesMap[idx]
+		if len(sr.ts) == 0 {
+			return make([]float64, len(refTS))
+		}
+		return alignToTimestamps(refTS, buildTSMap(sr.ts, sr.vals))
+	}
+
+	return &VolumeMetricsHistory{
+		VolumeName:      volumeName,
+		Timestamps:      refTS,
+		ReadThroughput:  align(0),
+		WriteThroughput: align(1),
+		ReadIOPS:        align(2),
+		WriteIOPS:       align(3),
+		ReadLatencyMs:   align(4),
+		WriteLatencyMs:  align(5),
+	}, nil
 }
