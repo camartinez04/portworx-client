@@ -708,8 +708,14 @@ func GetVolumeInfo(conn *grpc.ClientConn, volumeID string) (volumeInfo config.Vo
 	volumeIOPriorityPrev := volumeInspect.Volume.Spec.GetCos()
 
 	volumeName := volumeInspect.Volume.Locator.GetName()
-	volumeReplicas := len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
-	volumeReplicaNodes := volumeInspect.Volume.ReplicaSets[0].GetNodes()
+
+	// ReplicaSets may be empty for snapshot, cloud-backed, or degraded volumes.
+	var volumeReplicas int
+	var volumeReplicaNodes []string
+	if len(volumeInspect.Volume.ReplicaSets) > 0 {
+		volumeReplicas = len(volumeInspect.Volume.ReplicaSets[0].GetNodes())
+		volumeReplicaNodes = volumeInspect.Volume.ReplicaSets[0].GetNodes()
+	}
 	volumeIOProfile := IoProfile_name[int32(volumeIOProfilePrev)]
 	volumeIOProfileAPI := volumeInspect.Volume.Spec.GetIoProfile().String()
 	volumeIOPriority := CosType_name[int32(volumeIOPriorityPrev)]
