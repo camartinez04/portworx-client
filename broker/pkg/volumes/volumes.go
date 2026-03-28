@@ -492,7 +492,10 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 
 	apiVolumeInspect = *volumeInspect.Volume
 
-	apiVolumeReplicas = apiVolumeInspect.ReplicaSets[0].Nodes
+	// ReplicaSets may be empty for snapshot, cloud-backed, or degraded volumes.
+	if len(apiVolumeInspect.ReplicaSets) > 0 {
+		apiVolumeReplicas = apiVolumeInspect.ReplicaSets[0].Nodes
+	}
 
 	apiVolumeStatus = apiVolumeInspect.GetStatus().String()
 
@@ -504,7 +507,7 @@ func InspectVolume(conn *grpc.ClientConn, volumeName string) (apiVolumeInspect a
 	nodeclient := api.NewOpenStorageNodeClient(conn)
 
 	// For each node ID, get its information
-	for _, nodeID := range apiVolumeInspect.ReplicaSets[0].Nodes {
+	for _, nodeID := range apiVolumeReplicas {
 
 		// Retrieves the node information.
 		nodeIdResponse, errorFound := nodeclient.Inspect(
