@@ -35,7 +35,7 @@ spec:
               value: keycloak
           volumeMounts:
             - name: data
-              mountPath: /data/pgdata
+              mountPath: /data
   volumeClaimTemplates:
     - metadata:
         name: data
@@ -51,6 +51,8 @@ kind: Service
 metadata:
   name: postgres
   namespace: px-client
+  labels:
+    app: postgres
 spec:
   selector:
     app: postgresql
