@@ -8,8 +8,8 @@ spec:
   selector:
     app: pxfrontend
   ports:
-  - port: 80
-    targetPort: 8082
+    - port: 80
+      targetPort: 8082
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -28,59 +28,59 @@ spec:
         app: pxfrontend
     spec:
       containers:
-      - name: pxfrontend
-        image: calvarado2004/portworx-client-frontend:latest
-        resources:
-          requests:
-            cpu: 10m
-            memory: 10Mi
-          limits:
-            cpu: 100m
-            memory: 100Mi
-        env:
-        - name: "BROKER_URL"
-          value: "http://pxbroker-service"
-        - name: "KEYCLOAK_URL"
-          valueFrom:
-            secretKeyRef:
-              name: keycloak
-              key: keycloakUrl
-        - name: "KEYCLOAK_CLIENT_ID"
-          valueFrom:
-            secretKeyRef:
-              name: keycloak
-              key: keycloakClientID
-        - name: "KEYCLOAK_SECRET"
-          valueFrom:
-            secretKeyRef:
-              name: keycloak
-              key: keycloakSecret
-        - name: "KEYCLOAK_REALM"
-          valueFrom:
-            secretKeyRef:
-              name: keycloak
-              key: keycloakRealm
-        ports:
-        - containerPort: 8082
-        livenessProbe:
-          exec:
-            command:
-              - sh
-              - -ec
-              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
-          initialDelaySeconds: 7
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
-        readinessProbe:
-          exec:
-            command:
-              - sh
-              - -ec
-              - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 6
+        - name: pxfrontend
+          image: calvarado2004/portworx-client-frontend:latest
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+          env:
+            - name: "BROKER_URL"
+              value: "http://pxbroker-service:8081"
+            - name: "KEYCLOAK_URL"
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak
+                  key: keycloakUrl
+            - name: "KEYCLOAK_CLIENT_ID"
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak
+                  key: keycloakClientID
+            - name: "KEYCLOAK_SECRET"
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak
+                  key: keycloakSecret
+            - name: "KEYCLOAK_REALM"
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak
+                  key: keycloakRealm
+          ports:
+            - containerPort: 8082
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
+            initialDelaySeconds: 7
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -ec
+                - 'wget --no-verbose --tries=1 --spider http://127.0.0.1:8082/ping || exit 1'
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6

@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: postgresql
-          image: postgres:14.5
+          image: postgres:16
           env:
             - name: POSTGRES_PASSWORD
               value: testpassword
@@ -38,7 +38,7 @@ spec:
         storageClassName: px-csi-db
         resources:
           requests:
-            storage: "3Gi"
+            storage: "5Gi"
 ---
 apiVersion: v1
 kind: Service
